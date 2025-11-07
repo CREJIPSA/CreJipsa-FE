@@ -1,8 +1,10 @@
+import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const Landing = () => {
+export default function Landing() {
 
+  const router = useRouter();
   const insets = useSafeAreaInsets();
 
   return (
@@ -15,7 +17,10 @@ const Landing = () => {
         <Text style={styles.subText}>크리에이터를 위한 어시스턴트 앱</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <Pressable style={styles.loginButton}>
+        <Pressable 
+          style={styles.loginButton}
+          onPress={() => router.navigate("login")}
+        >
           <Text style={styles.loginButtonText}>로그인</Text>
         </Pressable>
         <Pressable style={styles.signUpButton}>
@@ -25,8 +30,6 @@ const Landing = () => {
     </View>
   )
 }
-
-export default Landing;
 
 const styles = StyleSheet.create({
   landingContainer: {
