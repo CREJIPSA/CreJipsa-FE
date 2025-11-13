@@ -15,11 +15,11 @@ export default function Login() {
       </View>
       <View style={styles.formContainer}>
         <TextInput 
-          style={styles.idInputForm}
+          style={styles.inputForm}
           placeholder="아이디"
         />
         <TextInput 
-          style={styles.passwordInputForm}
+          style={styles.inputForm}
           placeholder="비밀번호" 
           secureTextEntry={true} 
         />
@@ -32,7 +32,9 @@ export default function Login() {
             <Text style={styles.authOptionsText}>비밀번호 찾기</Text>
           </Pressable>
           <View style={styles.authOptionsDivider} />
-          <Pressable>
+          <Pressable
+            onPress={() => router.navigate("sign-up")} 
+          >
             <Text style={styles.authOptionsText}>회원가입</Text>
           </Pressable>
         </View>
@@ -78,15 +80,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 25,
   },
-  idInputForm: {
-    width: 285,
-    height: 50,
-    borderColor: '#000000',
-    borderBottomWidth: 0.5,
-    marginBottom: 20,
-    paddingLeft: 20,
-  },
-  passwordInputForm: {
+  inputForm: {
     width: 285,
     height: 50,
     borderColor: '#000000',

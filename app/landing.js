@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,7 +11,8 @@ export default function Landing() {
   return (
     <View style={[styles.landingContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <View style={styles.logoContainer}>
-        <Text>logo&graphic</Text>
+        {/* 추후 로고 대체 */}
+        <Ionicons name="checkmark-circle-outline" size={150} color="#000000" />
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.mainText}>크집사에 오신걸 환영합니다.</Text>
@@ -23,7 +25,10 @@ export default function Landing() {
         >
           <Text style={styles.loginButtonText}>로그인</Text>
         </Pressable>
-        <Pressable style={styles.signUpButton}>
+        <Pressable 
+          style={styles.signUpButton}
+          onPress={() => router.navigate("sign-up")}
+        >
           <Text style={styles.signUpButtonText}>회원가입</Text>
         </Pressable>
       </View>
