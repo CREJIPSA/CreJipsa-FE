@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 export default function Landing() {
 
@@ -10,7 +11,13 @@ export default function Landing() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const styles = getStyles(isDark);
+  const isLoggedIn = false; // 실제 인증 상태에 따라 변경
 
+  // 로그인 상태 확인
+  if (isLoggedIn) {
+    return <Redirect href="/(tabs)" />;
+  }
+  
   return (
     <View style={[styles.landingContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <View style={styles.logoContainer}>

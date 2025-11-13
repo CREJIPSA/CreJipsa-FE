@@ -39,11 +39,11 @@ export default function SignUp() {
   useEffect(() => {
     if (step === 8) {
       const timer = setTimeout(() => {
-        router.replace("landing");
+        router.replace("/");
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [step]);
+  }, [step, router]);
 
   // 관심분야 선택 칩 컴포넌트
   const chipOptions = ['일상/밈', '뷰티', '게임', '패션', '음악', '스포츠', '반려동물'];

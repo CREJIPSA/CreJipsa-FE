@@ -90,6 +90,7 @@ const getStyles = (isDark) => StyleSheet.create({
   inputForm: {
     width: 285,
     height: 50,
+    color: isDark ? '#FAFAFA' : '#000000',
     borderColor: isDark ? '#FAFAFA' : '#000000',
     borderBottomWidth: 0.5,
     marginBottom: 20,
