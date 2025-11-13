@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, TextInput, View, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import kakaoLogo from '../assets/images/kakao_logo.png';
 
@@ -7,6 +7,9 @@ export default function Login() {
 
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const styles = getStyles(isDark);
 
   return (
     <View style={[ styles.loginContainer, { paddingTop: insets.top, paddingBottom: insets.bottom } ]}>
@@ -17,10 +20,12 @@ export default function Login() {
         <TextInput 
           style={styles.inputForm}
           placeholder="아이디"
+          placeholderTextColor={isDark ? '#ffffff' : '#000000'}
         />
         <TextInput 
           style={styles.inputForm}
           placeholder="비밀번호" 
+          placeholderTextColor={isDark ? '#ffffff' : '#000000'}
           secureTextEntry={true} 
         />
         <View style={styles.authOptionsContainer}>
@@ -58,11 +63,12 @@ export default function Login() {
   )
 }
 
-const styles = StyleSheet.create({
+const getStyles = (isDark) => StyleSheet.create({
   loginContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: isDark ? '#202020' : '#d9d9d9',
   },
   titleContainer: {
     flex: 1.5,
@@ -73,6 +79,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: isDark ? '#FAFAFA' : '#000000',
   },
   formContainer: {
     flex: 2,
@@ -83,7 +90,7 @@ const styles = StyleSheet.create({
   inputForm: {
     width: 285,
     height: 50,
-    borderColor: '#000000',
+    borderColor: isDark ? '#FAFAFA' : '#000000',
     borderBottomWidth: 0.5,
     marginBottom: 20,
     paddingLeft: 20,
@@ -98,11 +105,12 @@ const styles = StyleSheet.create({
   authOptionsDivider: {
     width: 1,
     height: '70%',
-    backgroundColor: '#000000',
+    backgroundColor: isDark ? '#FAFAFA' : '#000000',
   },
-  authOptionsText: {
+  authOptionsText: { 
+    color: isDark ? '#FAFAFA' : '#000000',
     fontSize: 14,
-    fontWeight: 200,
+    fontWeight: 'lighter',
   },
   buttonContainer: {
     flex: 1,
@@ -117,7 +125,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 3,
     borderRadius: 100,
-    backgroundColor: '#d9d9d9',
+    backgroundColor: isDark ? '#d9d9d9' : '#E6E6E6',
   },
   loginButton: { 
     width: 172,
@@ -126,11 +134,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 3,
     borderRadius: 100,
-    backgroundColor: '#d9d9d9',
+    backgroundColor: isDark ? '#CCFF66' : '#E6E6E6',
   },
   buttonText: {
     fontSize: 14,
-    fontWeight: 200,
+    fontWeight: 'lighter',
   },
   socialLoginContainer: {
     flex: 4,
