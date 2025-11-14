@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function MyPage() {
+export default function My() {
   const [pushEnabled, setPushEnabled] = useState(true);
 
   return (
