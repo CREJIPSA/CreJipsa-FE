@@ -1,6 +1,6 @@
-import { Text, View } from "react-native";
+import { Text, View } from 'react-native'
 
-export default function Index() {
+export default function Feed() {
   return (
     <View
       style={{
@@ -9,7 +9,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+      <Text>Edit app/(tabs)/feed.js to edit this screen.</Text>
     </View>
-  );
+  )
 }
