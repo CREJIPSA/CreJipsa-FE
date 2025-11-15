@@ -39,7 +39,7 @@ export default function SignUp() {
   useEffect(() => {
     if (step === 8) {
       const timer = setTimeout(() => {
-        router.replace("/");
+        router.replace("/(tabs)/(home)");
       }, 3000);
       return () => clearTimeout(timer);
     }
