@@ -1,15 +1,179 @@
-import { Tabs } from 'expo-router'
+import { Tabs } from 'expo-router';
+import { Text, useColorScheme, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Path } from "react-native-svg";
 
 export default function TabsLayout() {
+
+  const insets = useSafeAreaInsets();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const styles = getStyles(isDark);
+  
+  // 탭바 아이콘 컴포넌트
+  function TabBarIcon({ name, focused }) {
+    const fill = focused ? (isDark ? '#FAFAFA' : '#000000') : (isDark ? '#878787' : '#AAAAAA');
+
+    if (name === 'home') {
+      return (
+        <Svg width="21" height="24" viewBox="0 0 21 24" fill={fill} xmlns="http://www.w3.org/2000/svg">
+          <Path d="M1.5 21.5775H7.038V13.962C7.038 13.619 7.1545 13.3315 7.3875 13.0995C7.6195 12.8665 7.907 12.75 8.25 12.75H12.75C13.093 12.75 13.381 12.8665 13.614 13.0995C13.846 13.3315 13.962 13.619 13.962 13.962V21.5775H19.5V8.5395C19.5 8.3855 19.4665 8.2455 19.3995 8.1195C19.3325 7.9935 19.241 7.8835 19.125 7.7895L11.049 1.7025C10.895 1.5685 10.712 1.5015 10.5 1.5015C10.288 1.5015 10.1055 1.5685 9.9525 1.7025L1.875 7.7895C1.76 7.8855 1.6685 7.9955 1.6005 8.1195C1.5325 8.2435 1.499 8.3835 1.5 8.5395V21.5775ZM0 21.5775V8.5395C0 8.1555 0.0859999 7.792 0.258 7.449C0.43 7.106 0.667 6.8235 0.969 6.6015L9.0465 0.484501C9.4695 0.161501 9.9525 0 10.4955 0C11.0385 0 11.5245 0.161501 11.9535 0.484501L20.031 6.6C20.334 6.822 20.571 7.105 20.742 7.449C20.914 7.792 21 8.1555 21 8.5395V21.5775C21 21.9795 20.8505 22.33 20.5515 22.629C20.2525 22.928 19.902 23.0775 19.5 23.0775H13.674C13.33 23.0775 13.042 22.9615 12.81 22.7295C12.578 22.4965 12.462 22.2085 12.462 21.8655V14.2515H8.538V21.8655C8.538 22.2095 8.422 22.4975 8.19 22.7295C7.958 22.9615 7.6705 23.0775 7.3275 23.0775H1.5C1.098 23.0775 0.7475 22.928 0.4485 22.629C0.1495 22.33 0 21.9795 0 21.5775Z" />
+        </Svg>
+      )
+    }
+
+    if (name === 'search') {
+      return (
+        <Svg width="25" height="25" viewBox="0 0 25 25" fill={fill} xmlns="http://www.w3.org/2000/svg">
+          <Path d="M8.5965 17.19C6.1985 17.19 4.166 16.357 2.499 14.691C0.833 13.026 0 10.994 0 8.595C0 6.196 0.833 4.1635 2.499 2.4975C4.165 0.831501 6.1975 -0.0009991 8.5965 8.9982e-07C10.9955 0.0010009 13.0275 0.834001 14.6925 2.499C16.3575 4.164 17.1905 6.196 17.1915 8.595C17.1915 9.637 17.007 10.6455 16.638 11.6205C16.269 12.5955 15.784 13.4295 15.183 14.1225L24.0465 22.983C24.1865 23.123 24.2615 23.2955 24.2715 23.5005C24.2805 23.7035 24.2055 23.885 24.0465 24.045C23.8865 24.205 23.7095 24.285 23.5155 24.285C23.3215 24.285 23.1445 24.205 22.9845 24.045L14.1225 15.183C13.3725 15.822 12.51 16.3165 11.535 16.6665C10.56 17.0165 9.58 17.1915 8.595 17.1915M8.595 15.6915C10.585 15.6915 12.2655 15.0065 13.6365 13.6365C15.0065 12.2665 15.6915 10.586 15.6915 8.595C15.6915 6.604 15.007 4.924 13.638 3.555C12.269 2.186 10.589 1.501 8.598 1.5C6.607 1.5 4.9265 2.185 3.5565 3.555C2.1865 4.925 1.501 6.605 1.5 8.595C1.499 10.585 2.184 12.265 3.555 13.635C4.926 15.005 6.606 15.69 8.595 15.69" f/>
+        </Svg>
+      )
+    }
+
+    if (name === 'storyboard') {
+      return(
+        <Svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+          <Path
+            d="M19.0567 6.32775L23.2987 10.5712M24.1477 2.93475L26.6932 5.48025C26.9181 5.70527 27.0444 6.01038 27.0444 6.3285C27.0444 6.64662 26.9181 6.95173 26.6932 7.17675L9.50925 24.3592L4.20675 25.4197L5.26725 20.1172L22.4497 2.93325C22.5612 2.82168 22.6935 2.73317 22.8392 2.67278C22.9849 2.61239 23.141 2.58131 23.2987 2.58131C23.4564 2.58131 23.6126 2.61239 23.7583 2.67278C23.904 2.73317 24.0363 2.82318 24.1477 2.93475Z"
+            stroke={fill}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <Path
+            d="M4.02225 0.97725L3.45675 3.23925C3.4435 3.29176 3.41629 3.3397 3.378 3.378C3.3397 3.41629 3.29176 3.4435 3.23925 3.45675L0.97725 4.02225C0.67425 4.09725 0.67425 4.52925 0.97725 4.60425L3.23925 5.16975C3.29176 5.183 3.3397 5.21021 3.378 5.2485C3.41629 5.2868 3.4435 5.33474 3.45675 5.38725L4.02225 7.64925C4.09725 7.95225 4.52925 7.95225 4.60425 7.64925L5.16975 5.38725C5.183 5.33474 5.21021 5.2868 5.2485 5.2485C5.2868 5.21021 5.33474 5.183 5.38725 5.16975L7.64925 4.60425C7.95225 4.52925 7.95225 4.09725 7.64925 4.02225L5.38725 3.45675C5.33474 3.4435 5.2868 3.41629 5.2485 3.378C5.21021 3.3397 5.183 3.29176 5.16975 3.23925L4.60425 0.97725C4.52925 0.67425 4.09725 0.67425 4.02225 0.97725Z"
+            fill={fill}
+          />
+          <Path
+            d="M25.3132 22.3132L24.7132 24.7132L22.3132 25.3132L24.7132 25.9132L25.3132 28.3132L25.9132 25.9132L28.3132 25.3132L25.9132 24.7132L25.3132 22.3132Z"
+            fill={fill}
+          />
+        </Svg>
+      )
+    }
+
+    if (name === 'feed') {
+      return (
+        <Svg width="29" height="29" viewBox="0 0 29 29" fill={fill} xmlns="http://www.w3.org/2000/svg">
+          <Path d="M1.5 26.385L6.885 21H24C24.7956 21 25.5587 20.6839 26.1213 20.1213C26.6839 19.5587 27 18.7956 27 18V4.5C27 3.70435 26.6839 2.94129 26.1213 2.37868C25.5587 1.81607 24.7956 1.5 24 1.5H4.5C3.70435 1.5 2.94129 1.81607 2.37868 2.37868C1.81607 2.94129 1.5 3.70435 1.5 4.5V26.385ZM1.5 28.5H0V4.5C0 3.30653 0.474106 2.16193 1.31802 1.31802C2.16193 0.474106 3.30653 0 4.5 0H24C25.1935 0 26.3381 0.474106 27.182 1.31802C28.0259 2.16193 28.5 3.30653 28.5 4.5V18C28.5 19.1935 28.0259 20.3381 27.182 21.182C26.3381 22.0259 25.1935 22.5 24 22.5H7.5L1.5 28.5ZM6 6H22.5V7.5H6V6ZM6 10.5H22.5V12H6V10.5ZM6 15H18V16.5H6V15Z" />
+        </Svg>
+      )
+    }
+
+    if (name === 'my') {
+      return (
+        <Svg width="27" height="27" viewBox="0 0 27 27" fill={fill} xmlns="http://www.w3.org/2000/svg">
+          <Path fillRule="evenodd" clipRule="evenodd" d="M13.5 13.5C16.815 13.5 19.5 10.815 19.5 7.5C19.5 4.185 16.815 1.5 13.5 1.5C10.185 1.5 7.5 4.185 7.5 7.5C7.5 10.815 10.185 13.5 13.5 13.5ZM21 7.5C21 11.6438 17.6437 15 13.5 15C9.35625 15 6 11.6438 6 7.5C6 3.35625 9.35625 0 13.5 0C17.6437 0 21 3.35625 21 7.5ZM2.41725 21.159C1.665 21.7665 1.5 22.2218 1.5 22.5V25.5H25.5V22.5C25.5 22.2225 25.335 21.7658 24.582 21.159C23.847 20.5658 22.7505 20.0002 21.4215 19.5112C18.765 18.534 15.5647 18 13.5 18C11.4353 18 8.235 18.534 5.5785 19.5112C4.2495 20.0002 3.153 20.5658 2.41725 21.159ZM13.5 16.5C8.99475 16.5 0 18.7762 0 22.5V27H27V22.5C27 18.7762 18.006 16.5 13.5 16.5Z" />
+        </Svg>
+      )
+    }
+
+    return null;
+  } 
+
   return (
-    <Tabs
-      screenOptions={{ headerShown: false }}
-    >
-      <Tabs.Screen name="(home)/index" options={{ title: 'Home' }} />
-      <Tabs.Screen name="search-trend" options={{ title: 'SearchTrend' }} />
-      <Tabs.Screen name="storyboard" options={{ title: 'Storyboard' }} />
-      <Tabs.Screen name="feed" options={{ title: 'Feed' }} />
-      <Tabs.Screen name="my" options={{ title: 'My' }} />
-    </Tabs>
+    <View style={{ flex: 1, backgroundColor: isDark ? '#141414' : '#FFFFFF' }}>
+      <Tabs
+        screenOptions={{ 
+          headerShown: false,
+          tabBarStyle: {...styles.tabBar, marginBottom: insets.bottom},
+        }}
+      >
+        <Tabs.Screen 
+          name="(home)/index" 
+          options={{ 
+            tabBarLabel: ({focused}) => {
+              return (
+                <Text style={{ 
+                  color: focused ? (isDark ? '#FAFAFA' : '#000000') : (isDark ? '#878787' : '#AAAAAA'),
+                  fontSize: 12,
+                }}>
+                  홈
+                </Text>)
+            },
+            tabBarIcon: ({focused}) => (
+              <TabBarIcon name="home" focused={focused} />
+            )
+          }} 
+        />
+        <Tabs.Screen 
+          name="search-trend" 
+          options={{ 
+            tabBarLabel: ({focused}) => {
+              return (
+                <Text style={{ 
+                  color: focused ? (isDark ? '#FAFAFA' : '#000000') : (isDark ? '#878787' : '#AAAAAA'),
+                  fontSize: 12,
+                }}>
+                  트렌드 검색
+                </Text>)
+            },
+            tabBarIcon: ({focused}) => (
+              <TabBarIcon name="search" focused={focused} />
+            )
+          }} 
+        />
+        <Tabs.Screen 
+          name="storyboard" 
+          options={{ 
+            tabBarLabel: ({focused}) => {
+              return (
+                <Text style={{ 
+                  color: focused ? (isDark ? '#FAFAFA' : '#000000') : (isDark ? '#878787' : '#AAAAAA'),
+                  fontSize: 12,
+                }}>
+                  스토리보드
+                </Text>)
+            },
+            tabBarIcon: ({focused}) => (
+              <TabBarIcon name="storyboard" focused={focused} />
+            )
+          }} 
+        />
+        <Tabs.Screen 
+          name="feed" 
+          options={{ 
+            tabBarLabel: ({focused}) => {
+              return (
+                <Text style={{ 
+                  color: focused ? (isDark ? '#FAFAFA' : '#000000') : (isDark ? '#878787' : '#AAAAAA'),
+                  fontSize: 12,
+                }}>
+                  피드
+                </Text>)
+            },
+            tabBarIcon: ({focused}) => (
+              <TabBarIcon name="feed" focused={focused} />
+            )
+          }} 
+        />
+        <Tabs.Screen 
+          name="my" 
+          options={{ 
+            tabBarLabel: ({focused}) => {
+              return (
+                <Text style={{ 
+                  color: focused ? (isDark ? '#FAFAFA' : '#000000') : (isDark ? '#878787' : '#AAAAAA'),
+                  fontSize: 12,
+                }}>
+                  마이
+                </Text>)
+            },
+            tabBarIcon: ({focused}) => (
+              <TabBarIcon name="my" focused={focused} />
+            )
+          }} 
+        />
+      </Tabs>
+    </View>
   )
 }
+
+const getStyles = (isDark) => ({
+  tabBar: {
+    height: 70,
+    paddingTop: 15,
+    paddingBottom: 8,
+    backgroundColor: isDark ? '#141414' : '#ffffff',
+  }
+})
