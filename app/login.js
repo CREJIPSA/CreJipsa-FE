@@ -1,7 +1,9 @@
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
+import { useContext, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, TextInput, View, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import kakaoLogo from '../assets/images/kakao_logo.png';
+import { AuthContext } from './_layout';
 
 export default function Login() {
 
@@ -10,6 +12,24 @@ export default function Login() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const styles = getStyles(isDark);
+  const [userId, setUserId] = useState('');
+  const [userPw, setUserPw] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const { user, login } = useContext(AuthContext);
+  const isLoggedIn = !!user;
+
+  const handleLogin = async () => {
+    const result = await login(userId, userPw);
+    if (result && result.message) {
+      setErrorMessage(result.message);
+      return;
+    }
+  }
+
+  if (isLoggedIn) { // 자동 로그인
+    return <Redirect href="/(tabs)" />;
+  }
 
   return (
     <View style={[ styles.loginContainer, { paddingTop: insets.top, paddingBottom: insets.bottom } ]}>
@@ -21,12 +41,16 @@ export default function Login() {
           style={styles.inputForm}
           placeholder="아이디"
           placeholderTextColor={isDark ? '#ffffff' : '#000000'}
+          value={userId}
+          onChangeText={setUserId}
         />
         <TextInput 
           style={styles.inputForm}
           placeholder="비밀번호" 
           placeholderTextColor={isDark ? '#ffffff' : '#000000'}
           secureTextEntry={true} 
+          value={userPw}
+          onChangeText={setUserPw}
         />
         <View style={styles.authOptionsContainer}>
           <Pressable>
@@ -44,13 +68,17 @@ export default function Login() {
           </Pressable>
         </View>
       </View>
+      {errorMessage ? <Text style={{ color: 'red' }}>{errorMessage}</Text> : null}
       <View style={styles.buttonContainer}>
         <Pressable 
           style={styles.backButton}
           onPress={() => router.back()}>
           <Text style={styles.buttonText}>뒤로가기</Text>
         </Pressable>
-        <Pressable style={styles.loginButton}>
+        <Pressable 
+          style={styles.loginButton}
+          onPress={handleLogin}  
+        >
           <Text style={styles.buttonText}>로그인</Text>
         </Pressable>
       </View>
