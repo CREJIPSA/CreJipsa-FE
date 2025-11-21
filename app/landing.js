@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, useRouter } from 'expo-router';
+import { useContext } from 'react';
 import { Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
+import { AuthContext } from './_layout';
 
 export default function Landing() {
 
@@ -11,7 +12,9 @@ export default function Landing() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const styles = getStyles(isDark);
-  const isLoggedIn = true; // 실제 인증 상태에 따라 변경
+
+  const { user } = useContext(AuthContext);
+  const isLoggedIn = !!user; // 실제 인증 상태에 따라 변경
 
   // 로그인 상태 확인
   if (isLoggedIn) {
