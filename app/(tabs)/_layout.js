@@ -113,7 +113,10 @@ export default function TabsLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarStyle: { ...styles.tabBar, marginBottom: insets.bottom },
+          tabBarStyle: {
+            ...styles.tabBar,
+            paddingBottom: insets.bottom,
+          },
         }}>
         <Tabs.Screen
           name="(home)/index"
