@@ -4,7 +4,7 @@ import { memo, useCallback, useEffect, useState } from 'react';
 import { Image, Modal, Pressable, StyleSheet, Text, TextInput, View, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import instagramLogo from '../assets/images/instagram_logo.png';
-import tictokLogo from '../assets/images/tictok_logo.png';
+import tiktokLogo from '../assets/images/tiktok_logo.png';
 import youtubeLogo from '../assets/images/youtube_logo.png';
 
 export default function SignUp() {
@@ -341,8 +341,8 @@ export default function SignUp() {
                     }, 300);
                   }}
                 >
-                  <Image source={tictokLogo} style={{ width: 40, height: 40 }} />
-                  <Text style={styles.modalOptionText}>Tictok</Text>
+                  <Image source={tiktokLogo} style={{ width: 40, height: 40 }} />
+                  <Text style={styles.modalOptionText}>TikTok</Text>
                 </Pressable>
                 <Pressable
                   style={[

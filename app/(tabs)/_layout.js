@@ -80,7 +80,7 @@ export default function TabsLayout() {
         }}
       >
         <Tabs.Screen 
-          name="(home)/index" 
+          name="(home)" 
           options={{ 
             tabBarLabel: ({focused}) => {
               return (
@@ -175,5 +175,6 @@ const getStyles = (isDark) => ({
     paddingTop: 15,
     paddingBottom: 8,
     backgroundColor: isDark ? '#141414' : '#ffffff',
+    borderTopWidth: 0,
   }
 })
