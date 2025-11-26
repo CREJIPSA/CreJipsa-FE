@@ -1,5 +1,5 @@
-import "expo-router/entry";
-import { createServer, Response } from "miragejs";
+import 'expo-router/entry';
+import { createServer, Response } from 'miragejs';
 
 // Entry point for Expo Router
 
@@ -12,20 +12,20 @@ if (__DEV__) {
 
 window.server = createServer({
   routes() {
-    this.post("/login", (schema, request) => {
+    this.post('/login', (schema, request) => {
       const { userId, userPw } = JSON.parse(request.requestBody);
-      if (userId === "crezipsa" && userPw === "1111") {
+      if (userId === 'crezipsa' && userPw === '1111') {
         return {
-          accessToken: "access-token",
-          refreshToken: "refresh-token",
+          accessToken: 'access-token',
+          refreshToken: 'refresh-token',
           user: {
-            id: "crezipsa",
-            name: "CrezipsaDemo"
-          }
-        }
+            id: 'crezipsa',
+            name: 'CrezipsaDemo',
+          },
+        };
       } else {
-        return new Response(401, {}, { message: "Invalid credentials" });
+        return new Response(401, {}, { message: 'Invalid credentials' });
       }
     });
-  }
-})
+  },
+});
