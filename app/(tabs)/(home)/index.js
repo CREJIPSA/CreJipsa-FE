@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import {
   Dimensions,
   ScrollView,
+  StyleSheet,
   Text,
   View,
   useColorScheme,
@@ -29,7 +30,7 @@ export default function Home() {
     // 임의
     {
       rank: 1,
-      tag: "#음악",
+      tag: "음악",
       title: "AOA 짧은 치마",
       width: Dimensions.get("window").width * 0.75,
       height: Dimensions.get("window").height * 0.43,
@@ -41,7 +42,7 @@ export default function Home() {
     },
     {
       rank: 4,
-      tag: "#음악",
+      tag: "음악",
       title: "샤넬 챌린지",
       width: Dimensions.get("window").width * 0.29,
       height: Dimensions.get("window").height * 0.22,
@@ -53,7 +54,7 @@ export default function Home() {
     },
     {
       rank: 2,
-      tag: "#게임",
+      tag: "게임",
       title: "배틀 그라운드",
       width: Dimensions.get("window").width * 0.6,
       height: Dimensions.get("window").height * 0.2,
@@ -65,8 +66,8 @@ export default function Home() {
     },
     {
       rank: 3,
-      tag: "#게임",
-      title: "배틀 그라운드",
+      tag: "뷰티",
+      title: "올리브영",
       width: Dimensions.get("window").width * 0.44,
       height: Dimensions.get("window").height * 0.2,
       path: getThirdTrendCardPath(
@@ -99,7 +100,7 @@ export default function Home() {
             <Text style={styles.rankText}>{c.rank}위</Text>
             {c.tag && (
               <View style={styles.tag}>
-                <Text style={styles.tagText}>{c.tag}</Text>
+                <Text style={styles.tagText}>#{c.tag}</Text>
               </View>
             )}
           </View>
@@ -187,6 +188,7 @@ export default function Home() {
 
   return (
     <ScrollView style={styles.mainContainer}>
+      {/* 실시간 트렌드 */}
       <View style={styles.sectionHeader}>
         <Text style={styles.titleText}>실시간 트렌드</Text>
         <Text style={styles.lastUpdateText}>
@@ -208,6 +210,7 @@ export default function Home() {
           </View>
         </View>
       </View>
+      {/* 트렌드 리포트 */}
       <View style={styles.sectionHeader}>
         <Text style={styles.titleText}>트렌드 리포트</Text>
       </View>
@@ -243,125 +246,134 @@ export default function Home() {
   );
 }
 
-const getStyles = (isDark) => ({
-  mainContainer: {
-    flex: 1,
-    backgroundColor: isDark ? "#202020" : "#fff",
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: 30,
-    marginBottom: 20,
-  },
-  titleText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: isDark ? "#FAFAFA" : "#000",
-  },
-  lastUpdateText: {
-    fontSize: 12,
-    color: isDark ? "#D3D3D3" : "#555",
-    textAlign: "right",
-  },
-  trendCardTopContainer: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    paddingHorizontal: 16,
-    position: "relative",
-  },
-  rank4TrendCard: {
-    position: "absolute",
-    right: 16,
-    borderRadius: 30,
-  },
-  trendCardBottomContainer: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    paddingHorizontal: 16,
-    marginTop: 15,
-    marginBottom: 40,
-    position: "relative",
-  },
-  rank3TrendCard: {
-    position: "absolute",
-    right: 16,
-  },
-  rankText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: isDark ? "#141414" : "#FFF",
-    paddingTop: 20,
-    paddingLeft: 25,
-  },
-  tag: {
-    marginTop: 8,
-    marginLeft: 20,
-    backgroundColor: "#141414",
-    padding: 8,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  tagText: {
-    fontSize: 16,
-    color: "#FAFAFA",
-  },
-  trendCardTitleText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#141414",
-  },
-  fieldSectionHeader: {
-    paddingHorizontal: 16,
-    paddingTop: 20,
-  },
-  fieldText: {
-    fontSize: 20,
-    color: "#FAFAFA",
-  },
-  trendReportCardContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "flex-start",
-    paddingHorizontal: 16,
-    marginTop: 20,
-  },
-  trendReportCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: isDark ? "#FAFAFA" : "#F5F5F5",
-    borderRadius: 10,
-    paddingVertical: 14,
-    paddingHorizontal: 12,
-    gap: 16,
-    marginRight: 8,
-    marginBottom: 12,
-  },
-  trendReportIcon: {
-    width: 60,
-    height: 60,
-    backgroundColor: "#000000",
-    borderRadius: 8,
-  },
-  trendReportContents: {
-    gap: 6,
-    alignItems: "flex-start",
-  },
-  trendReportTitleText: {
-    fontSize: 18,
-    color: isDark ? "#141414" : "#000",
-  },
-  trendReportTag: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    backgroundColor: isDark ? "#202020" : "#D3D3D3",
-    borderRadius: 20,
-  },
-  trendReportTagText: {
-    fontSize: 14,
-    color: isDark ? "#FAFAFA" : "#777777",
-  },
-});
+const getStyles = (isDark) => {
+  const colors = {
+    background: isDark ? "#202020" : "#FAFAFA",
+    text: isDark ? "#FAFAFA" : "#141414",
+  };
+
+  return StyleSheet.create({
+    mainContainer: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    sectionHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingTop: 30,
+      marginBottom: 20,
+    },
+    titleText: {
+      fontSize: 24,
+      fontWeight: "bold",
+      color: colors.text,
+    },
+    lastUpdateText: {
+      fontSize: 12,
+      color: isDark ? "#D3D3D3" : "#666",
+      textAlign: "right",
+    },
+    trendCardTopContainer: {
+      flexDirection: "row",
+      alignItems: "flex-end",
+      paddingHorizontal: 16,
+      position: "relative",
+    },
+    rank4TrendCard: {
+      position: "absolute",
+      right: 16,
+      borderRadius: 30,
+    },
+    trendCardBottomContainer: {
+      flexDirection: "row",
+      alignItems: "flex-end",
+      paddingHorizontal: 16,
+      marginTop: 15,
+      marginBottom: 40,
+      position: "relative",
+    },
+    rank3TrendCard: {
+      position: "absolute",
+      right: 16,
+    },
+    rankText: {
+      fontSize: 24,
+      fontWeight: "bold",
+      color: "#141414",
+      paddingTop: 20,
+      paddingLeft: 25,
+    },
+    tag: {
+      marginTop: 8,
+      marginLeft: 20,
+      backgroundColor: "#141414",
+      padding: 8,
+      borderRadius: 20,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    tagText: {
+      fontSize: 16,
+      color: "#FAFAFA",
+    },
+    trendCardTitleText: {
+      fontSize: 24,
+      fontWeight: "bold",
+      color: "#141414",
+    },
+    fieldSectionHeader: {
+      paddingHorizontal: 16,
+      paddingTop: 20,
+    },
+    fieldText: {
+      fontSize: 20,
+      color: colors.text,
+    },
+    trendReportCardContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "flex-start",
+      paddingHorizontal: 16,
+      marginTop: 20,
+    },
+    trendReportCard: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: isDark ? "#FAFAFA" : "#FAFFF0",
+      borderRadius: 10,
+      paddingVertical: 14,
+      paddingHorizontal: 12,
+      gap: 16,
+      marginRight: 8,
+      marginBottom: 12,
+      borderWidth: 1,
+      borderColor: isDark ? "#141414" : "#D3D3D3",
+    },
+    trendReportIcon: {
+      width: 60,
+      height: 60,
+      backgroundColor: isDark ? "#000000" : "#D3D3D3",
+      borderRadius: 8,
+    },
+    trendReportContents: {
+      gap: 6,
+      alignItems: "flex-start",
+    },
+    trendReportTitleText: {
+      fontSize: 18,
+      color: isDark ? "#141414" : "#000",
+    },
+    trendReportTag: {
+      paddingVertical: 5,
+      paddingHorizontal: 10,
+      backgroundColor: isDark ? "#202020" : "#A3CC52",
+      borderRadius: 20,
+    },
+    trendReportTagText: {
+      fontSize: 14,
+      color: isDark ? "#FAFAFA" : "#FAFFF0",
+    },
+  });
+};
