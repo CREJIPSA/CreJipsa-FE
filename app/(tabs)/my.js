@@ -206,6 +206,7 @@ export default function My() {
         <DeleteModal
           visible={deleteModalVisible}
           onClose={() => setDeleteModalVisible(false)}
+          isDark={isDark}
         />
       </ScrollView>
     </SafeAreaView>

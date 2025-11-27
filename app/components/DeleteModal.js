@@ -1,7 +1,11 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 
-export default function DeleteModal({ visible, onClose }) {
+export default function DeleteModal({ visible, onClose, isDark }) {
+  const modalBg = isDark ? '#454545' : '#FFFFFF';
+  const textColor = isDark ? '#FFFFFF' : '#000000';
+  const okBtnColor = isDark ? '#CCFF66' : '#B8E65C';
+
   return (
     <Modal
       isVisible={visible}
@@ -10,8 +14,8 @@ export default function DeleteModal({ visible, onClose }) {
       backdropOpacity={0.5}
       onBackdropPress={onClose}
     >
-      <View style={styles.modal}>
-        <Text style={styles.text}>
+      <View style={[styles.modal, { backgroundColor: modalBg }]}>
+        <Text style={[styles.text, { color: textColor }]}>
           회원 탈퇴 시, {'\n'}
           계정 정보는 복구가 불가능합니다.{'\n'}
           정말로 탈퇴하시겠어요?
@@ -22,7 +26,9 @@ export default function DeleteModal({ visible, onClose }) {
             <Text style={styles.cancelText}>계속 사용하기</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.okBtn}>
+          <TouchableOpacity
+            style={[styles.okBtn, { backgroundColor: okBtnColor }]}
+          >
             <Text style={styles.okText}>네 탈퇴할게요</Text>
           </TouchableOpacity>
         </View>
