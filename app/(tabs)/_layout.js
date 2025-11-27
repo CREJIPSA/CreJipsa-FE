@@ -1,25 +1,19 @@
-import { Tabs } from 'expo-router';
-import { Text, useColorScheme, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Path } from 'react-native-svg';
+import { Tabs } from "expo-router";
+import { Text, useColorScheme, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Svg, { Path } from "react-native-svg";
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = colorScheme === "dark";
   const styles = getStyles(isDark);
 
   // 탭바 아이콘 컴포넌트
   function TabBarIcon({ name, focused }) {
-    const fill = focused
-      ? isDark
-        ? '#FAFAFA'
-        : '#000000'
-      : isDark
-        ? '#878787'
-        : '#AAAAAA';
+    const fill = focused ? styles.focusedColor : styles.unFocusedColor;
 
-    if (name === 'home') {
+    if (name === "home") {
       return (
         <Svg
           width="21"
@@ -33,7 +27,7 @@ export default function TabsLayout() {
       );
     }
 
-    if (name === 'search') {
+    if (name === "search") {
       return (
         <Svg
           width="25"
@@ -50,7 +44,7 @@ export default function TabsLayout() {
       );
     }
 
-    if (name === 'storyboard') {
+    if (name === "storyboard") {
       return (
         <Svg
           width="30"
@@ -60,11 +54,11 @@ export default function TabsLayout() {
         >
           <Path
             d="M19.0567 6.32775L23.2987 10.5712M24.1477 2.93475L26.6932 5.48025C26.9181 5.70527 27.0444 6.01038 27.0444 6.3285C27.0444 6.64662 26.9181 6.95173 26.6932 7.17675L9.50925 24.3592L4.20675 25.4197L5.26725 20.1172L22.4497 2.93325C22.5612 2.82168 22.6935 2.73317 22.8392 2.67278C22.9849 2.61239 23.141 2.58131 23.2987 2.58131C23.4564 2.58131 23.6126 2.61239 23.7583 2.67278C23.904 2.73317 24.0363 2.82318 24.1477 2.93475Z"
+            fill="none"
             stroke={fill}
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            fill="none"
           />
           <Path
             d="M4.02225 0.97725L3.45675 3.23925C3.4435 3.29176 3.41629 3.3397 3.378 3.378C3.3397 3.41629 3.29176 3.4435 3.23925 3.45675L0.97725 4.02225C0.67425 4.09725 0.67425 4.52925 0.97725 4.60425L3.23925 5.16975C3.29176 5.183 3.3397 5.21021 3.378 5.2485C3.41629 5.2868 3.4435 5.33474 3.45675 5.38725L4.02225 7.64925C4.09725 7.95225 4.52925 7.95225 4.60425 7.64925L5.16975 5.38725C5.183 5.33474 5.21021 5.2868 5.2485 5.2485C5.2868 5.21021 5.33474 5.183 5.38725 5.16975L7.64925 4.60425C7.95225 4.52925 7.95225 4.09725 7.64925 4.02225L5.38725 3.45675C5.33474 3.4435 5.2868 3.41629 5.2485 3.378C5.21021 3.3397 5.183 3.29176 5.16975 3.23925L4.60425 0.97725C4.52925 0.67425 4.09725 0.67425 4.02225 0.97725Z"
@@ -78,7 +72,7 @@ export default function TabsLayout() {
       );
     }
 
-    if (name === 'feed') {
+    if (name === "feed") {
       return (
         <Svg
           width="29"
@@ -92,7 +86,7 @@ export default function TabsLayout() {
       );
     }
 
-    if (name === 'my') {
+    if (name === "my") {
       return (
         <Svg
           width="27"
@@ -114,30 +108,27 @@ export default function TabsLayout() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: isDark ? '#141414' : '#FFFFFF' }}>
+    <View style={{ flex: 1, backgroundColor: isDark ? "#141414" : "#FAFAFA" }}>
       <Tabs
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
             ...styles.tabBar,
-            paddingBottom: insets.bottom,
+            marginBottom: insets.bottom,
+            elevation: 0,
           },
         }}
       >
         <Tabs.Screen
-          name="(home)/index"
+          name="(home)"
           options={{
             tabBarLabel: ({ focused }) => {
               return (
                 <Text
                   style={{
                     color: focused
-                      ? isDark
-                        ? '#FAFAFA'
-                        : '#000000'
-                      : isDark
-                        ? '#878787'
-                        : '#AAAAAA',
+                      ? styles.focusedColor
+                      : styles.unFocusedColor,
                     fontSize: 12,
                   }}
                 >
@@ -158,12 +149,8 @@ export default function TabsLayout() {
                 <Text
                   style={{
                     color: focused
-                      ? isDark
-                        ? '#FAFAFA'
-                        : '#000000'
-                      : isDark
-                        ? '#878787'
-                        : '#AAAAAA',
+                      ? styles.focusedColor
+                      : styles.unFocusedColor,
                     fontSize: 12,
                   }}
                 >
@@ -184,12 +171,8 @@ export default function TabsLayout() {
                 <Text
                   style={{
                     color: focused
-                      ? isDark
-                        ? '#FAFAFA'
-                        : '#000000'
-                      : isDark
-                        ? '#878787'
-                        : '#AAAAAA',
+                      ? styles.focusedColor
+                      : styles.unFocusedColor,
                     fontSize: 12,
                   }}
                 >
@@ -210,12 +193,8 @@ export default function TabsLayout() {
                 <Text
                   style={{
                     color: focused
-                      ? isDark
-                        ? '#FAFAFA'
-                        : '#000000'
-                      : isDark
-                        ? '#878787'
-                        : '#AAAAAA',
+                      ? styles.focusedColor
+                      : styles.unFocusedColor,
                     fontSize: 12,
                   }}
                 >
@@ -236,12 +215,8 @@ export default function TabsLayout() {
                 <Text
                   style={{
                     color: focused
-                      ? isDark
-                        ? '#FAFAFA'
-                        : '#000000'
-                      : isDark
-                        ? '#878787'
-                        : '#AAAAAA',
+                      ? styles.focusedColor
+                      : styles.unFocusedColor,
                     fontSize: 12,
                   }}
                 >
@@ -259,11 +234,14 @@ export default function TabsLayout() {
   );
 }
 
-const getStyles = isDark => ({
+const getStyles = (isDark) => ({
+  focusedColor: isDark ? "#FAFAFA" : "#141414",
+  unFocusedColor: isDark ? "#878787" : "#959595",
   tabBar: {
     height: 70,
     paddingTop: 15,
     paddingBottom: 8,
-    backgroundColor: isDark ? '#141414' : '#ffffff',
+    backgroundColor: isDark ? "#141414" : "#FAFAFA",
+    borderTopWidth: 0,
   },
 });
