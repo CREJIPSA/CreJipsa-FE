@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
+import DeleteModal from '../components/DeleteModal.js';
 
 export default function My() {
   const [pushEnabled, setPushEnabled] = useState(true);
@@ -19,6 +20,7 @@ export default function My() {
   const styles = getStyles(isDark);
   const safeAreaBg = isDark ? '#202020' : '#FCFCFC';
   const iconColor = isDark ? '#CCFF66' : '#B8E65C';
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: safeAreaBg }}>
@@ -196,9 +198,15 @@ export default function My() {
               <Text style={styles.sectionItem}>버전 정보</Text>
               <Text style={styles.sectionItem}>1234567890</Text>
             </View>
-            <Text style={styles.sectionItem}>회원 탈퇴하기</Text>
+            <TouchableOpacity onPress={() => setDeleteModalVisible(true)}>
+              <Text style={styles.sectionItem}>회원 탈퇴하기</Text>
+            </TouchableOpacity>
           </View>
         </View>
+        <DeleteModal
+          visible={deleteModalVisible}
+          onClose={() => setDeleteModalVisible(false)}
+        />
       </ScrollView>
     </SafeAreaView>
   );
