@@ -1,0 +1,32 @@
+reviews:
+  language: 'ko'
+  auto_review_on:
+    - pull_request
+
+  include:
+    - 'src/**/*.{js,jsx,ts,tsx}'
+    - 'app/**/*.{js,jsx,ts,tsx}'
+
+  exclude:
+    - '**/node_modules/**'
+    - '**/*.lock'
+    - '**/assets/images/**'
+    - '*.snap'
+
+  review_level: medium
+
+  rules:
+    performance: true
+    security: true
+    readability: true
+    maintainability: true
+    unused_code: true
+
+    best_practices: false
+    styling: false
+
+  style:
+    inline_comments: minimal
+    summarization: true
+    praise_ratio: high
+    tone: relaxed
