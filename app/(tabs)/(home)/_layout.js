@@ -1,8 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { Image } from "expo-image";
-import { withLayoutContext } from "expo-router";
-import { useState } from "react";
+import { Ionicons } from '@expo/vector-icons';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { Image } from 'expo-image';
+import { withLayoutContext } from 'expo-router';
+import { useState } from 'react';
 import {
   Modal,
   Pressable,
@@ -10,11 +10,11 @@ import {
   Text,
   View,
   useColorScheme,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import instagramLogo from "../../../assets/images/instagram_logo.png";
-import tiktokLogo from "../../../assets/images/tiktok_logo.png";
-import youtubeLogo from "../../../assets/images/youtube_logo.png";
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import instagramLogo from '../../../assets/images/instagram_logo.png';
+import tictokLogo from '../../../assets/images/tictok_logo.png';
+import youtubeLogo from '../../../assets/images/youtube_logo.png';
 
 const { Navigator } = createMaterialTopTabNavigator();
 export const MaterialTopTabs = withLayoutContext(Navigator);
@@ -23,28 +23,28 @@ export default function HomeLayout() {
   const insets = useSafeAreaInsets();
 
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const isDark = colorScheme === 'dark';
   const styles = getStyles(isDark);
 
   // 플랫폼 선택
   const platformOptions = [
-    { key: "youtube", logo: youtubeLogo, name: "YouTube" },
-    { key: "instagram", logo: instagramLogo, name: "Instagram" },
-    { key: "tiktok", logo: tiktokLogo, name: "TikTok" },
+    { key: 'youtube', logo: youtubeLogo, name: 'YouTube' },
+    { key: 'instagram', logo: instagramLogo, name: 'Instagram' },
+    { key: 'tictok', logo: tictokLogo, name: 'TicTok' },
   ];
-  const [selectedPlatform, setSelectedPlatform] = useState("youtube");
+  const [selectedPlatform, setSelectedPlatform] = useState('youtube');
   const [isPlatformDropdownVisible, setIsPlatformDropdownVisible] =
     useState(false);
-  const getPlatformInfo = (selectedPlatform) => {
+  const getPlatformInfo = selectedPlatform => {
     switch (selectedPlatform) {
-      case "youtube":
-        return { logo: youtubeLogo, name: "Youtube" };
-      case "instagram":
-        return { logo: instagramLogo, name: "Instagram" };
-      case "tiktok":
-        return { logo: tiktokLogo, name: "TikTok" };
+      case 'youtube':
+        return { logo: youtubeLogo, name: 'Youtube' };
+      case 'instagram':
+        return { logo: instagramLogo, name: 'Instagram' };
+      case 'tictok':
+        return { logo: tictokLogo, name: 'TicTok' };
       default:
-        return { logo: youtubeLogo, name: "YouTube" };
+        return { logo: youtubeLogo, name: 'YouTube' };
     }
   };
   const { logo: platformLogo, name: platformName } =
@@ -70,13 +70,13 @@ export default function HomeLayout() {
               <Ionicons
                 name="caret-up-outline"
                 size={10}
-                color={isDark ? "#141414" : "#fff"}
+                color={isDark ? '#141414' : '#fff'}
               ></Ionicons>
             ) : (
               <Ionicons
                 name="caret-down-outline"
                 size={10}
-                color={isDark ? "#141414" : "#fff"}
+                color={isDark ? '#141414' : '#fff'}
               ></Ionicons>
             )}
           </Pressable>
@@ -93,7 +93,7 @@ export default function HomeLayout() {
             onPress={() => setIsPlatformDropdownVisible(false)}
           >
             <View style={styles.dropdownContainer}>
-              {platformOptions.map((option) => (
+              {platformOptions.map(option => (
                 <Pressable
                   key={option.key}
                   style={styles.dropdownOption}
@@ -115,7 +115,7 @@ export default function HomeLayout() {
             <Ionicons
               name="search-outline"
               size={24}
-              color={isDark ? "#FAFAFA" : "#141414"}
+              color={isDark ? '#FAFAFA' : '#141414'}
               style={styles.icon}
             />
           </Pressable>
@@ -123,7 +123,7 @@ export default function HomeLayout() {
             <Ionicons
               name="notifications-outline"
               size={24}
-              color={isDark ? "#FAFAFA" : "#141414"}
+              color={isDark ? '#FAFAFA' : '#141414'}
               style={styles.icon}
             />
           </Pressable>
@@ -133,50 +133,50 @@ export default function HomeLayout() {
       <MaterialTopTabs
         screenOptions={{
           tabBarIndicatorStyle: {
-            backgroundColor: isDark ? "#CCFF66" : "#141414",
+            backgroundColor: isDark ? '#CCFF66' : '#141414',
           },
           tabBarStyle: {
-            backgroundColor: isDark ? "#141414" : "#FAFAFA",
+            backgroundColor: isDark ? '#141414' : '#FAFAFA',
             marginLeft: 10,
             elevation: 0,
           },
           tabBarGap: 10,
           tabBarItemStyle: {
-            width: "auto",
+            width: 'auto',
             height: 45,
             paddingHorizontal: 8,
             marginHorizontal: 0,
-            alignItems: "center",
+            alignItems: 'center',
           },
-          tabBarActiveTintColor: isDark ? "#CCFF66" : "#141414",
-          tabBarInactiveTintColor: isDark ? "#FAFAFA" : "#141414",
+          tabBarActiveTintColor: isDark ? '#CCFF66' : '#141414',
+          tabBarInactiveTintColor: isDark ? '#FAFAFA' : '#141414',
           tabBarLabelStyle: {
-            fontWeight: "bold",
+            fontWeight: 'bold',
             fontSize: 16,
           },
           tabBarScrollEnabled: true,
         }}
       >
-        <MaterialTopTabs.Screen name="index" options={{ title: "전체" }} />
+        <MaterialTopTabs.Screen name="index" options={{ title: '전체' }} />
         <MaterialTopTabs.Screen
           name="dailyMeme"
-          options={{ title: "일상/밈" }}
+          options={{ title: '일상/밈' }}
         />
-        <MaterialTopTabs.Screen name="game" options={{ title: "게임" }} />
-        <MaterialTopTabs.Screen name="fashion" options={{ title: "패션" }} />
-        <MaterialTopTabs.Screen name="music" options={{ title: "음악" }} />
-        <MaterialTopTabs.Screen name="pet" options={{ title: "반려동물" }} />
-        <MaterialTopTabs.Screen name="beauty" options={{ title: "뷰티" }} />
-        <MaterialTopTabs.Screen name="sports" options={{ title: "스포츠" }} />
+        <MaterialTopTabs.Screen name="game" options={{ title: '게임' }} />
+        <MaterialTopTabs.Screen name="fashion" options={{ title: '패션' }} />
+        <MaterialTopTabs.Screen name="music" options={{ title: '음악' }} />
+        <MaterialTopTabs.Screen name="pet" options={{ title: '반려동물' }} />
+        <MaterialTopTabs.Screen name="beauty" options={{ title: '뷰티' }} />
+        <MaterialTopTabs.Screen name="sports" options={{ title: '스포츠' }} />
       </MaterialTopTabs>
     </View>
   );
 }
 
-const getStyles = (isDark) => {
+const getStyles = isDark => {
   const colors = {
-    background: isDark ? "#141414" : "#FAFAFA",
-    text: isDark ? "#FAFAFA" : "#141414",
+    background: isDark ? '#141414' : '#FAFAFA',
+    text: isDark ? '#FAFAFA' : '#141414',
   };
 
   return StyleSheet.create({
@@ -186,17 +186,17 @@ const getStyles = (isDark) => {
     },
     header: {
       height: 40,
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     platformSelectionContainer: {
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
       marginLeft: 20,
     },
     selectedPlatform: {
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
       gap: 12,
     },
     platformLogo: {
@@ -204,52 +204,52 @@ const getStyles = (isDark) => {
       height: 30,
     },
     platformName: {
-      fontWeight: "bold",
+      fontWeight: 'bold',
       fontSize: 20,
       color: colors.text,
     },
     dropdownButton: {
       height: 20,
       width: 20,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: isDark ? "#D7FF88" : "#141414",
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: isDark ? '#D7FF88' : '#141414',
       borderRadius: 4,
       marginLeft: 20,
     },
     iconContainer: {
-      flexDirection: "row",
-      position: "absolute",
+      flexDirection: 'row',
+      position: 'absolute',
       right: 20,
       gap: 10,
     },
     modalOverlay: {
       flex: 1,
-      backgroundColor: "transparent",
-      justifyContent: "flex-start",
-      alignItems: "flex-start",
+      backgroundColor: 'transparent',
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
     },
     dropdownContainer: {
-      position: "absolute",
+      position: 'absolute',
       top: 45,
       left: 16,
-      backgroundColor: "#323232",
+      backgroundColor: '#323232',
       borderRadius: 10,
       padding: 10,
       elevation: 5,
     },
     dropdownOption: {
       width: 230,
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
       paddingLeft: 16,
       paddingVertical: 12,
       gap: 12,
     },
     dropdownPlatformName: {
       fontSize: 20,
-      fontWeight: "bold",
-      color: "#FAFAFA",
+      fontWeight: 'bold',
+      color: '#FAFAFA',
     },
   });
 };

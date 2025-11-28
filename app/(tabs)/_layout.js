@@ -1,19 +1,19 @@
-import { Tabs } from "expo-router";
-import { Text, useColorScheme, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Svg, { Path } from "react-native-svg";
+import { Tabs } from 'expo-router';
+import { Text, useColorScheme, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Path } from 'react-native-svg';
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const isDark = colorScheme === 'dark';
   const styles = getStyles(isDark);
 
   // 탭바 아이콘 컴포넌트
   function TabBarIcon({ name, focused }) {
     const fill = focused ? styles.focusedColor : styles.unFocusedColor;
 
-    if (name === "home") {
+    if (name === 'home') {
       return (
         <Svg
           width="21"
@@ -27,7 +27,7 @@ export default function TabsLayout() {
       );
     }
 
-    if (name === "search") {
+    if (name === 'search') {
       return (
         <Svg
           width="25"
@@ -44,7 +44,7 @@ export default function TabsLayout() {
       );
     }
 
-    if (name === "storyboard") {
+    if (name === 'storyboard') {
       return (
         <Svg
           width="30"
@@ -72,7 +72,7 @@ export default function TabsLayout() {
       );
     }
 
-    if (name === "feed") {
+    if (name === 'feed') {
       return (
         <Svg
           width="29"
@@ -86,7 +86,7 @@ export default function TabsLayout() {
       );
     }
 
-    if (name === "my") {
+    if (name === 'my') {
       return (
         <Svg
           width="27"
@@ -108,7 +108,7 @@ export default function TabsLayout() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: isDark ? "#141414" : "#FAFAFA" }}>
+    <View style={{ flex: 1, backgroundColor: isDark ? '#141414' : '#FAFAFA' }}>
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -234,14 +234,14 @@ export default function TabsLayout() {
   );
 }
 
-const getStyles = (isDark) => ({
-  focusedColor: isDark ? "#FAFAFA" : "#141414",
-  unFocusedColor: isDark ? "#878787" : "#959595",
+const getStyles = isDark => ({
+  focusedColor: isDark ? '#FAFAFA' : '#141414',
+  unFocusedColor: isDark ? '#878787' : '#959595',
   tabBar: {
     height: 70,
     paddingTop: 15,
     paddingBottom: 8,
-    backgroundColor: isDark ? "#141414" : "#FAFAFA",
+    backgroundColor: isDark ? '#141414' : '#FAFAFA',
     borderTopWidth: 0,
   },
 });

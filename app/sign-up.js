@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import instagramLogo from '../assets/images/instagram_logo.png';
+import tictokLogo from '../assets/images/tictok_logo.png';
 import youtubeLogo from '../assets/images/youtube_logo.png';
 
 export default function SignUp() {
