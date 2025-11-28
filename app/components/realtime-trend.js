@@ -47,7 +47,7 @@ function TrendCard({ width, height, path, children, imageUrl, contentStyle }) {
 
 export const getFirstTrendCardPath = (width, height) => {
   const cutX = width * 0.8;
-  const cutY = height * 0.47;
+  const cutY = height * 0.44;
   const r = 30;
 
   return `
@@ -180,7 +180,7 @@ const RealTimeTrendCard = ({
           }}
         >
           <Text
-            style={styles.trendCardTitleText}
+            style={[styles.trendCardTitleText, rank === 2 && { width: '80%' }]}
             numberOfLines={2}
             ellipsizeMode="tail"
           >
@@ -201,14 +201,13 @@ const RealTimeTrend = ({ tagAndTitles }) => {
   const lastUpdateTime = format(new Date(), 'yyyy년 MM월 dd일 HH:mm');
 
   const realTimeTrendData = [
-    // 임의
     {
       rank: 1,
       width: Dimensions.get('window').width * 0.75,
-      height: Dimensions.get('window').height * 0.43,
+      height: Dimensions.get('window').height * 0.41,
       path: getFirstTrendCardPath(
         Dimensions.get('window').width * 0.75,
-        Dimensions.get('window').height * 0.43,
+        Dimensions.get('window').height * 0.41,
       ),
       imageUrl: 'trendRank1Image',
     },
@@ -225,20 +224,20 @@ const RealTimeTrend = ({ tagAndTitles }) => {
     {
       rank: 2,
       width: Dimensions.get('window').width * 0.6,
-      height: Dimensions.get('window').height * 0.2,
+      height: Dimensions.get('window').height * 0.22,
       path: getSecondTrendCardPath(
         Dimensions.get('window').width * 0.6,
-        Dimensions.get('window').height * 0.2,
+        Dimensions.get('window').height * 0.22,
       ),
       imageUrl: 'trendRank2Image',
     },
     {
       rank: 3,
       width: Dimensions.get('window').width * 0.44,
-      height: Dimensions.get('window').height * 0.2,
+      height: Dimensions.get('window').height * 0.22,
       path: getThirdTrendCardPath(
         Dimensions.get('window').width * 0.44,
-        Dimensions.get('window').height * 0.2,
+        Dimensions.get('window').height * 0.22,
       ),
       imageUrl: 'trendRank3Image',
     },
@@ -362,6 +361,8 @@ const getStyles = isDark => {
       color: '#FAFAFA',
     },
     trendCardTitleText: {
+      width: '100%',
+      paddingRight: 20,
       fontSize: 24,
       fontWeight: 'bold',
       color: '#141414',

@@ -1,0 +1,56 @@
+[33m31c7aa0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeat/main-home[m[33m)[m refactor(main-home): #12 - 실시간 트렌드 카드 태그와 제목만 입력 받도록 수정
+[33ma91142d[m refactor(main-home): #12 - 실시간 트렌드 섹션 컴포넌트로 분리
+[33me0d3f9a[m refactor(main-home): #12 - 트렌드 리포트 카드 컴포넌트로 분리
+[33m49f0cdf[m feat(main-home): #12 - 실시간 트렌드 그래픽 이미지 수정
+[33m80d809e[m[33m ([m[1;31morigin/develop[m[33m)[m Merge pull request #19 from CREJIPSA/chore/setup-coderabbit
+[33m39331d0[m chore(coderabbit): #18 - 설정 오류 해결을 위해 version 필드 제거
+[33m2607529[m chore(coderabbit): #18 - 코드래빗 자동 리뷰 설정 파일 추가
+[33m93a1d8b[m Merge pull request #17 from CREJIPSA/feat/mypage-ui
+[33m017f6f3[m feat(mypage): #3 - 화이트모드 모달창 전환 추가
+[33m03db0ae[m feat(mypage): #3 - 회원 탈퇴 알림 모달창 추가
+[33mbb424d7[m chore(deps): #3 - react-native-modal 패키지 설치
+[33mb58afa5[m Merge pull request #16 from CREJIPSA/feat/main-home
+[33m70afa35[m[33m ([m[1;31morigin/feat/main-home[m[33m)[m chore: develop 충돌 확인
+[33mb37661e[m feat(main-home): #12 - 메인화면 라이트모드 색상 설정
+[33m60bd4ea[m feat(main-home): #12 - 트렌드 리포트 UI 레이아웃 구현 & 실시간 트렌드 SectionList를 FlatList로 변경
+[33mf64c26e[m Merge pull request #15 from CREJIPSA/chore/setup-prettier
+[33m2fec129[m chore(prettier): #14 - 프로젝트 전체 코드 Prettier 포맷팅 적용
+[33m8d6f1d0[m chore(prettier): #14 - format 스크립트 추가
+[33m39d3d4e[m chore(prettier): #14 - ESLint 설정에 Prettier 연동
+[33m559b627[m chore(prettier): #14 - .prettierignore 파일 추가
+[33m22c7395[m chore(prettier): #14 - Prettier 설정 파일 추가
+[33mea55230[m chore(prettier): #14 - Prettier 관련 패키지 설치
+[33m7a190b5[m feat(main-home): #12 - 홈화면 실시간 트렌드 UI Layout 구현
+[33m49a71e3[m Merge pull request #13 from CREJIPSA/feat/mypage-ui
+[33m488f7af[m fix(app): 화이트모드에서 상태바 아이콘도 하얀색이었던 문제 수정
+[33me3120ec[m fix(tab-bar): 탭바가 화면 아래와 분리되어 보이던 문제 수정
+[33m4ec51c7[m fix(tab-bar): 스토리보드 아이콘 비활성 상태에서 내부가 검정색으로 보이는 문제 수정
+[33me1170f3[m feat(mypage): #3 - 다크/화이트 모드 전환 구현
+[33mf952c49[m feat(mypage): #3 - 프로필 수정 버튼 추가
+[33mc076f67[m feat(mypage): #3 - 메뉴 아이콘을 svg로 변경
+[33m97d47c5[m Merge pull request #11 from CREJIPSA/feat/mock-server
+[33m14dc5af[m Merge pull request #9 from CREJIPSA/feat/tab-bar
+[33mce9d1f5[m[33m ([m[1;31morigin/feat/mock-server[m[33m, [m[1;32mfeat/mock-server[m[33m)[m feat(mock-server): #10 - 개발용 임시 서버 구축
+[33m12ab3db[m[33m ([m[1;31morigin/feat/tab-bar[m[33m, [m[1;32mfeat/tab-bar[m[33m)[m feat(tab-bar): #8 - 탭바 커스터마이징
+[33md2e1d8c[m Merge pull request #7 from CREJIPSA/chore/file-structure
+[33m7aff24a[m[33m ([m[1;31morigin/chore/file-structure[m[33m, [m[1;32mchore/file-structure[m[33m)[m chore(file-stucture): root index 파일 추가
+[33m402893b[m Merge pull request #6 from CREJIPSA/feat/mypage-ui
+[33mb0b56a3[m[33m ([m[1;31morigin/feat/mypage-ui[m[33m)[m refactor(router): #3 - 불필요한 `my` 경로 제거
+[33mcb84fca[m refactor(mypage): #3 - 팀 라우팅 방식에 맞춰 기존 구조 변경 및 충돌 해결
+[33m15b208d[m Merge pull request #5 from CREJIPSA/feat/sign-up
+[33med8a104[m feat(mypage): #3 - 마이페이지 세부 UI 수정 및 스위치 토글 기능 추가
+[33me550683[m feat(mypage): #3 - 하단바 제외 마이페이지 UI 구현
+[33m5629719[m chore(eslint): `import/no-unresolved` 규칙 비활성화
+[33m648dcb2[m[33m ([m[1;31morigin/feat/sign-up[m[33m, [m[1;32mfeat/sign-up[m[33m)[m feat(signup): #4 - 회원가입 완료 후 홈화면 이동
+[33mad99fe3[m feat(login/signup): #4 - 로그인/회원가입 다크모드 색상 설정
+[33m5f4be13[m feat(signup): #4 - 회원가입 UI 구현
+[33m2dc70fd[m[33m ([m[1;32mfeat/login[m[33m)[m feat(login): Login 화면 UI 레이아웃 구현
+[33m918948b[m[33m ([m[1;32mfeat/landing[m[33m)[m feat(landing): landing 화면 UI 레이아웃 구현
+[33m866cbe0[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #2 from CREJIPSA/chore/switch-to-js
+[33m5801929[m[33m ([m[1;31morigin/chore/switch-to-js[m[33m, [m[1;32mchore/switch-to-js[m[33m)[m chore(project): remove TypeScript setup and add jsconfig for JS migration
+[33meca651e[m Update issue templates
+[33mec15cc7[m Create pull_request_template.md
+[33ma5df3b8[m[33m ([m[1;32mmain[m[33m)[m Revert "Update issue templates"
+[33m5a4ecaf[m Update issue templates
+[33m6e3765c[m [Chore] 프로젝트 초기 세팅
+[33mb948299[m Initial commit
