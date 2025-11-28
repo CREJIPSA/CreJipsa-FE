@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   Image,
@@ -21,6 +22,7 @@ export default function My() {
   const safeAreaBg = isDark ? '#202020' : '#FCFCFC';
   const iconColor = isDark ? '#CCFF66' : '#B8E65C';
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const router = useRouter();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: safeAreaBg }}>
@@ -35,7 +37,7 @@ export default function My() {
             />
             <TouchableOpacity
               style={styles.editButton}
-              onPress={() => console.log('프로필 수정 버튼 클릭!')}
+              onPress={() => router.push('/profile-edit')}
             >
               <Svg
                 width="24"
