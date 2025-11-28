@@ -1,17 +1,11 @@
 import {
-  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
   View,
   useColorScheme,
 } from 'react-native';
-import RealTimeTrend, {
-  getFirstTrendCardPath,
-  getFourthTrendCardPath,
-  getSecondTrendCardPath,
-  getThirdTrendCardPath,
-} from '../../components/realtime-trend';
+import RealTimeTrend from '../../components/realtime-trend';
 import TrendKeywordCard from '../../components/trend-keyword-card';
 
 export default function Home() {
@@ -22,55 +16,25 @@ export default function Home() {
   {
     /* 실시간 트렌드 */
   }
-  const realTimeTrendData = [
-    // 임의
+  {
+    /* 실시간 트렌드 더미 데이터  */
+  }
+  const tagAndTitles = [
     {
-      rank: 1,
       tag: '음악',
       title: 'AOA 짧은 치마',
-      width: Dimensions.get('window').width * 0.75,
-      height: Dimensions.get('window').height * 0.43,
-      path: getFirstTrendCardPath(
-        Dimensions.get('window').width * 0.75,
-        Dimensions.get('window').height * 0.43,
-      ),
-      imageUrl: 'trendRank1Image',
     },
     {
-      rank: 4,
       tag: '음악',
       title: '샤넬 챌린지',
-      width: Dimensions.get('window').width * 0.29,
-      height: Dimensions.get('window').height * 0.22,
-      path: getFourthTrendCardPath(
-        Dimensions.get('window').width * 0.29,
-        Dimensions.get('window').height * 0.22,
-      ),
-      imageUrl: 'trendRank4Image',
     },
     {
-      rank: 2,
       tag: '게임',
       title: '배틀 그라운드',
-      width: Dimensions.get('window').width * 0.6,
-      height: Dimensions.get('window').height * 0.2,
-      path: getSecondTrendCardPath(
-        Dimensions.get('window').width * 0.6,
-        Dimensions.get('window').height * 0.2,
-      ),
-      imageUrl: 'trendRank2Image',
     },
     {
-      rank: 3,
       tag: '뷰티',
       title: '올리브영',
-      width: Dimensions.get('window').width * 0.44,
-      height: Dimensions.get('window').height * 0.2,
-      path: getThirdTrendCardPath(
-        Dimensions.get('window').width * 0.44,
-        Dimensions.get('window').height * 0.2,
-      ),
-      imageUrl: 'trendRank3Image',
     },
   ];
 
@@ -78,7 +42,7 @@ export default function Home() {
     /* 트렌드 리포트 */
   }
   {
-    /* 트렌드 키워드 카드 데이터 */
+    /* 트렌드 키워드 카드 더미 데이터 */
   }
   const fieldData = [
     {
@@ -234,7 +198,7 @@ export default function Home() {
   return (
     <ScrollView style={styles.mainContainer}>
       {/* 실시간 트렌드 */}
-      <RealTimeTrend realTimeTrendData={realTimeTrendData} />
+      <RealTimeTrend tagAndTitles={tagAndTitles} />
       {/* 트렌드 리포트 */}
       <View style={styles.sectionHeader}>
         <Text style={styles.titleText}>트렌드 리포트</Text>

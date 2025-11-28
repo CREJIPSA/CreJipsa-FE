@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
-import { Image, Text, useColorScheme, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Dimensions, Image, Text, useColorScheme, View } from 'react-native';
 import Svg, { ClipPath, Defs, Path, Image as SvgImage } from 'react-native-svg';
 
 const images = {
@@ -128,7 +129,70 @@ export const getFourthTrendCardPath = (width, height) => {
   `;
 };
 
-const RealTimeTrend = ({ realTimeTrendData }) => {
+const RealTimeTrendCard = ({
+  rank,
+  width,
+  height,
+  path,
+  imageUrl,
+  contentStyle,
+  inputTag,
+  inputTitle,
+  styles,
+}) => {
+  const [tag, setTag] = useState('');
+  const [title, setTitle] = useState('');
+
+  useEffect(() => {
+    setTag(inputTag);
+    setTitle(inputTitle);
+  }, [inputTag, inputTitle]);
+
+  return (
+    <TrendCard
+      key={rank}
+      width={width}
+      height={height}
+      path={path}
+      imageUrl={imageUrl}
+      contentStyle={contentStyle}
+    >
+      <View style={{ flex: 1, position: 'relative', height: height }}>
+        <View
+          style={
+            rank === 3 && {
+              position: 'absolute',
+              left: width * 0.33,
+            }
+          }
+        >
+          <Text style={styles.rankText}>{rank}위</Text>
+          <View style={styles.tag}>
+            <Text style={styles.tagText}>#{tag}</Text>
+          </View>
+        </View>
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 20,
+            left: 20,
+            width: width - 30,
+          }}
+        >
+          <Text
+            style={styles.trendCardTitleText}
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {title}
+          </Text>
+        </View>
+      </View>
+    </TrendCard>
+  );
+};
+
+const RealTimeTrend = ({ tagAndTitles }) => {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const styles = getStyles(isDark);
@@ -136,52 +200,49 @@ const RealTimeTrend = ({ realTimeTrendData }) => {
   // (임시) 현재 시간을 마지막 업데이트로 설정
   const lastUpdateTime = format(new Date(), 'yyyy년 MM월 dd일 HH:mm');
 
-  const RealTimeTrendCard = c => {
-    return (
-      <TrendCard
-        key={c.rank}
-        width={c.width}
-        height={c.height}
-        path={c.path}
-        imageUrl={c.imageUrl}
-        contentStyle={c.contentStyle}
-      >
-        <View style={{ flex: 1, position: 'relative', height: c.height }}>
-          <View
-            style={
-              c.rank === 3 && {
-                position: 'absolute',
-                left: c.width * 0.33,
-              }
-            }
-          >
-            <Text style={styles.rankText}>{c.rank}위</Text>
-            {c.tag && (
-              <View style={styles.tag}>
-                <Text style={styles.tagText}>#{c.tag}</Text>
-              </View>
-            )}
-          </View>
-          <View
-            style={{
-              position: 'absolute',
-              bottom: 20,
-              left: 20,
-              width: c.width - 30,
-            }}
-          >
-            <Text
-              style={styles.trendCardTitleText}
-              numberOfLines={2}
-              ellipsizeMode="tail"
-            >
-              {c.title}
-            </Text>
-          </View>
-        </View>
-      </TrendCard>
-    );
-  };
+  const realTimeTrendData = [
+    // 임의
+    {
+      rank: 1,
+      width: Dimensions.get('window').width * 0.75,
+      height: Dimensions.get('window').height * 0.43,
+      path: getFirstTrendCardPath(
+        Dimensions.get('window').width * 0.75,
+        Dimensions.get('window').height * 0.43,
+      ),
+      imageUrl: 'trendRank1Image',
+    },
+    {
+      rank: 4,
+      width: Dimensions.get('window').width * 0.29,
+      height: Dimensions.get('window').height * 0.22,
+      path: getFourthTrendCardPath(
+        Dimensions.get('window').width * 0.29,
+        Dimensions.get('window').height * 0.22,
+      ),
+      imageUrl: 'trendRank4Image',
+    },
+    {
+      rank: 2,
+      width: Dimensions.get('window').width * 0.6,
+      height: Dimensions.get('window').height * 0.2,
+      path: getSecondTrendCardPath(
+        Dimensions.get('window').width * 0.6,
+        Dimensions.get('window').height * 0.2,
+      ),
+      imageUrl: 'trendRank2Image',
+    },
+    {
+      rank: 3,
+      width: Dimensions.get('window').width * 0.44,
+      height: Dimensions.get('window').height * 0.2,
+      path: getThirdTrendCardPath(
+        Dimensions.get('window').width * 0.44,
+        Dimensions.get('window').height * 0.2,
+      ),
+      imageUrl: 'trendRank3Image',
+    },
+  ];
 
   return (
     <>
@@ -194,15 +255,35 @@ const RealTimeTrend = ({ realTimeTrendData }) => {
       </View>
       <View style={{ justifyContent: 'flex-end' }}>
         <View style={styles.trendCardTopContainer}>
-          <RealTimeTrendCard {...realTimeTrendData[0]} />
+          <RealTimeTrendCard
+            {...realTimeTrendData[0]}
+            inputTag={tagAndTitles[0].tag}
+            inputTitle={tagAndTitles[0].title}
+            styles={styles}
+          />
           <View style={styles.rank4TrendCard}>
-            <RealTimeTrendCard {...realTimeTrendData[1]} />
+            <RealTimeTrendCard
+              {...realTimeTrendData[1]}
+              inputTag={tagAndTitles[1].tag}
+              inputTitle={tagAndTitles[1].title}
+              styles={styles}
+            />
           </View>
         </View>
         <View style={styles.trendCardBottomContainer}>
-          <RealTimeTrendCard {...realTimeTrendData[2]} />
+          <RealTimeTrendCard
+            {...realTimeTrendData[2]}
+            inputTag={tagAndTitles[2].tag}
+            inputTitle={tagAndTitles[2].title}
+            styles={styles}
+          />
           <View style={styles.rank3TrendCard}>
-            <RealTimeTrendCard {...realTimeTrendData[3]} />
+            <RealTimeTrendCard
+              {...realTimeTrendData[3]}
+              inputTag={tagAndTitles[3].tag}
+              inputTitle={tagAndTitles[3].title}
+              styles={styles}
+            />
           </View>
         </View>
       </View>
