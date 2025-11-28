@@ -2,10 +2,10 @@ import { Image, View } from 'react-native';
 import Svg, { ClipPath, Defs, Path, Image as SvgImage } from 'react-native-svg';
 
 const images = {
-  trendRank1Image: require('../assets/images/trend_rank1.png'),
-  trendRank2Image: require('../assets/images/trend_rank2.png'),
-  trendRank3Image: require('../assets/images/trend_rank3.png'),
-  trendRank4Image: require('../assets/images/trend_rank4.png'),
+  trendRank1Image: require('../../assets/images/trend_rank1.png'),
+  trendRank2Image: require('../../assets/images/trend_rank2.png'),
+  trendRank3Image: require('../../assets/images/trend_rank3.png'),
+  trendRank4Image: require('../../assets/images/trend_rank4.png'),
 };
 
 export default function TrendCard({
@@ -18,8 +18,6 @@ export default function TrendCard({
 }) {
   const image = images[imageUrl];
   const imageSource = Image.resolveAssetSource(image);
-
-  console.log('TrendCard imageSource:', imageSource);
 
   return (
     <View style={{ overflow: 'hidden' }}>

@@ -8,12 +8,13 @@ import {
   useColorScheme,
 } from 'react-native';
 
-import TrendCard, {
+import TrendKeywordCard from '@/app/components/trend-keyword-card';
+import RealTimeTrendCard, {
   getFirstTrendCardPath,
   getFourthTrendCardPath,
   getSecondTrendCardPath,
   getThirdTrendCardPath,
-} from '../../../components/trendcard';
+} from '../../components/realtime-trendcard';
 
 export default function Home() {
   const colorScheme = useColorScheme();
@@ -80,7 +81,7 @@ export default function Home() {
 
   const renderCard = c => {
     return (
-      <TrendCard
+      <RealTimeTrendCard
         key={c.rank}
         width={c.width}
         height={c.height}
@@ -121,16 +122,20 @@ export default function Home() {
             </Text>
           </View>
         </View>
-      </TrendCard>
+      </RealTimeTrendCard>
     );
   };
 
   {
     /* 트렌드 리포트 */
   }
+  {
+    /* 트렌드 키워드 카드 데이터 */
+  }
   const fieldData = [
     {
       field: '전체',
+      icon: '🔥',
       data: [
         {
           title: '아이폰 16 pro',
@@ -151,7 +156,26 @@ export default function Home() {
       ],
     },
     {
+      field: '일상/밈',
+      icon: '😂',
+      data: [
+        {
+          title: '샤넬 챌린지',
+          tag: '일상/밈',
+        },
+        {
+          title: '듀 가나디',
+          tag: '일상/밈',
+        },
+        {
+          title: '아이폰 16 pro',
+          tag: '일상/밈',
+        },
+      ],
+    },
+    {
       field: '게임',
+      icon: '🎮',
       data: [
         {
           title: '배틀그라운드',
@@ -168,7 +192,62 @@ export default function Home() {
       ],
     },
     {
+      field: '패션',
+      icon: '👗',
+      data: [
+        {
+          title: '무신사',
+          tag: '패션',
+        },
+        {
+          title: '에이블리',
+          tag: '패션',
+        },
+        {
+          title: '블랙 프라이데이',
+          tag: '패션',
+        },
+      ],
+    },
+    {
+      field: '음악',
+      icon: '🎵',
+      data: [
+        {
+          title: '멜론',
+          tag: '음악',
+        },
+        {
+          title: '올데이프로젝트',
+          tag: '음악',
+        },
+        {
+          title: '화사',
+          tag: '음악',
+        },
+      ],
+    },
+    {
+      field: '반려동물',
+      icon: '🐶',
+      data: [
+        {
+          title: '고양이',
+          tag: '반려동물',
+        },
+        {
+          title: '강아지',
+          tag: '반려동물',
+        },
+        {
+          title: '킹율',
+          tag: '반려동물',
+        },
+      ],
+    },
+    {
       field: '뷰티',
+      icon: '💄',
       data: [
         {
           title: '올영 블프',
@@ -181,6 +260,24 @@ export default function Home() {
         {
           title: '다이소 뷰티템',
           tag: '뷰티',
+        },
+      ],
+    },
+    {
+      field: '스포츠',
+      icon: '⚽',
+      data: [
+        {
+          title: '마라톤',
+          tag: '스포츠',
+        },
+        {
+          title: '야구',
+          tag: '스포츠',
+        },
+        {
+          title: '축구',
+          tag: '스포츠',
         },
       ],
     },
@@ -223,21 +320,11 @@ export default function Home() {
               분야의 트렌드 추천
             </Text>
           </View>
+          {/* FlexWrap Layout */}
           <View style={styles.trendReportCardContainer}>
+            {/* 트렌드 키워드 카드 매핑 */}
             {fieldData.data.map((data, index) => (
-              <View key={index}>
-                <View style={styles.trendReportCard}>
-                  <View style={styles.trendReportIcon} />
-                  <View style={styles.trendReportContents}>
-                    <Text style={styles.trendReportTitleText}>
-                      {data.title}
-                    </Text>
-                    <View style={styles.trendReportTag}>
-                      <Text style={styles.trendReportTagText}>#{data.tag}</Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
+              <TrendKeywordCard key={index} icon={fieldData.icon} data={data} />
             ))}
           </View>
         </View>
@@ -337,43 +424,6 @@ const getStyles = isDark => {
       justifyContent: 'flex-start',
       paddingHorizontal: 16,
       marginTop: 20,
-    },
-    trendReportCard: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: isDark ? '#FAFAFA' : '#FAFFF0',
-      borderRadius: 10,
-      paddingVertical: 14,
-      paddingHorizontal: 12,
-      gap: 16,
-      marginRight: 8,
-      marginBottom: 12,
-      borderWidth: 1,
-      borderColor: isDark ? '#141414' : '#D3D3D3',
-    },
-    trendReportIcon: {
-      width: 60,
-      height: 60,
-      backgroundColor: isDark ? '#000000' : '#D3D3D3',
-      borderRadius: 8,
-    },
-    trendReportContents: {
-      gap: 6,
-      alignItems: 'flex-start',
-    },
-    trendReportTitleText: {
-      fontSize: 18,
-      color: isDark ? '#141414' : '#000',
-    },
-    trendReportTag: {
-      paddingVertical: 5,
-      paddingHorizontal: 10,
-      backgroundColor: isDark ? '#202020' : '#A3CC52',
-      borderRadius: 20,
-    },
-    trendReportTagText: {
-      fontSize: 14,
-      color: isDark ? '#FAFAFA' : '#FAFFF0',
     },
   });
 };
