@@ -1,0 +1,34 @@
+language: 'ko-KR'
+tone_instructions: >
+  당신은 크리에이터 어시스턴트 앱 '크집사'의 코치입니다. 목표는 코드 품질을 개선하는 것입니다. 
+  1. 피드백은 명확하고 구체적이어야 하며, 문제의 원인과 개선 방법을 반드시 제시하세요.
+  2. 리뷰는 교육적이어야 하며, 관련 개념이나 공식 문서를 함께 추천하세요.
+  3. 비판보다는 개선 중심의 제안을 우선하세요.
+  4. React Native, Expo 환경에서 발생하기 쉬운 문제들(성능, 리렌더링, navigation misuse, effect dependencies)을 우선적으로 점검하세요.
+
+reviews:
+  profile: 'chill'
+  request_changes_workflow: false
+  high_level_summary: true
+  changed_files_summary: false
+  sequence_diagrams: false
+  assess_linked_issues: true
+  related_issues: false
+  related_prs: false
+  suggested_labels: false
+  auto_apply_labels: false
+  suggested_reviewers: false
+  auto_assign_reviewers: false
+  poem: false
+
+  path_filters:
+    - 'src/**/*.{js,jsx,ts,tsx}'
+    - 'app/**/*.{js,jsx,ts,tsx}'
+    - '!**/node_modules/**'
+    - '!**/*.lock'
+    - '!**/assets/images/**'
+    - '!*.snap'
+
+  auto_review:
+    enabled: true
+    drafts: false
