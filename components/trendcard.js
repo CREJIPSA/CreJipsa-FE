@@ -1,8 +1,26 @@
-import { View } from "react-native";
-import Svg, { ClipPath, Defs, Path, Rect, Image as SvgImage } from 'react-native-svg';
+import { Image, View } from 'react-native';
+import Svg, { ClipPath, Defs, Path, Image as SvgImage } from 'react-native-svg';
 
-export default function TrendCard({ width, height, path, children, imageUrl, fill, contentStyle }) {
-  
+const images = {
+  trendRank1Image: require('../assets/images/trend_rank1.png'),
+  trendRank2Image: require('../assets/images/trend_rank2.png'),
+  trendRank3Image: require('../assets/images/trend_rank3.png'),
+  trendRank4Image: require('../assets/images/trend_rank4.png'),
+};
+
+export default function TrendCard({
+  width,
+  height,
+  path,
+  children,
+  imageUrl,
+  contentStyle,
+}) {
+  const image = images[imageUrl];
+  const imageSource = Image.resolveAssetSource(image);
+
+  console.log('TrendCard imageSource:', imageSource);
+
   return (
     <View style={{ overflow: 'hidden' }}>
       <Svg width={width} height={height}>
@@ -11,35 +29,28 @@ export default function TrendCard({ width, height, path, children, imageUrl, fil
             <Path d={path} />
           </ClipPath>
         </Defs>
-        {imageUrl 
-        ? ( 
-          <SvgImage 
-            href={{uri: imageUrl}} 
-            width={width} 
-            height={height} 
-            clipPath="url(#clip)" 
-          /> ) 
-        : ( 
-          <Rect 
-            width={width} 
-            height={height} 
-            fill={fill} 
-            clipPath="url(#clip)" 
-          /> )}
+        <SvgImage
+          href={imageSource}
+          width={width}
+          height={height}
+          preserveAspectRatio="xMidYMid slice"
+          clipPath="url(#clip)"
+        />
       </Svg>
       <View
         style={[
-        {
-          position: 'absolute',
-          insets: 0,
-        },
-        contentStyle,]}
+          {
+            position: 'absolute',
+            insets: 0,
+          },
+          contentStyle,
+        ]}
       >
         {children}
       </View>
     </View>
-  )
-};
+  );
+}
 
 export const getFirstTrendCardPath = (width, height) => {
   const cutX = width * 0.8;
@@ -61,7 +72,7 @@ export const getFirstTrendCardPath = (width, height) => {
     Q0 ${height} 0 ${height - r}
     Z
   `;
-}
+};
 
 export const getSecondTrendCardPath = (width, height) => {
   const cutX = width * 0.75;
@@ -83,7 +94,7 @@ export const getSecondTrendCardPath = (width, height) => {
     Q0 ${height} 0 ${height - r}
     Z
   `;
-}
+};
 
 export const getThirdTrendCardPath = (width, height) => {
   const cutX = width * 0.34;
@@ -106,11 +117,11 @@ export const getThirdTrendCardPath = (width, height) => {
     Q${cutX} 0 ${cutX + r} 0
     Z
   `;
-}
+};
 
 export const getFourthTrendCardPath = (width, height) => {
   const r = 30;
-  
+
   return `
     M${r} 0
     H${width - r}
@@ -123,4 +134,4 @@ export const getFourthTrendCardPath = (width, height) => {
     Q0 0 ${r} 0
     Z
   `;
-}
+};
