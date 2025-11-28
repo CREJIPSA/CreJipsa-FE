@@ -1,4 +1,3 @@
-version: 1
 reviews:
   language: 'ko'
   auto_review_on:
