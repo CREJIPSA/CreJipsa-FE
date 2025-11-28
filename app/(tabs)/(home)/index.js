@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import {
   Dimensions,
   ScrollView,
@@ -7,22 +6,18 @@ import {
   View,
   useColorScheme,
 } from 'react-native';
-
-import TrendKeywordCard from '@/app/components/trend-keyword-card';
-import RealTimeTrendCard, {
+import RealTimeTrend, {
   getFirstTrendCardPath,
   getFourthTrendCardPath,
   getSecondTrendCardPath,
   getThirdTrendCardPath,
-} from '../../components/realtime-trendcard';
+} from '../../components/realtime-trend';
+import TrendKeywordCard from '../../components/trend-keyword-card';
 
 export default function Home() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const styles = getStyles(isDark);
-
-  // (임시) 현재 시간을 마지막 업데이트로 설정
-  const lastUpdateTime = format(new Date(), 'yyyy년 MM월 dd일 HH:mm');
 
   {
     /* 실시간 트렌드 */
@@ -78,53 +73,6 @@ export default function Home() {
       imageUrl: 'trendRank3Image',
     },
   ];
-
-  const renderCard = c => {
-    return (
-      <RealTimeTrendCard
-        key={c.rank}
-        width={c.width}
-        height={c.height}
-        path={c.path}
-        imageUrl={c.imageUrl}
-        contentStyle={c.contentStyle}
-      >
-        <View style={{ flex: 1, position: 'relative', height: c.height }}>
-          <View
-            style={
-              c.rank === 3 && {
-                position: 'absolute',
-                left: c.width * 0.33,
-              }
-            }
-          >
-            <Text style={styles.rankText}>{c.rank}위</Text>
-            {c.tag && (
-              <View style={styles.tag}>
-                <Text style={styles.tagText}>#{c.tag}</Text>
-              </View>
-            )}
-          </View>
-          <View
-            style={{
-              position: 'absolute',
-              bottom: 20,
-              left: 20,
-              width: c.width - 30,
-            }}
-          >
-            <Text
-              style={styles.trendCardTitleText}
-              numberOfLines={2}
-              ellipsizeMode="tail"
-            >
-              {c.title}
-            </Text>
-          </View>
-        </View>
-      </RealTimeTrendCard>
-    );
-  };
 
   {
     /* 트렌드 리포트 */
@@ -286,27 +234,7 @@ export default function Home() {
   return (
     <ScrollView style={styles.mainContainer}>
       {/* 실시간 트렌드 */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.titleText}>실시간 트렌드</Text>
-        <Text style={styles.lastUpdateText}>
-          마지막 업데이트{'\n'}
-          {lastUpdateTime}
-        </Text>
-      </View>
-      <View style={{ justifyContent: 'flex-end' }}>
-        <View style={styles.trendCardTopContainer}>
-          {renderCard(realTimeTrendData[0])}
-          <View style={styles.rank4TrendCard}>
-            {renderCard(realTimeTrendData[1])}
-          </View>
-        </View>
-        <View style={styles.trendCardBottomContainer}>
-          {renderCard(realTimeTrendData[2])}
-          <View style={styles.rank3TrendCard}>
-            {renderCard(realTimeTrendData[3])}
-          </View>
-        </View>
-      </View>
+      <RealTimeTrend realTimeTrendData={realTimeTrendData} />
       {/* 트렌드 리포트 */}
       <View style={styles.sectionHeader}>
         <Text style={styles.titleText}>트렌드 리포트</Text>
@@ -384,31 +312,6 @@ const getStyles = isDark => {
     rank3TrendCard: {
       position: 'absolute',
       right: 16,
-    },
-    rankText: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#141414',
-      paddingTop: 20,
-      paddingLeft: 25,
-    },
-    tag: {
-      marginTop: 8,
-      marginLeft: 20,
-      backgroundColor: '#141414',
-      padding: 8,
-      borderRadius: 20,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    tagText: {
-      fontSize: 16,
-      color: '#FAFAFA',
-    },
-    trendCardTitleText: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#141414',
     },
     fieldSectionHeader: {
       paddingHorizontal: 16,
