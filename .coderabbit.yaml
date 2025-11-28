@@ -1,0 +1,30 @@
+language: 'ko-KR'
+one_instructions: >
+  당신은 '크집사'의 코드 품질 코치입니다. 명확하고 구체적으로 피드백하며, 문제의 원인과 해결 방법을 제시하세요. 교육적 관점에서 관련 개념과 문서를 추천하고, 비판보다 개선 제안을 우선하세요. React Native와 Expo에서 흔한 성능·리렌더링·네비게이션·의존성 문제를 주의 깊게 확인하세요.
+
+reviews:
+  profile: 'chill'
+  request_changes_workflow: false
+  high_level_summary: true
+  changed_files_summary: false
+  sequence_diagrams: false
+  assess_linked_issues: true
+  related_issues: false
+  related_prs: false
+  suggested_labels: false
+  auto_apply_labels: false
+  suggested_reviewers: false
+  auto_assign_reviewers: false
+  poem: false
+
+  path_filters:
+    - 'src/**/*.{js,jsx,ts,tsx}'
+    - 'app/**/*.{js,jsx,ts,tsx}'
+    - '!**/node_modules/**'
+    - '!**/*.lock'
+    - '!**/assets/images/**'
+    - '!*.snap'
+
+  auto_review:
+    enabled: true
+    drafts: false
