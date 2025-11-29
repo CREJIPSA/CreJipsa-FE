@@ -99,6 +99,7 @@ const getStyles = isDark =>
       paddingTop: 30,
     },
     kakaoLoginButton: {
+      marginTop: 30,
       flexDirection: 'row',
       width: '100%',
       alignItems: 'center',
