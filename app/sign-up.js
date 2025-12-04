@@ -12,6 +12,7 @@ import {
   useColorScheme,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Path } from 'react-native-svg';
 import instagramLogo from '../assets/images/instagram_logo.png';
 import tictokLogo from '../assets/images/tictok_logo.png';
 import youtubeLogo from '../assets/images/youtube_logo.png';
@@ -22,34 +23,6 @@ export default function SignUp() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const styles = getStyles(isDark);
-
-  // 채널 정보
-  const [myChannels, setMyChannels] = useState([]); // 채널 목록
-  const [channelInfo, setChannelInfo] = useState({
-    platform: null,
-    interestFields: [],
-    channelId: '',
-  });
-  const addChannel = () => {
-    const newChannelInfo = {
-      platform: platform,
-      interestFields: [...selectedChips],
-      channelId: channelId,
-    };
-    setMyChannels([...myChannels, newChannelInfo]);
-    setChannelInfo({
-      platform: null,
-      interestFields: [],
-      channelId: '',
-    });
-    setStep(4);
-  };
-  const removeChannel = channelId => {
-    const updatedChannels = myChannels.filter(
-      channel => channel.channelId !== channelId,
-    );
-    setMyChannels(updatedChannels);
-  };
 
   const [username, setUsername] = useState(); // 이름
   const [birthday, setBirthday] = useState(); // 생년월일
@@ -93,6 +66,47 @@ export default function SignUp() {
       router.back();
     }
   };
+
+  // 채널 정보
+  const [myChannels, setMyChannels] = useState([]); // 채널 목록
+  const [channelInfo, setChannelInfo] = useState({
+    platform: null,
+    interestFields: [],
+    channelId: '',
+  });
+  const handleSelectPlatform = selectedPlatform => {
+    setPlatform(selectedPlatform);
+    setChannelInfo(prevInfo => ({
+      ...prevInfo,
+      platform: selectedPlatform,
+    }));
+  };
+  const addChannel = () => {
+    const newChannelInfo = {
+      platform: platform,
+      interestFields: [...selectedChips],
+      channelId: channelId,
+    };
+    setMyChannels(prev => [...prev, newChannelInfo]);
+    setChannelInfo({
+      platform: null,
+      interestFields: [],
+      channelId: '',
+    });
+    setStep(4);
+    setPlatform(null);
+    setChannelId('');
+    setSelectedChips([]);
+  };
+  const removeChannel = channelId => {
+    const updatedChannels = myChannels.filter(
+      channel => channel.channelId !== channelId,
+    );
+    setMyChannels(updatedChannels);
+  };
+  useEffect(() => {
+    console.log('My Channels:', myChannels);
+  }, [myChannels]);
 
   // 회원가입 완료 후 홈화면으로 이동
   useEffect(() => {
@@ -167,9 +181,33 @@ export default function SignUp() {
           setSelectedChips([...selectedChips, option]);
         }
       }
+
+      setChannelInfo(prevInfo => ({
+        ...prevInfo,
+        interestFields: selectedChips,
+      }));
     },
     [selectedChips],
   );
+
+  const RemoveChannelButtonIcon = () => {
+    return (
+      <Svg
+        width="17"
+        height="19"
+        viewBox="0 0 17 19"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <Path
+          d="M10.5 8.5V14.5M6.5 8.5V14.5M2.5 4.5V16.5C2.5 17.0304 2.71071 17.5391 3.08579 17.9142C3.46086 18.2893 3.96957 18.5 4.5 18.5H12.5C13.0304 18.5 13.5391 18.2893 13.9142 17.9142C14.2893 17.5391 14.5 17.0304 14.5 16.5V4.5M0.5 4.5H16.5M3.5 4.5L5.5 0.5H11.5L13.5 4.5"
+          stroke="#FAFAFA"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </Svg>
+    );
+  };
 
   return (
     <View
@@ -264,7 +302,11 @@ export default function SignUp() {
               </View>
             </View>
             {/* 채널 플랫폼 */}
-            <View style={{ display: step >= 4 && step <= 7 ? 'flex' : 'none' }}>
+            <View
+              style={{
+                display: step >= 4 && step <= 7 ? 'flex' : 'none',
+              }}
+            >
               <Text style={styles.inputTitle}>채널 플랫폼</Text>
               <View style={styles.platformInputFormContainer}>
                 {platform === null ? (
@@ -279,41 +321,14 @@ export default function SignUp() {
                 <Pressable
                   onPress={() => {
                     setPlatformModalVisible(true);
+                    setChannelInfo({
+                      ...channelInfo,
+                      platform: platform,
+                    });
                   }}
                 >
                   <Ionicons name="chevron-down" size={24} color="#FAFAFA" />
                 </Pressable>
-              </View>
-              {/* 채널 추가 정보 */}
-              <View
-                style={{
-                  display: step >= 8 && step <= 9 ? 'flex' : 'none',
-                  flexDirection: 'column-reverse',
-                  marginBottom: 30,
-                }}
-              >
-                {myChannels && (
-                  <View style={styles.addChannelContainer}>
-                    {myChannels.map((myChannels, index) => (
-                      <View key={index} style={styles.addedChannelBox}>
-                        <Text style={styles.addChannelText}>
-                          {myChannels[index].channelId}
-                        </Text>
-                        <Pressable
-                          style={styles.removeChannelButton}
-                          onPress={() =>
-                            removeChannel(myChannels[index].channelId)
-                          }
-                        >
-                          <Ionicons name="close" size={24} color="#FF0000" />
-                          <Text style={styles.removeChannelButtonText}>
-                            삭제
-                          </Text>
-                        </Pressable>
-                      </View>
-                    ))}
-                  </View>
-                )}
               </View>
             </View>
             {/* 관심 분야 */}
@@ -338,7 +353,13 @@ export default function SignUp() {
                 placeholder="@크집사"
                 placeholderTextColor={isDark ? '#A5A5A5' : '#000000'}
                 value={channelId}
-                onChangeText={setChannelId}
+                onChangeText={text => {
+                  setChannelId(text);
+                  setChannelInfo(prev => ({
+                    ...prev,
+                    channelId: text,
+                  }));
+                }}
                 onSubmitEditing={handleNextStep}
               />
             </View>
@@ -369,6 +390,40 @@ export default function SignUp() {
                 채널 추가
               </Text>
             </Pressable>
+          </View>
+          {/* 채널 추가 정보 */}
+          <View
+            style={{
+              display: step >= 4 && step <= 7 ? 'flex' : 'none',
+              position: 'absolute',
+              flexDirection: 'column-reverse',
+              width: '100%',
+              bottom: 20,
+            }}
+          >
+            {myChannels && (
+              <View style={styles.addChannelContainer}>
+                {myChannels.map((channel, index) => (
+                  <View
+                    key={channel.channelId ?? index}
+                    style={styles.addedChannelBox}
+                  >
+                    <Text style={styles.addChannelText}>
+                      {channel.channelId}
+                    </Text>
+                    <Pressable
+                      style={styles.removeChannelButton}
+                      onPress={() => removeChannel(channel.channelId)}
+                    >
+                      <RemoveChannelButtonIcon
+                        style={styles.removeChannelButtonIcon}
+                      />
+                      <Text style={styles.removeChannelButtonText}>삭제</Text>
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
+            )}
           </View>
           {/* 가입 완료 */}
           <View
@@ -553,7 +608,7 @@ export default function SignUp() {
                     styles.dimmedOption,
                 ]}
                 onPress={() => {
-                  setPlatform('인스타그램');
+                  handleSelectPlatform('인스타그램');
                 }}
               >
                 <Image
@@ -573,7 +628,7 @@ export default function SignUp() {
                     styles.dimmedOption,
                 ]}
                 onPress={() => {
-                  setPlatform('유튜브');
+                  handleSelectPlatform('유튜브');
                 }}
               >
                 <Image source={youtubeLogo} style={{ width: 40, height: 40 }} />
@@ -590,7 +645,7 @@ export default function SignUp() {
                     styles.dimmedOption,
                 ]}
                 onPress={() => {
-                  setPlatform('틱톡');
+                  handleSelectPlatform('틱톡');
                 }}
               >
                 <Image source={tictokLogo} style={{ width: 40, height: 40 }} />
@@ -819,8 +874,10 @@ const getStyles = isDark =>
     },
     addChannelContainer: {
       marginBottom: 30,
-      width: '100%',
+      width: '90%',
       gap: 10,
+      justifyContent: 'center',
+      alignSelf: 'center',
     },
     addedChannelBox: {
       flexDirection: 'row',
@@ -828,6 +885,30 @@ const getStyles = isDark =>
       alignItems: 'center',
       paddingHorizontal: 15,
       height: 60,
+      borderRadius: 4,
+      borderWidth: 0.5,
+      borderColor: isDark ? '#FAFAFA' : '#000000',
+    },
+    addChannelText: {
+      fontSize: 12,
+      fontWeight: 'normal',
+      color: isDark ? '#FAFAFA' : '#000000',
+    },
+    removeChannelButton: {
+      width: 70,
+      height: 35,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 8,
+      borderWidth: 0.5,
+      borderRadius: 4,
+      borderColor: '#FAFAFA',
+      paddingHorizontal: 10,
+    },
+    removeChannelButtonText: {
+      fontSize: 12,
+      color: '#FAFAFA',
     },
     termConfirmButton: {
       width: '100%',
