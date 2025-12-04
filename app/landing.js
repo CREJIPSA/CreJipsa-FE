@@ -61,7 +61,7 @@ const getStyles = isDark =>
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: isDark ? '#202020' : '#d9d9d9',
+      backgroundColor: isDark ? '#202020' : '#FCFCFC',
     },
     logoContainer: {
       flex: 6,
@@ -75,12 +75,12 @@ const getStyles = isDark =>
       gap: 9,
     },
     mainText: {
-      color: isDark ? '#FFFFFF' : '#000000',
+      color: isDark ? '#FFFFFF' : '#141414',
       fontSize: 24,
       fontWeight: 'bold',
     },
     subText: {
-      color: isDark ? '#CCCCCC' : '#333333',
+      color: isDark ? '#CCCCCC' : '#141414',
       fontSize: 16,
       fontWeight: 'normal',
     },

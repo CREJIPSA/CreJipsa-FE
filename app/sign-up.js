@@ -129,7 +129,7 @@ export default function SignUp() {
         </Pressable>
         <View>
           <Text
-            style={{ color: isDark ? '#FAFAFA' : '#000000', marginLeft: 10 }}
+            style={{ color: isDark ? '#FAFAFA' : '#141414', marginLeft: 10 }}
           >
             {label}
           </Text>
@@ -271,7 +271,7 @@ export default function SignUp() {
                 {gender === null ? (
                   <Text style={{ color: '#a5a5a5' }}>성별</Text>
                 ) : (
-                  <Text style={{ color: isDark ? '#FAFAFA' : '#000000' }}>
+                  <Text style={{ color: isDark ? '#FAFAFA' : '#141414' }}>
                     {gender}
                   </Text>
                 )}
@@ -289,11 +289,11 @@ export default function SignUp() {
               <Text style={styles.inputTitle}>채널 플랫폼</Text>
               <View style={styles.platformInputFormContainer}>
                 {platform === null ? (
-                  <Text style={{ color: isDark ? '#FAFAFA' : '#000000' }}>
+                  <Text style={{ color: isDark ? '#FAFAFA' : '#141414' }}>
                     채널 플랫폼 선택
                   </Text>
                 ) : (
-                  <Text style={{ color: isDark ? '#FAFAFA' : '#000000' }}>
+                  <Text style={{ color: isDark ? '#FAFAFA' : '#141414' }}>
                     {platform}
                   </Text>
                 )}
@@ -330,7 +330,7 @@ export default function SignUp() {
               <TextInput
                 style={styles.channelIdInputForm}
                 placeholder="@크집사"
-                placeholderTextColor={isDark ? '#A5A5A5' : '#000000'}
+                placeholderTextColor={isDark ? '#A5A5A5' : '#B7B7B7'}
                 value={channelId}
                 onChangeText={text => {
                   setChannelId(text);
@@ -357,13 +357,13 @@ export default function SignUp() {
               <Ionicons
                 name="add"
                 size={24}
-                color={isDark ? '#FAFAFA' : '#000000'}
+                color={isDark ? '#FAFAFA' : '#141414'}
               />
               <Text
                 style={{
                   fontSize: 12,
                   fontWeight: 'normal',
-                  color: isDark ? '#FAFAFA' : '#000000',
+                  color: isDark ? '#FAFAFA' : '#141414',
                 }}
               >
                 채널 추가
@@ -394,7 +394,9 @@ export default function SignUp() {
                       style={styles.removeChannelButton}
                       onPress={() => removeChannel(channel.channelId)}
                     >
-                      <RemoveChannelIcon />
+                      <RemoveChannelIcon
+                        color={isDark ? '#FAFAFA' : '#141414'}
+                      />
                       <Text style={styles.removeChannelButtonText}>삭제</Text>
                     </Pressable>
                   </View>
@@ -464,7 +466,7 @@ export default function SignUp() {
                 style={{
                   height: 0.5,
                   marginVertical: 10,
-                  backgroundColor: isDark ? '#F4F2F2' : '#000000',
+                  backgroundColor: isDark ? '#F4F2F2' : '#1B1B1B',
                   width: 'calc(100% - 32px)',
                 }}
               />
@@ -640,7 +642,7 @@ const getStyles = isDark =>
   StyleSheet.create({
     signUpContainer: {
       flex: 1,
-      backgroundColor: isDark ? '#202020' : '#d9d9d9',
+      backgroundColor: isDark ? '#202020' : '#FCFCFC',
     },
     header: {
       flex: 1,
@@ -654,7 +656,7 @@ const getStyles = isDark =>
       paddingLeft: 16,
     },
     titleText: {
-      color: isDark ? '#FAFAFA' : '#000000',
+      color: isDark ? '#FAFAFA' : '#141414',
       fontSize: 20,
       fontWeight: 'normal',
     },
@@ -666,7 +668,7 @@ const getStyles = isDark =>
       gap: 40,
     },
     inputTitle: {
-      color: isDark ? '#FAFAFA' : '#000000',
+      color: isDark ? '#FAFAFA' : '#141414',
       fontSize: 12,
       fontWeight: '100',
     },
@@ -674,15 +676,15 @@ const getStyles = isDark =>
       height: 42,
       paddingLeft: 3,
       borderBottomWidth: 0.5,
-      borderBottomColor: isDark ? '#FAFAFA' : '#000000',
-      color: isDark ? '#FAFAFA' : '#000000',
+      borderBottomColor: isDark ? '#FAFAFA' : '#141414',
+      color: isDark ? '#FAFAFA' : '#141414',
     },
     birthdayInputForm: {
       height: 42,
       paddingLeft: 3,
       borderBottomWidth: 0.5,
-      borderBottomColor: isDark ? '#FAFAFA' : '#000000',
-      color: isDark ? '#FAFAFA' : '#000000',
+      borderBottomColor: isDark ? '#FAFAFA' : '#141414',
+      color: isDark ? '#FAFAFA' : '#141414',
     },
     genderInputFormContainer: {
       flexDirection: 'row',
@@ -691,8 +693,8 @@ const getStyles = isDark =>
       height: 42,
       paddingLeft: 3,
       borderBottomWidth: 0.5,
-      color: isDark ? '#FAFAFA' : '#000000',
-      borderBottomColor: isDark ? '#FAFAFA' : '#000000',
+      color: isDark ? '#FAFAFA' : '#141414',
+      borderBottomColor: isDark ? '#FAFAFA' : '#141414',
     },
     modalBackground: {
       flex: 1,
@@ -703,14 +705,14 @@ const getStyles = isDark =>
     modalContainer: {
       justifyContent: 'flex-start',
       alignItems: 'flex-start',
-      backgroundColor: isDark ? '#141414' : '#ffffff',
+      backgroundColor: isDark ? '#141414' : '#FAFAFA',
       borderTopLeftRadius: 24,
       borderTopRightRadius: 24,
       paddingTop: 34,
       paddingLeft: 16,
     },
     modalText: {
-      color: isDark ? '#FAFAFA' : '#000000',
+      color: isDark ? '#FAFAFA' : '#141414',
       fontSize: 20,
       fontWeight: 'lighter',
     },
@@ -725,7 +727,7 @@ const getStyles = isDark =>
       alignItems: 'center',
     },
     termOptionSubText: {
-      color: isDark ? '#FAFAFA' : '#000000',
+      color: isDark ? '#FAFAFA' : '#141414',
       marginLeft: 10,
       fontSize: 12,
       fontWeight: '100',
@@ -745,7 +747,7 @@ const getStyles = isDark =>
       gap: 25,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: isDark ? '#323232' : '#FFFFFF',
+      backgroundColor: isDark ? '#323232' : '#FAFAFA',
       borderRadius: 16,
       shadowOpacity: 0.15,
       boxShadow: '0px 0px 15px rgba(255, 255, 255, 0.15)',
@@ -754,7 +756,7 @@ const getStyles = isDark =>
       opacity: 0.3,
     },
     modalOptionText: {
-      color: isDark ? '#FAFAFA' : '#000000',
+      color: isDark ? '#FAFAFA' : '#141414',
       fontSize: 18,
       fontWeight: 'normal',
     },
@@ -765,7 +767,7 @@ const getStyles = isDark =>
       height: 42,
       paddingLeft: 3,
       borderBottomWidth: 0.5,
-      borderColor: isDark ? '#FAFAFA' : '#000000',
+      borderColor: isDark ? '#FAFAFA' : '#141414',
     },
     platformModalOptionContainer: {
       width: '100%',
@@ -780,7 +782,7 @@ const getStyles = isDark =>
       flexDirection: 'row',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      backgroundColor: isDark ? '#323232' : '#FFFFFF',
+      backgroundColor: isDark ? '#323232' : '#FAFAFA',
       borderRadius: 16,
       shadowOpacity: 0.15,
       boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.15)',
@@ -791,7 +793,7 @@ const getStyles = isDark =>
       flexDirection: 'row',
       flexWrap: 'wrap',
       borderBottomWidth: 0.5,
-      borderBottomColor: isDark ? '#FAFAFA' : '#000000',
+      borderBottomColor: isDark ? '#FAFAFA' : '#141414',
       gap: 12,
       paddingVertical: 20,
     },
@@ -801,14 +803,14 @@ const getStyles = isDark =>
       paddingHorizontal: 10,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: isDark ? '#323232' : '#A7A7A7',
+      backgroundColor: isDark ? '#323232' : '#E6E6E6',
       borderRadius: 20,
       borderWidth: 1,
-      borderColor: '#FAFAFA',
+      borderColor: isDark ? '#FAFAFA' : '#141414',
       boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.1)',
     },
     baseChipText: {
-      color: '#FAFAFA',
+      color: isDark ? '#FAFAFA' : '#141414',
       fontSize: 14,
       fontWeight: 'normal',
     },
@@ -818,22 +820,23 @@ const getStyles = isDark =>
       paddingHorizontal: 10,
       justifyContent: 'center',
       alignItems: 'center',
-      borderColor: '#CCFF66',
+      borderColor: isDark ? '#CCFF66' : '#141414',
       borderWidth: 1,
       borderRadius: 16,
       boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.1)',
+      backgroundColor: isDark ? null : '#CCFF66',
     },
     selectedChipText: {
       fontSize: 14,
       fontWeight: 'normal',
-      color: '#CCFF66',
+      color: isDark ? '#CCFF66' : '#141414',
     },
     channelIdInputForm: {
       height: 42,
       paddingLeft: 3,
       borderBottomWidth: 0.5,
-      borderBottomColor: isDark ? '#FAFAFA' : '#000000',
-      color: isDark ? '#FAFAFA' : '#000000',
+      borderBottomColor: isDark ? '#FAFAFA' : '#141414',
+      color: isDark ? '#FAFAFA' : '#141414',
     },
     addChannelButton: {
       width: 120,
@@ -847,7 +850,7 @@ const getStyles = isDark =>
       gap: 5,
       borderWidth: 0.5,
       borderRadius: 4,
-      borderColor: isDark ? '#FAFAFA' : '#000000',
+      borderColor: isDark ? '#FAFAFA' : '#141414',
     },
     addChannelContainer: {
       marginBottom: 30,
@@ -864,12 +867,12 @@ const getStyles = isDark =>
       height: 60,
       borderRadius: 4,
       borderWidth: 0.5,
-      borderColor: isDark ? '#FAFAFA' : '#000000',
+      borderColor: isDark ? '#FAFAFA' : '#141414',
     },
     addChannelText: {
       fontSize: 12,
       fontWeight: 'normal',
-      color: isDark ? '#FAFAFA' : '#000000',
+      color: isDark ? '#FAFAFA' : '#141414',
     },
     removeChannelButton: {
       width: 70,
@@ -880,12 +883,12 @@ const getStyles = isDark =>
       gap: 8,
       borderWidth: 0.5,
       borderRadius: 4,
-      borderColor: '#FAFAFA',
+      borderColor: isDark ? '#FAFAFA' : '#141414',
       paddingHorizontal: 10,
     },
     removeChannelButtonText: {
       fontSize: 12,
-      color: '#FAFAFA',
+      color: isDark ? '#FAFAFA' : '#141414',
     },
     termConfirmButton: {
       width: '100%',
@@ -901,7 +904,7 @@ const getStyles = isDark =>
     termConfirmButtonText: {
       fontSize: 16,
       fontWeight: 'bold',
-      color: isDark ? '#000000' : '#FFFFFF',
+      color: '#000000',
     },
     completedContainer: {
       flex: 17,
@@ -914,7 +917,7 @@ const getStyles = isDark =>
       paddingTop: 180,
       fontSize: 20,
       fontWeight: 'normal',
-      color: isDark ? '#FAFAFA' : '#000000',
+      color: isDark ? '#FAFAFA' : '#141414',
     },
     footerContainer: {
       flex: 1,
@@ -927,19 +930,19 @@ const getStyles = isDark =>
     backButton: {
       width: '30%',
       height: 40,
-      backgroundColor: isDark ? '#E6E6E6' : '#E0E0E0',
+      backgroundColor: '#E6E6E6',
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 100,
     },
     backButtonText: {
       fontSize: 14,
-      color: isDark ? '#000000' : '#000000',
+      color: '#000000',
     },
     nextButton: {
       width: '65%',
       height: 40,
-      backgroundColor: isDark ? '#CCFF66' : '#000000',
+      backgroundColor: '#CCFF66',
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 100,
@@ -947,6 +950,6 @@ const getStyles = isDark =>
     nextButtonText: {
       fontSize: 16,
       fontWeight: 'bold',
-      color: isDark ? '#000000' : '#CCFF66',
+      color: '#000000',
     },
   });
