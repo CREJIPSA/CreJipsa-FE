@@ -1,22 +1,39 @@
-import { Text, View, useColorScheme } from 'react-native';
-
+import { View } from 'react-native';
+import RealTimeTrend from '../../components/realtime-trend';
+import useThemedStyle from '../../hooks/use-themed-style';
 
 export default function Sports() {
+  const { styles } = useThemedStyle(getStyles);
 
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const styles = getStyles(isDark);
+  const tagAndTitles = [
+    {
+      tag: '스포츠',
+      title: '마라톤',
+    },
+    {
+      tag: '스포츠',
+      title: '야구',
+    },
+    {
+      tag: '스포츠',
+      title: '축구',
+    },
+    {
+      tag: '스포츠',
+      title: '농구',
+    },
+  ];
 
   return (
     <View style={styles.mainContainer}>
-      <Text style={{color: isDark ? '#fff' : '#000'}}>sports</Text>
+      <RealTimeTrend tagAndTitles={tagAndTitles} />
     </View>
-  )
+  );
 }
 
-const getStyles = (isDark) => ({
+const getStyles = isDark => ({
   mainContainer: {
     flex: 1,
-    backgroundColor: isDark ? '#202020' : '#fff',
+    backgroundColor: isDark ? '#202020' : '#FAFAFA',
   },
 });

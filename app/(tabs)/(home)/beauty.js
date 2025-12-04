@@ -1,21 +1,39 @@
-import { Text, View, useColorScheme } from 'react-native';
+import { View } from 'react-native';
+import RealTimeTrend from '../../components/realtime-trend';
+import useThemedStyle from '../../hooks/use-themed-style';
 
 export default function Beauty() {
+  const { styles } = useThemedStyle(getStyles);
 
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const styles = getStyles(isDark);
+  const tagAndTitles = [
+    {
+      tag: '뷰티',
+      title: '올리브영',
+    },
+    {
+      tag: '뷰티',
+      title: '롬앤',
+    },
+    {
+      tag: '뷰티',
+      title: '다이소 뷰티템',
+    },
+    {
+      tag: '뷰티',
+      title: '올영 블프',
+    },
+  ];
 
   return (
     <View style={styles.mainContainer}>
-      <Text style={{color: isDark ? '#fff' : '#000'}}>beauty</Text>
+      <RealTimeTrend tagAndTitles={tagAndTitles} />
     </View>
-  )
+  );
 }
 
-const getStyles = (isDark) => ({
+const getStyles = isDark => ({
   mainContainer: {
     flex: 1,
-    backgroundColor: isDark ? '#202020' : '#fff',
+    backgroundColor: isDark ? '#202020' : '#FAFAFA',
   },
 });

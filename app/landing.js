@@ -1,25 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, useRouter } from 'expo-router';
 import { useContext } from 'react';
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  useColorScheme,
-} from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthContext } from './_layout';
+import useThemedStyle from './hooks/use-themed-style';
 
 export default function Landing() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const styles = getStyles(isDark);
+  const { isDark, styles } = useThemedStyle(getStyles);
 
   const { user } = useContext(AuthContext);
-  const isLoggedIn = !!user; // 실제 인증 상태에 따라 변경
+  const isLoggedIn = !!user;
 
   // 로그인 상태 확인
   if (isLoggedIn) {
@@ -47,16 +40,15 @@ export default function Landing() {
       </View>
       <View style={styles.buttonContainer}>
         <Pressable
-          style={styles.loginButton}
-          onPress={() => router.navigate('login')}
+          style={styles.kakaoLoginButton}
+          // 추후 카카오 로그인 연동 필요
+          onPress={() => router.push('/sign-up')}
         >
-          <Text style={styles.loginButtonText}>로그인</Text>
-        </Pressable>
-        <Pressable
-          style={styles.signUpButton}
-          onPress={() => router.navigate('sign-up')}
-        >
-          <Text style={styles.signUpButtonText}>회원가입</Text>
+          <Image
+            source={require('../assets/images/kakao_logo.png')}
+            style={{ width: 15, height: 15 }}
+          />
+          <Text style={styles.kakaoLoginButtonText}>카카오 로그인</Text>
         </Pressable>
       </View>
     </View>
@@ -69,7 +61,7 @@ const getStyles = isDark =>
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: isDark ? '#202020' : '#d9d9d9',
+      backgroundColor: isDark ? '#202020' : '#FCFCFC',
     },
     logoContainer: {
       flex: 6,
@@ -83,45 +75,36 @@ const getStyles = isDark =>
       gap: 9,
     },
     mainText: {
-      color: isDark ? '#FFFFFF' : '#000000',
+      color: isDark ? '#FFFFFF' : '#141414',
       fontSize: 24,
       fontWeight: 'bold',
     },
     subText: {
-      color: isDark ? '#CCCCCC' : '#333333',
+      color: isDark ? '#CCCCCC' : '#141414',
       fontSize: 16,
       fontWeight: 'normal',
     },
     buttonContainer: {
       flex: 2,
+      width: '80%',
       alignItems: 'center',
       paddingTop: 30,
     },
-    loginButton: {
-      width: 250,
-      height: 42,
+    kakaoLoginButton: {
+      marginTop: 30,
+      flexDirection: 'row',
+      width: '100%',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: isDark ? '#CCFF66' : '#FFFFFF',
-      borderRadius: 100,
-      marginBottom: 8,
+      backgroundColor: '#FFEB34',
+      borderRadius: 8,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
     },
-    signUpButton: {
-      width: 250,
-      height: 42,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: isDark ? '#E6E6E6' : '#FFFFFF',
-      borderRadius: 100,
-    },
-    loginButtonText: {
+    kakaoLoginButtonText: {
       color: '#000000',
-      fontSize: 16,
+      fontSize: 15,
       fontWeight: 'bold',
-    },
-    signUpButtonText: {
-      color: '#000000',
-      fontSize: 16,
-      fontWeight: 'bold',
+      marginLeft: 5,
     },
   });

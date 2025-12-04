@@ -9,38 +9,99 @@ import {
   Text,
   TextInput,
   View,
-  useColorScheme,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import instagramLogo from '../assets/images/instagram_logo.png';
+import tictokLogo from '../assets/images/tictok_logo.png';
 import youtubeLogo from '../assets/images/youtube_logo.png';
+import GenderFemaleIcon from '../assets/svgs/signup-gender-female-icon';
+import GenderMaleIcon from '../assets/svgs/signup-gender-male-icon';
+import RemoveChannelIcon from '../assets/svgs/signup-remove-channel-icon';
+import useThemedStyle from './hooks/use-themed-style';
 
 export default function SignUp() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const styles = getStyles(isDark);
+  const { isDark, styles } = useThemedStyle(getStyles);
 
   const [username, setUsername] = useState(); // 이름
   const [birthday, setBirthday] = useState(); // 생년월일
   const [gender, setGender] = useState(null); // 성별
   const [platform, setPlatform] = useState(null); // 채널 플랫폼
   const [channelId, setChannelId] = useState(''); // 채널 아이디
+  const [isTermModalVisible, setIsTermModalVisible] = useState(true); // 약관 모달 표시 여부
+  const [isAllTermsChecked, setIsAllTermsChecked] = useState(false); // 전체 약관 동의 여부
+  const [isTerm1Checked, setIsTerm1Checked] = useState(false); // 14세 이상 동의 여부
+  const [isTerm2Checked, setIsTerm2Checked] = useState(false); // 서비스 이용 약관 동의 여부
+  const [isTerm3Checked, setIsTerm3Checked] = useState(false); // 개인정보 보호 방침 동의 여부
+  const [isTerm4Checked, setIsTerm4Checked] = useState(false); // 마케팅 수신 동의 여부
   const [isGenderModalVisible, setIsGenderModalVisible] = useState(false); // 성별 선택 모달 표시 여부
   const [isPlatformModalVisible, setPlatformModalVisible] = useState(false); // 플랫폼 선택 모달 표시 여부
 
-  const [step, setStep] = useState(1); // 회원가입 단계 구분
+  // 전체 약관 동의 상태 동기화
+  useEffect(() => {
+    if (isTerm1Checked && isTerm2Checked && isTerm3Checked && isTerm4Checked) {
+      setIsAllTermsChecked(true);
+    } else {
+      setIsAllTermsChecked(false);
+    }
+  }, [isTerm1Checked, isTerm2Checked, isTerm3Checked, isTerm4Checked]);
+
+  // 회원가입 단계 관리
+  const [step, setStep] = useState(1);
   const handleNextStep = () => {
     if (step < 8) {
       setStep(step + 1);
     }
   };
-  const handlePreviousStep = () => {
-    if (step > 1) {
+  const handleBackStep = () => {
+    if (step > 0) {
       setStep(step - 1);
+    } else {
+      router.back();
     }
   };
+
+  // 채널 정보
+  const [myChannels, setMyChannels] = useState([]); // 채널 목록
+  const [channelInfo, setChannelInfo] = useState({
+    platform: null,
+    interestFields: [],
+    channelId: '',
+  });
+  const handleSelectPlatform = selectedPlatform => {
+    setPlatform(selectedPlatform);
+    setChannelInfo(prevInfo => ({
+      ...prevInfo,
+      platform: selectedPlatform,
+    }));
+  };
+  const addChannel = () => {
+    const newChannelInfo = {
+      platform: platform,
+      interestFields: [...selectedChips],
+      channelId: channelId,
+    };
+    setMyChannels(prev => [...prev, newChannelInfo]);
+    setChannelInfo({
+      platform: null,
+      interestFields: [],
+      channelId: '',
+    });
+    setStep(4);
+    setPlatform(null);
+    setChannelId('');
+    setSelectedChips([]);
+  };
+  const removeChannel = channelId => {
+    const updatedChannels = myChannels.filter(
+      channel => channel.channelId !== channelId,
+    );
+    setMyChannels(updatedChannels);
+  };
+  useEffect(() => {
+    console.log('My Channels:', myChannels);
+  }, [myChannels]);
 
   // 회원가입 완료 후 홈화면으로 이동
   useEffect(() => {
@@ -52,15 +113,50 @@ export default function SignUp() {
     }
   }, [step, router]);
 
+  // 약관 컴포넌트
+  const TermOption = memo(function TermOption({ label, isChecked, onPress }) {
+    return (
+      <View style={styles.termOption}>
+        <Pressable onPress={onPress}>
+          <Ionicons
+            name="checkmark-circle"
+            size={24}
+            color={
+              isChecked
+                ? isDark
+                  ? '#CCFF66'
+                  : '#C6E945'
+                : isDark
+                  ? '#B7B7B7'
+                  : '#B7B7B7'
+            }
+          />
+        </Pressable>
+        <View>
+          <Text
+            style={{ color: isDark ? '#FAFAFA' : '#141414', marginLeft: 10 }}
+          >
+            {label}
+          </Text>
+          {label === '모두 동의' && (
+            <Text style={styles.termOptionSubText}>
+              약관 및 개인정보보호방침, 마케팅 수신에 동의합니다.
+            </Text>
+          )}
+        </View>
+      </View>
+    );
+  });
+
   // 관심분야 선택 칩 컴포넌트
   const chipOptions = [
     '일상/밈',
-    '뷰티',
     '게임',
     '패션',
     '음악',
-    '스포츠',
+    '뷰티',
     '반려동물',
+    '스포츠',
   ];
   const Chip = memo(function Chip({ label, isSelected, onPress }) {
     return (
@@ -77,7 +173,7 @@ export default function SignUp() {
     );
   });
 
-  // 관심분야 선택 칩 상태 관리
+  // 선택 칩 상태 관리
   const [selectedChips, setSelectedChips] = useState([]);
   const toggle = useCallback(
     option => {
@@ -88,6 +184,11 @@ export default function SignUp() {
           setSelectedChips([...selectedChips, option]);
         }
       }
+
+      setChannelInfo(prevInfo => ({
+        ...prevInfo,
+        interestFields: selectedChips,
+      }));
     },
     [selectedChips],
   );
@@ -99,27 +200,8 @@ export default function SignUp() {
         { paddingTop: insets.top, paddingBottom: insets.bottom },
       ]}
     >
-      {/* 헤더 */}
-      <View style={styles.header}>
-        <Pressable
-          onPress={() => {
-            if (step === 1) {
-              router.back();
-            } else {
-              handlePreviousStep();
-            }
-          }}
-        >
-          <Ionicons
-            name="chevron-back"
-            size={24}
-            color={isDark ? '#FAFAFA' : '#000000'}
-          />
-        </Pressable>
-      </View>
-
       {/* 바디 */}
-      <View style={{ flex: 17 }}>
+      <View style={{ flex: 15 }}>
         {/* 회원가입 단계별 문구 */}
         <View
           style={[
@@ -150,7 +232,7 @@ export default function SignUp() {
           >
             {/* 이름 */}
             <View style={{ display: step >= 1 && step <= 3 ? 'flex' : 'none' }}>
-              <Text style={styles.inputTitle}>이름 또는 닉네임</Text>
+              <Text style={styles.inputTitle}>이름 (최대 10글자)</Text>
               <TextInput
                 style={styles.nameInputForm}
                 value={username}
@@ -163,8 +245,6 @@ export default function SignUp() {
               <Text style={styles.inputTitle}>생년월일 (8자리)</Text>
               <TextInput
                 style={styles.birthdayInputForm}
-                placeholder="1990.01.01"
-                placeholderTextColor={isDark ? '#A5A5A5' : '#000000'}
                 value={birthday}
                 onChangeText={setBirthday}
                 onSubmitEditing={handleNextStep}
@@ -175,60 +255,69 @@ export default function SignUp() {
               <Text style={styles.inputTitle} />
               <View style={styles.genderInputFormContainer}>
                 {gender === null ? (
-                  <Text style={{ color: '#a5a5a5' }}>성별</Text>
+                  <Text style={{ color: isDark ? '#FAFAFA' : '#141414' }}>
+                    성별
+                  </Text>
                 ) : (
-                  <Text style={{ color: isDark ? '#FAFAFA' : '#000000' }}>
+                  <Text style={{ color: isDark ? '#FAFAFA' : '#141414' }}>
                     {gender}
                   </Text>
                 )}
                 <Pressable onPress={() => setIsGenderModalVisible(true)}>
-                  <Ionicons name="chevron-down" size={24} color="#a5a5a5" />
+                  <Ionicons
+                    name="chevron-down"
+                    size={24}
+                    color={isDark ? '#FAFAFA' : '#141414'}
+                  />
                 </Pressable>
               </View>
             </View>
             {/* 채널 플랫폼 */}
-            <View style={{ display: step >= 4 && step <= 7 ? 'flex' : 'none' }}>
+            <View
+              style={{
+                display: step >= 4 && step <= 7 ? 'flex' : 'none',
+              }}
+            >
               <Text style={styles.inputTitle}>채널 플랫폼</Text>
               <View style={styles.platformInputFormContainer}>
                 {platform === null ? (
-                  <Text style={{ color: isDark ? '#FAFAFA' : '#000000' }}>
+                  <Text style={{ color: isDark ? '#FAFAFA' : '#141414' }}>
                     채널 플랫폼 선택
                   </Text>
                 ) : (
-                  <Text style={{ color: isDark ? '#FAFAFA' : '#000000' }}>
+                  <Text style={{ color: isDark ? '#FAFAFA' : '#141414' }}>
                     {platform}
                   </Text>
                 )}
                 <Pressable
                   onPress={() => {
                     setPlatformModalVisible(true);
+                    setChannelInfo({
+                      ...channelInfo,
+                      platform: platform,
+                    });
                   }}
                 >
-                  <Ionicons name="chevron-down" size={24} color="#FAFAFA" />
+                  <Ionicons
+                    name="chevron-down"
+                    size={24}
+                    color={isDark ? '#FAFAFA' : '#141414'}
+                  />
                 </Pressable>
               </View>
             </View>
             {/* 관심 분야 */}
             <View style={{ display: step >= 5 && step <= 7 ? 'flex' : 'none' }}>
-              <Text style={styles.inputTitle}>
-                관심 분야 ( 중복 가능 / 최대 3가지 선택 )
-              </Text>
+              <Text style={styles.inputTitle}>관심 분야 ( 중복 가능 )</Text>
               <View style={styles.interestFieldOptionContainer}>
                 {chipOptions.map(option => (
                   <Chip
                     key={option}
                     label={option}
-                    isSelected={
-                      selectedChips.length === 0 ||
-                      selectedChips.includes(option)
-                    }
+                    isSelected={selectedChips.includes(option)}
                     onPress={() => toggle(option)}
                   />
                 ))}
-                <Pressable onPress={() => handleNextStep()}>
-                  {/* 임의 버튼: 추후 수정 */}
-                  <Ionicons name="chevron-forward" size={20} color="#FAFAFA" />
-                </Pressable>
               </View>
             </View>
             {/* 채널 아이디 */}
@@ -236,10 +325,16 @@ export default function SignUp() {
               <Text style={styles.inputTitle}>채널 아이디</Text>
               <TextInput
                 style={styles.channelIdInputForm}
-                placeholder="@Krzipsa"
-                placeholderTextColor={isDark ? '#A5A5A5' : '#000000'}
+                placeholder="@크집사"
+                placeholderTextColor={isDark ? '#A5A5A5' : '#B7B7B7'}
                 value={channelId}
-                onChangeText={setChannelId}
+                onChangeText={text => {
+                  setChannelId(text);
+                  setChannelInfo(prev => ({
+                    ...prev,
+                    channelId: text,
+                  }));
+                }}
                 onSubmitEditing={handleNextStep}
               />
             </View>
@@ -251,22 +346,59 @@ export default function SignUp() {
                 styles.addChannelButton,
                 { display: step === 7 ? 'flex' : 'none' },
               ]}
+              onPress={() => {
+                addChannel();
+              }}
             >
               <Ionicons
                 name="add"
                 size={24}
-                color={isDark ? '#FAFAFA' : '#000000'}
+                color={isDark ? '#FAFAFA' : '#141414'}
               />
               <Text
                 style={{
                   fontSize: 12,
                   fontWeight: 'normal',
-                  color: isDark ? '#FAFAFA' : '#000000',
+                  color: isDark ? '#FAFAFA' : '#141414',
                 }}
               >
                 채널 추가
               </Text>
             </Pressable>
+          </View>
+          {/* 채널 추가 정보 */}
+          <View
+            style={{
+              display: step >= 4 && step <= 7 ? 'flex' : 'none',
+              position: 'absolute',
+              flexDirection: 'column-reverse',
+              width: '100%',
+              bottom: 20,
+            }}
+          >
+            {myChannels && (
+              <View style={styles.addChannelContainer}>
+                {myChannels.map((channel, index) => (
+                  <View
+                    key={channel.channelId ?? index}
+                    style={styles.addedChannelBox}
+                  >
+                    <Text style={styles.addChannelText}>
+                      {channel.channelId}
+                    </Text>
+                    <Pressable
+                      style={styles.removeChannelButton}
+                      onPress={() => removeChannel(channel.channelId)}
+                    >
+                      <RemoveChannelIcon
+                        color={isDark ? '#FAFAFA' : '#141414'}
+                      />
+                      <Text style={styles.removeChannelButtonText}>삭제</Text>
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
+            )}
           </View>
           {/* 가입 완료 */}
           <View
@@ -282,24 +414,88 @@ export default function SignUp() {
             <Ionicons
               name="checkmark-circle-outline"
               size={100}
-              color="#CCFF66"
+              color="#C6E945"
             />
           </View>
         </View>
-        {/* 정보 확인 버튼 */}
-        <View>
-          <Pressable
-            style={[
-              styles.confirmButton,
-              { display: step === 7 ? 'flex' : 'none' },
-            ]}
-            onPress={() => handleNextStep()}
-          >
-            <Text style={styles.confirmButtonText}>확인했어요</Text>
+      </View>
+      {/* 푸터 */}
+      {step <= 7 && (
+        <View style={styles.footerContainer}>
+          <Pressable style={styles.backButton} onPress={() => handleBackStep()}>
+            <Text style={styles.backButtonText}>뒤로가기</Text>
+          </Pressable>
+          <Pressable style={styles.nextButton} onPress={() => handleNextStep()}>
+            <Text style={styles.nextButtonText}>다음</Text>
           </Pressable>
         </View>
-      </View>
-
+      )}
+      {/* 약관 모달 */}
+      <Modal
+        visible={isTermModalVisible}
+        transparent={true}
+        animationType="slide"
+        statusBarTranslucent={true}
+        onRequestClose={() => setIsTermModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View
+            style={[
+              styles.modalContainer,
+              { paddingBottom: insets.bottom + 53 },
+            ]}
+          >
+            <Text style={styles.modalText}>약관에 동의해주세요</Text>
+            <View style={styles.termModalOptionContainer}>
+              <TermOption
+                label="모두 동의"
+                isChecked={isAllTermsChecked}
+                onPress={() => {
+                  setIsAllTermsChecked(!isAllTermsChecked);
+                  setIsTerm1Checked(!isAllTermsChecked);
+                  setIsTerm2Checked(!isAllTermsChecked);
+                  setIsTerm3Checked(!isAllTermsChecked);
+                  setIsTerm4Checked(!isAllTermsChecked);
+                }}
+              />
+              <View
+                style={{
+                  height: 0.5,
+                  marginVertical: 10,
+                  backgroundColor: isDark ? '#F4F2F2' : '#1B1B1B',
+                  width: 'calc(100% - 32px)',
+                }}
+              />
+              <TermOption
+                label="(필수) 만 14세 이상이에요"
+                isChecked={isTerm1Checked}
+                onPress={() => setIsTerm1Checked(!isTerm1Checked)}
+              />
+              <TermOption
+                label="(필수) 서비스 이용 약관 동의"
+                isChecked={isTerm2Checked}
+                onPress={() => setIsTerm2Checked(!isTerm2Checked)}
+              />
+              <TermOption
+                label="(필수) 개인정보 보호 방침 동의"
+                isChecked={isTerm3Checked}
+                onPress={() => setIsTerm3Checked(!isTerm3Checked)}
+              />
+              <TermOption
+                label="(선택) 마케팅 수신 동의"
+                isChecked={isTerm4Checked}
+                onPress={() => setIsTerm4Checked(!isTerm4Checked)}
+              />
+            </View>
+            <Pressable
+              style={styles.termConfirmButton}
+              onPress={() => setIsTermModalVisible(false)}
+            >
+              <Text style={styles.termConfirmButtonText}>동의합니다.</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       {/* 성별 선택 모달 */}
       <Modal
         visible={isGenderModalVisible}
@@ -308,7 +504,10 @@ export default function SignUp() {
         statusBarTranslucent={true}
         onRequestClose={() => setIsGenderModalVisible(false)}
       >
-        <View style={styles.modalBackground}>
+        <Pressable
+          style={styles.modalBackground}
+          onPress={() => setIsGenderModalVisible(false)}
+        >
           <View
             style={[
               styles.modalContainer,
@@ -322,19 +521,26 @@ export default function SignUp() {
                   styles.genderModalOption,
                   gender === '남성' && {
                     borderWidth: 0.5,
-                    borderColor: '#FAFAFA',
+                    borderColor: isDark ? '#FAFAFA' : '#CCFF66',
                   },
                   gender === '여성' && styles.dimmedOption,
                 ]}
                 onPress={() => {
                   setGender('남성');
-                  setTimeout(() => {
-                    setIsGenderModalVisible(false);
-                    handleNextStep();
-                  }, 300);
                 }}
               >
-                <Ionicons name="male" size={80} color="#CCFF66" />
+                <GenderMaleIcon
+                  size={80}
+                  color={
+                    gender === '여성'
+                      ? isDark
+                        ? '#CCFF66'
+                        : '#7A7C71'
+                      : isDark
+                        ? '#CCFF66'
+                        : '#C6E945'
+                  }
+                />
                 <Text style={styles.modalOptionText}>남성</Text>
               </Pressable>
               <Pressable
@@ -342,24 +548,31 @@ export default function SignUp() {
                   styles.genderModalOption,
                   gender === '여성' && {
                     borderWidth: 0.5,
-                    borderColor: '#FAFAFA',
+                    borderColor: isDark ? '#FAFAFA' : '#CCFF66',
                   },
                   gender === '남성' && styles.dimmedOption,
                 ]}
                 onPress={() => {
                   setGender('여성');
-                  setTimeout(() => {
-                    setIsGenderModalVisible(false);
-                    handleNextStep();
-                  }, 300);
                 }}
               >
-                <Ionicons name="female" size={80} color="#CCFF66" />
+                <GenderFemaleIcon
+                  size={80}
+                  color={
+                    gender === '남성'
+                      ? isDark
+                        ? '#CCFF66'
+                        : '#7A7C71'
+                      : isDark
+                        ? '#CCFF66'
+                        : '#C6E945'
+                  }
+                />
                 <Text style={styles.modalOptionText}>여성</Text>
               </Pressable>
             </View>
           </View>
-        </View>
+        </Pressable>
       </Modal>
       {/* 플랫폼 선택 모달 */}
       <Modal
@@ -369,7 +582,10 @@ export default function SignUp() {
         statusBarTranslucent={true}
         onRequestClose={() => setPlatformModalVisible(false)}
       >
-        <View style={styles.modalBackground}>
+        <Pressable
+          style={styles.modalBackground}
+          onPress={() => setPlatformModalVisible(false)}
+        >
           <View
             style={[
               styles.modalContainer,
@@ -383,17 +599,13 @@ export default function SignUp() {
                   styles.platformModalOption,
                   platform === '인스타그램' && {
                     borderWidth: 0.5,
-                    borderColor: '#FAFAFA',
+                    borderColor: isDark ? '#E3FFAB' : '#CCFF66',
                   },
                   !(platform === null || platform === '인스타그램') &&
                     styles.dimmedOption,
                 ]}
                 onPress={() => {
-                  setPlatform('인스타그램');
-                  setTimeout(() => {
-                    setPlatformModalVisible(false);
-                    handleNextStep();
-                  }, 300);
+                  handleSelectPlatform('인스타그램');
                 }}
               >
                 <Image
@@ -407,17 +619,13 @@ export default function SignUp() {
                   styles.platformModalOption,
                   platform === '유튜브' && {
                     borderWidth: 0.5,
-                    borderColor: '#FAFAFA',
+                    borderColor: isDark ? '#E3FFAB' : '#CCFF66',
                   },
                   !(platform === null || platform === '유튜브') &&
                     styles.dimmedOption,
                 ]}
                 onPress={() => {
-                  setPlatform('유튜브');
-                  setTimeout(() => {
-                    setPlatformModalVisible(false);
-                    handleNextStep();
-                  }, 300);
+                  handleSelectPlatform('유튜브');
                 }}
               >
                 <Image source={youtubeLogo} style={{ width: 40, height: 40 }} />
@@ -428,45 +636,21 @@ export default function SignUp() {
                   styles.platformModalOption,
                   platform === '틱톡' && {
                     borderWidth: 0.5,
-                    borderColor: '#FAFAFA',
+                    borderColor: isDark ? '#E3FFAB' : '#CCFF66',
                   },
                   !(platform === null || platform === '틱톡') &&
                     styles.dimmedOption,
                 ]}
                 onPress={() => {
-                  setPlatform('틱톡');
-                  setTimeout(() => {
-                    setPlatformModalVisible(false);
-                    handleNextStep();
-                  }, 300);
+                  handleSelectPlatform('틱톡');
                 }}
               >
                 <Image source={tictokLogo} style={{ width: 40, height: 40 }} />
                 <Text style={styles.modalOptionText}>Tictok</Text>
               </Pressable>
-              <Pressable
-                style={[
-                  styles.platformModalOption,
-                  platform === '기타 플랫폼' && {
-                    borderWidth: 0.5,
-                    borderColor: '#FAFAFA',
-                  },
-                  !(platform === null || platform === '기타 플랫폼') &&
-                    styles.dimmedOption,
-                ]}
-                onPress={() => {
-                  setPlatform('기타 플랫폼');
-                  setTimeout(() => {
-                    setPlatformModalVisible(false);
-                    handleNextStep();
-                  }, 300);
-                }}
-              >
-                <Text style={styles.modalOptionText}>기타 플랫폼</Text>
-              </Pressable>
             </View>
           </View>
-        </View>
+        </Pressable>
       </Modal>
     </View>
   );
@@ -476,50 +660,44 @@ const getStyles = isDark =>
   StyleSheet.create({
     signUpContainer: {
       flex: 1,
-      backgroundColor: isDark ? '#202020' : '#d9d9d9',
-    },
-    header: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'flex-start',
-      paddingLeft: 16,
-      marginBottom: 36,
+      backgroundColor: isDark ? '#202020' : '#FCFCFC',
     },
     titleContainer: {
       flex: 2,
+      marginTop: 100,
+      marginBottom: 40,
       paddingLeft: 16,
     },
     titleText: {
-      color: isDark ? '#FAFAFA' : '#000000',
+      color: isDark ? '#FAFAFA' : '#141414',
       fontSize: 20,
       fontWeight: 'normal',
     },
     formContainer: {
       position: 'relative',
-      width: 380,
-      paddingLeft: 16,
+      paddingHorizontal: 16,
       flexDirection: 'column-reverse',
       justifyContent: 'flex-end',
       gap: 40,
     },
     inputTitle: {
-      color: isDark ? '#FAFAFA' : '#000000',
+      color: isDark ? '#FAFAFA' : '#141414',
       fontSize: 12,
-      fontWeight: 'lighter',
+      fontWeight: '100',
     },
     nameInputForm: {
       height: 42,
       paddingLeft: 3,
       borderBottomWidth: 0.5,
-      borderBottomColor: isDark ? '#FAFAFA' : '#000000',
-      color: isDark ? '#FAFAFA' : '#000000',
+      borderBottomColor: isDark ? '#FAFAFA' : '#141414',
+      color: isDark ? '#FAFAFA' : '#141414',
     },
     birthdayInputForm: {
       height: 42,
       paddingLeft: 3,
       borderBottomWidth: 0.5,
-      borderBottomColor: isDark ? '#FAFAFA' : '#000000',
-      color: isDark ? '#FAFAFA' : '#000000',
+      borderBottomColor: isDark ? '#FAFAFA' : '#141414',
+      color: isDark ? '#FAFAFA' : '#141414',
     },
     genderInputFormContainer: {
       flexDirection: 'row',
@@ -528,8 +706,8 @@ const getStyles = isDark =>
       height: 42,
       paddingLeft: 3,
       borderBottomWidth: 0.5,
-      color: isDark ? '#FAFAFA' : '#000000',
-      borderBottomColor: isDark ? '#FAFAFA' : '#000000',
+      color: isDark ? '#FAFAFA' : '#141414',
+      borderBottomColor: isDark ? '#FAFAFA' : '#141414',
     },
     modalBackground: {
       flex: 1,
@@ -540,16 +718,32 @@ const getStyles = isDark =>
     modalContainer: {
       justifyContent: 'flex-start',
       alignItems: 'flex-start',
-      backgroundColor: isDark ? '#141414' : '#ffffff',
+      backgroundColor: isDark ? '#141414' : '#FAFAFA',
       borderTopLeftRadius: 24,
       borderTopRightRadius: 24,
       paddingTop: 34,
       paddingLeft: 16,
     },
     modalText: {
-      color: isDark ? '#FAFAFA' : '#000000',
+      color: isDark ? '#FAFAFA' : '#141414',
       fontSize: 20,
       fontWeight: 'lighter',
+    },
+    termModalOptionContainer: {
+      width: '100%',
+      paddingRight: 16,
+      marginTop: 25,
+      gap: 10,
+    },
+    termOption: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    termOptionSubText: {
+      color: isDark ? '#FAFAFA' : '#141414',
+      marginLeft: 10,
+      fontSize: 12,
+      fontWeight: '100',
     },
     genderModalOptionContainer: {
       width: '100%',
@@ -566,7 +760,7 @@ const getStyles = isDark =>
       gap: 25,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: isDark ? '#323232' : '#FFFFFF',
+      backgroundColor: isDark ? '#323232' : '#F4F2F2',
       borderRadius: 16,
       shadowOpacity: 0.15,
       boxShadow: '0px 0px 15px rgba(255, 255, 255, 0.15)',
@@ -575,7 +769,7 @@ const getStyles = isDark =>
       opacity: 0.3,
     },
     modalOptionText: {
-      color: isDark ? '#FAFAFA' : '#000000',
+      color: isDark ? '#FAFAFA' : '#141414',
       fontSize: 18,
       fontWeight: 'normal',
     },
@@ -586,7 +780,7 @@ const getStyles = isDark =>
       height: 42,
       paddingLeft: 3,
       borderBottomWidth: 0.5,
-      borderColor: isDark ? '#FAFAFA' : '#000000',
+      borderColor: isDark ? '#FAFAFA' : '#141414',
     },
     platformModalOptionContainer: {
       width: '100%',
@@ -601,10 +795,9 @@ const getStyles = isDark =>
       flexDirection: 'row',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      backgroundColor: isDark ? '#323232' : '#FFFFFF',
+      backgroundColor: isDark ? '#323232' : '#F4F2F2',
       borderRadius: 16,
       shadowOpacity: 0.15,
-      boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.15)',
       paddingLeft: 24,
       gap: 10,
     },
@@ -612,47 +805,50 @@ const getStyles = isDark =>
       flexDirection: 'row',
       flexWrap: 'wrap',
       borderBottomWidth: 0.5,
-      borderBottomColor: isDark ? '#FAFAFA' : '#000000',
+      borderBottomColor: isDark ? '#FAFAFA' : '#141414',
       gap: 12,
       paddingVertical: 20,
     },
     baseChip: {
-      height: 20,
-      paddingHorizontal: 23,
+      height: 30,
+      paddingVertical: 5,
+      paddingHorizontal: 10,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: isDark ? 'rgba(211, 211, 211, 0.3)' : '#A7A7A7',
-      borderRadius: 100,
-      borderWidth: 0.5,
-      borderColor: 'rgba(167, 167, 167, 0.3)',
+      backgroundColor: isDark ? '#323232' : '#E6E6E6',
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: isDark ? '#FAFAFA' : '#141414',
       boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.1)',
     },
     baseChipText: {
-      color: '#202020',
-      fontSize: 12,
+      color: isDark ? '#FAFAFA' : '#141414',
+      fontSize: 14,
       fontWeight: 'normal',
     },
     selectedChip: {
-      height: 20,
-      paddingHorizontal: 23,
+      height: 30,
+      paddingVertical: 5,
+      paddingHorizontal: 10,
       justifyContent: 'center',
       alignItems: 'center',
-      borderColor: '#CCFF66',
-      borderWidth: 0.5,
+      borderColor: isDark ? '#CCFF66' : '#141414',
+      borderWidth: 1,
       borderRadius: 16,
       boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.1)',
+      backgroundColor: isDark ? null : '#CCFF66',
     },
     selectedChipText: {
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: 'normal',
-      color: '#CCFF66',
+      color: isDark ? '#CCFF66' : '#141414',
     },
     channelIdInputForm: {
       height: 42,
       paddingLeft: 3,
       borderBottomWidth: 0.5,
-      borderBottomColor: isDark ? '#FAFAFA' : '#000000',
-      color: isDark ? '#FAFAFA' : '#000000',
+      borderBottomColor: isDark ? '#FAFAFA' : '#141414',
+      color: isDark ? '#FAFAFA' : '#141414',
     },
     addChannelButton: {
       width: 120,
@@ -666,23 +862,60 @@ const getStyles = isDark =>
       gap: 5,
       borderWidth: 0.5,
       borderRadius: 4,
-      borderColor: isDark ? '#FAFAFA' : '#000000',
+      borderColor: isDark ? '#FAFAFA' : '#141414',
     },
-    confirmButton: {
-      width: 380,
+    addChannelContainer: {
+      width: '90%',
+      gap: 10,
+      justifyContent: 'center',
+      alignSelf: 'center',
+    },
+    addedChannelBox: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 15,
       height: 60,
-      position: 'absolute',
-      bottom: 15,
+      borderRadius: 4,
+      borderWidth: 0.5,
+      borderColor: isDark ? '#FAFAFA' : '#141414',
+    },
+    addChannelText: {
+      fontSize: 12,
+      fontWeight: 'normal',
+      color: isDark ? '#FAFAFA' : '#141414',
+    },
+    removeChannelButton: {
+      width: 70,
+      height: 35,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 8,
+      borderWidth: 0.5,
+      borderRadius: 4,
+      borderColor: isDark ? '#FAFAFA' : '#141414',
+      paddingHorizontal: 10,
+    },
+    removeChannelButtonText: {
+      fontSize: 12,
+      color: isDark ? '#FAFAFA' : '#141414',
+    },
+    termConfirmButton: {
+      width: '100%',
+      height: 40,
       justifyContent: 'center',
       alignSelf: 'center',
       alignItems: 'center',
-      backgroundColor: '#CCFF66',
-      borderRadius: 8,
+      backgroundColor: '#C6E945',
+      borderRadius: 100,
+      marginTop: 30,
+      marginRight: 16,
     },
-    confirmButtonText: {
-      fontSize: 24,
+    termConfirmButtonText: {
+      fontSize: 16,
       fontWeight: 'bold',
-      color: isDark ? '#202020' : '#FFFFFF',
+      color: '#000000',
     },
     completedContainer: {
       flex: 17,
@@ -695,6 +928,39 @@ const getStyles = isDark =>
       paddingTop: 180,
       fontSize: 20,
       fontWeight: 'normal',
-      color: isDark ? '#FAFAFA' : '#000000',
+      color: isDark ? '#FAFAFA' : '#141414',
+    },
+    footerContainer: {
+      flex: 1,
+      flexDirection: 'row',
+      marginHorizontal: 16,
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 8,
+    },
+    backButton: {
+      width: '30%',
+      height: 40,
+      backgroundColor: '#E6E6E6',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 100,
+    },
+    backButtonText: {
+      fontSize: 14,
+      color: '#000000',
+    },
+    nextButton: {
+      width: '65%',
+      height: 40,
+      backgroundColor: '#CCFF66',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 100,
+    },
+    nextButtonText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: '#000000',
     },
   });
