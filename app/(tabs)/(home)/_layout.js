@@ -15,6 +15,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import instagramLogo from '../../../assets/images/instagram_logo.png';
 import tictokLogo from '../../../assets/images/tictok_logo.png';
 import youtubeLogo from '../../../assets/images/youtube_logo.png';
+import AlarmIcon from '../../../assets/svgs/home-alarm-icon';
+import SearchIcon from '../../../assets/svgs/home-search-icon';
 
 const { Navigator } = createMaterialTopTabNavigator();
 export const MaterialTopTabs = withLayoutContext(Navigator);
@@ -112,20 +114,10 @@ export default function HomeLayout() {
         {/* 검색 알림 아이콘 */}
         <View style={styles.iconContainer}>
           <Pressable>
-            <Ionicons
-              name="search-outline"
-              size={24}
-              color={isDark ? '#FAFAFA' : '#141414'}
-              style={styles.icon}
-            />
+            <SearchIcon size={24} color={isDark ? '#FAFAFA' : '#141414'} />
           </Pressable>
           <Pressable>
-            <Ionicons
-              name="notifications-outline"
-              size={24}
-              color={isDark ? '#FAFAFA' : '#141414'}
-              style={styles.icon}
-            />
+            <AlarmIcon size={24} color={isDark ? '#FAFAFA' : '#141414'} />
           </Pressable>
         </View>
       </View>
