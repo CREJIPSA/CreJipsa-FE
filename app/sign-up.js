@@ -9,20 +9,18 @@ import {
   Text,
   TextInput,
   View,
-  useColorScheme,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import instagramLogo from '../assets/images/instagram_logo.png';
 import tictokLogo from '../assets/images/tictok_logo.png';
 import youtubeLogo from '../assets/images/youtube_logo.png';
 import RemoveChannelIcon from '../assets/svgs/signup-remove-channel-icon';
+import useThemedStyle from './hooks/use-themed-style';
 
 export default function SignUp() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const styles = getStyles(isDark);
+  const { isDark, styles } = useThemedStyle(getStyles);
 
   const [username, setUsername] = useState(); // 이름
   const [birthday, setBirthday] = useState(); // 생년월일

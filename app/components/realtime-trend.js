@@ -1,7 +1,8 @@
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
-import { Dimensions, Image, Text, useColorScheme, View } from 'react-native';
+import { Dimensions, Image, Text, View } from 'react-native';
 import Svg, { ClipPath, Defs, Path, Image as SvgImage } from 'react-native-svg';
+import useThemedStyle from '../hooks/use-themed-style';
 
 const images = {
   trendRank1Image: require('../../assets/images/trend_rank1.png'),
@@ -193,9 +194,7 @@ const RealTimeTrendCard = ({
 };
 
 const RealTimeTrend = ({ tagAndTitles }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const styles = getStyles(isDark);
+  const { styles } = useThemedStyle(getStyles);
 
   // (임시) 현재 시간을 마지막 업데이트로 설정
   const lastUpdateTime = format(new Date(), 'yyyy년 MM월 dd일 HH:mm');

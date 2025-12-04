@@ -1,10 +1,9 @@
-import { View, useColorScheme } from 'react-native';
+import { View } from 'react-native';
 import RealTimeTrend from '../../components/realtime-trend';
+import useThemedStyle from '../../hooks/use-themed-style';
 
 export default function DailyMeme() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const styles = getStyles(isDark);
+  const { styles } = useThemedStyle(getStyles);
 
   {
     /* 실시간 트렌드 더미 데이터  */

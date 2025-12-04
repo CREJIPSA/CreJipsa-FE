@@ -3,20 +3,14 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { Image } from 'expo-image';
 import { withLayoutContext } from 'expo-router';
 import { useState } from 'react';
-import {
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  useColorScheme,
-} from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import instagramLogo from '../../../assets/images/instagram_logo.png';
 import tictokLogo from '../../../assets/images/tictok_logo.png';
 import youtubeLogo from '../../../assets/images/youtube_logo.png';
 import AlarmIcon from '../../../assets/svgs/home-alarm-icon';
 import SearchIcon from '../../../assets/svgs/home-search-icon';
+import useThemedStyle from '../../hooks/use-themed-style';
 
 const { Navigator } = createMaterialTopTabNavigator();
 export const MaterialTopTabs = withLayoutContext(Navigator);
@@ -24,9 +18,7 @@ export const MaterialTopTabs = withLayoutContext(Navigator);
 export default function HomeLayout() {
   const insets = useSafeAreaInsets();
 
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const styles = getStyles(isDark);
+  const { isDark, styles } = useThemedStyle(getStyles);
 
   // 플랫폼 선택
   const platformOptions = [

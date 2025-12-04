@@ -1,9 +1,8 @@
-import { StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import useThemedStyle from '../hooks/use-themed-style';
 
 const TrendKeywordCard = ({ icon, data }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const styles = getStyles(isDark);
+  const { styles } = useThemedStyle(getStyles);
 
   return (
     <View style={styles.trendKeywordCard}>

@@ -4,15 +4,13 @@ import TabMyIcon from '@/assets/svgs/tab-my-icon';
 import TabSearchIcon from '@/assets/svgs/tab-search-icon';
 import TabStoryboardIcon from '@/assets/svgs/tab-storyboard-icon';
 import { Tabs } from 'expo-router';
-import { Text, useColorScheme, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useThemedStyle from '../hooks/use-themed-style';
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const styles = getStyles(isDark);
-
+  const { isDark, styles } = useThemedStyle(getStyles);
   // 탭바 아이콘 컴포넌트
   function TabBarIcon({ name, focused }) {
     const fill = focused ? styles.focusedColor : styles.unFocusedColor;
