@@ -54,11 +54,6 @@ export default function SignUp() {
       setStep(step + 1);
     }
   };
-  const handlePreviousStep = () => {
-    if (step > 1) {
-      setStep(step - 1);
-    }
-  };
   const handleBackStep = () => {
     if (step > 0) {
       setStep(step - 1);
@@ -205,25 +200,6 @@ export default function SignUp() {
         { paddingTop: insets.top, paddingBottom: insets.bottom },
       ]}
     >
-      {/* 헤더 */}
-      <View style={styles.header}>
-        <Pressable
-          onPress={() => {
-            if (step === 1) {
-              router.back();
-            } else {
-              handlePreviousStep();
-            }
-          }}
-        >
-          <Ionicons
-            name="chevron-back"
-            size={24}
-            color={isDark ? '#FAFAFA' : '#000000'}
-          />
-        </Pressable>
-      </View>
-
       {/* 바디 */}
       <View style={{ flex: 15 }}>
         {/* 회원가입 단계별 문구 */}
@@ -291,7 +267,7 @@ export default function SignUp() {
                   <Ionicons
                     name="chevron-down"
                     size={24}
-                    color={isDark ? '#A5A5A5' : '#141414'}
+                    color={isDark ? '#FAFAFA' : '#141414'}
                   />
                 </Pressable>
               </View>
@@ -686,15 +662,10 @@ const getStyles = isDark =>
       flex: 1,
       backgroundColor: isDark ? '#202020' : '#FCFCFC',
     },
-    header: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'flex-start',
-      paddingLeft: 16,
-      marginBottom: 36,
-    },
     titleContainer: {
       flex: 2,
+      marginTop: 100,
+      marginBottom: 40,
       paddingLeft: 16,
     },
     titleText: {
