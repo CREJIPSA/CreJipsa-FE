@@ -14,6 +14,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import instagramLogo from '../assets/images/instagram_logo.png';
 import tictokLogo from '../assets/images/tictok_logo.png';
 import youtubeLogo from '../assets/images/youtube_logo.png';
+import GenderFemaleIcon from '../assets/svgs/signup-gender-female-icon';
+import GenderMaleIcon from '../assets/svgs/signup-gender-male-icon';
 import RemoveChannelIcon from '../assets/svgs/signup-remove-channel-icon';
 import useThemedStyle from './hooks/use-themed-style';
 
@@ -124,7 +126,15 @@ export default function SignUp() {
           <Ionicons
             name="checkmark-circle"
             size={24}
-            color={isChecked ? '#CCFF66' : '#F4F2F2'}
+            color={
+              isChecked
+                ? isDark
+                  ? '#CCFF66'
+                  : '#C6E945'
+                : isDark
+                  ? '#B7B7B7'
+                  : '#B7B7B7'
+            }
           />
         </Pressable>
         <View>
@@ -269,14 +279,20 @@ export default function SignUp() {
               <Text style={styles.inputTitle} />
               <View style={styles.genderInputFormContainer}>
                 {gender === null ? (
-                  <Text style={{ color: '#a5a5a5' }}>성별</Text>
+                  <Text style={{ color: isDark ? '#FAFAFA' : '#141414' }}>
+                    성별
+                  </Text>
                 ) : (
                   <Text style={{ color: isDark ? '#FAFAFA' : '#141414' }}>
                     {gender}
                   </Text>
                 )}
                 <Pressable onPress={() => setIsGenderModalVisible(true)}>
-                  <Ionicons name="chevron-down" size={24} color="#a5a5a5" />
+                  <Ionicons
+                    name="chevron-down"
+                    size={24}
+                    color={isDark ? '#A5A5A5' : '#141414'}
+                  />
                 </Pressable>
               </View>
             </View>
@@ -306,7 +322,11 @@ export default function SignUp() {
                     });
                   }}
                 >
-                  <Ionicons name="chevron-down" size={24} color="#FAFAFA" />
+                  <Ionicons
+                    name="chevron-down"
+                    size={24}
+                    color={isDark ? '#FAFAFA' : '#141414'}
+                  />
                 </Pressable>
               </View>
             </View>
@@ -418,7 +438,7 @@ export default function SignUp() {
             <Ionicons
               name="checkmark-circle-outline"
               size={100}
-              color="#CCFF66"
+              color="#C6E945"
             />
           </View>
         </View>
@@ -525,7 +545,7 @@ export default function SignUp() {
                   styles.genderModalOption,
                   gender === '남성' && {
                     borderWidth: 0.5,
-                    borderColor: '#FAFAFA',
+                    borderColor: isDark ? '#FAFAFA' : '#CCFF66',
                   },
                   gender === '여성' && styles.dimmedOption,
                 ]}
@@ -533,7 +553,18 @@ export default function SignUp() {
                   setGender('남성');
                 }}
               >
-                <Ionicons name="male" size={80} color="#CCFF66" />
+                <GenderMaleIcon
+                  size={80}
+                  color={
+                    gender === '여성'
+                      ? isDark
+                        ? '#CCFF66'
+                        : '#7A7C71'
+                      : isDark
+                        ? '#CCFF66'
+                        : '#C6E945'
+                  }
+                />
                 <Text style={styles.modalOptionText}>남성</Text>
               </Pressable>
               <Pressable
@@ -541,7 +572,7 @@ export default function SignUp() {
                   styles.genderModalOption,
                   gender === '여성' && {
                     borderWidth: 0.5,
-                    borderColor: '#FAFAFA',
+                    borderColor: isDark ? '#FAFAFA' : '#CCFF66',
                   },
                   gender === '남성' && styles.dimmedOption,
                 ]}
@@ -549,7 +580,18 @@ export default function SignUp() {
                   setGender('여성');
                 }}
               >
-                <Ionicons name="female" size={80} color="#CCFF66" />
+                <GenderFemaleIcon
+                  size={80}
+                  color={
+                    gender === '남성'
+                      ? isDark
+                        ? '#CCFF66'
+                        : '#7A7C71'
+                      : isDark
+                        ? '#CCFF66'
+                        : '#C6E945'
+                  }
+                />
                 <Text style={styles.modalOptionText}>여성</Text>
               </Pressable>
             </View>
@@ -581,7 +623,7 @@ export default function SignUp() {
                   styles.platformModalOption,
                   platform === '인스타그램' && {
                     borderWidth: 0.5,
-                    borderColor: '#FAFAFA',
+                    borderColor: isDark ? '#E3FFAB' : '#CCFF66',
                   },
                   !(platform === null || platform === '인스타그램') &&
                     styles.dimmedOption,
@@ -601,7 +643,7 @@ export default function SignUp() {
                   styles.platformModalOption,
                   platform === '유튜브' && {
                     borderWidth: 0.5,
-                    borderColor: '#FAFAFA',
+                    borderColor: isDark ? '#E3FFAB' : '#CCFF66',
                   },
                   !(platform === null || platform === '유튜브') &&
                     styles.dimmedOption,
@@ -618,7 +660,7 @@ export default function SignUp() {
                   styles.platformModalOption,
                   platform === '틱톡' && {
                     borderWidth: 0.5,
-                    borderColor: '#FAFAFA',
+                    borderColor: isDark ? '#E3FFAB' : '#CCFF66',
                   },
                   !(platform === null || platform === '틱톡') &&
                     styles.dimmedOption,
@@ -747,7 +789,7 @@ const getStyles = isDark =>
       gap: 25,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: isDark ? '#323232' : '#FAFAFA',
+      backgroundColor: isDark ? '#323232' : '#F4F2F2',
       borderRadius: 16,
       shadowOpacity: 0.15,
       boxShadow: '0px 0px 15px rgba(255, 255, 255, 0.15)',
@@ -782,10 +824,9 @@ const getStyles = isDark =>
       flexDirection: 'row',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      backgroundColor: isDark ? '#323232' : '#FAFAFA',
+      backgroundColor: isDark ? '#323232' : '#F4F2F2',
       borderRadius: 16,
       shadowOpacity: 0.15,
-      boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.15)',
       paddingLeft: 24,
       gap: 10,
     },
@@ -853,7 +894,6 @@ const getStyles = isDark =>
       borderColor: isDark ? '#FAFAFA' : '#141414',
     },
     addChannelContainer: {
-      marginBottom: 30,
       width: '90%',
       gap: 10,
       justifyContent: 'center',
@@ -896,7 +936,7 @@ const getStyles = isDark =>
       justifyContent: 'center',
       alignSelf: 'center',
       alignItems: 'center',
-      backgroundColor: '#CCFF66',
+      backgroundColor: '#C6E945',
       borderRadius: 100,
       marginTop: 30,
       marginRight: 16,
