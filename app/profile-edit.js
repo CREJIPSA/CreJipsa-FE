@@ -1,14 +1,7 @@
+import useThemedStyle from '@/app/hooks/use-themed-style';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
-import {
-  Alert,
-  Image,
-  Pressable,
-  ScrollView,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AddIcon from '../assets/svgs/add.svg';
 import DeleteIcon from '../assets/svgs/delete.svg';
@@ -17,9 +10,7 @@ import InterestTag from './components/profile-edit/InterestTag';
 import MyInterestTag from './components/profile-edit/MyInterestTag';
 
 export default function ProfileEdit() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const styles = getStyles(isDark);
+  const { isDark, styles } = useThemedStyle(getStyles);
 
   const nickname = '혜안';
   const [profileImage, setProfileImage] = useState(null);
