@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
-import DeleteModal from '../components/DeleteModal.js';
+import DeleteModal from '../components/profile-edit/DeleteModal.js';
 
 export default function My() {
   const [pushEnabled, setPushEnabled] = useState(true);

@@ -3,14 +3,18 @@ import { useState } from 'react';
 import {
   Alert,
   Image,
+  Pressable,
   ScrollView,
   Text,
-  TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Svg, { Circle, ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
+import AddIcon from '../assets/svgs/add.svg';
+import DeleteIcon from '../assets/svgs/delete.svg';
+import EditIcon from '../assets/svgs/edit.svg';
+import InterestTag from './components/profile-edit/InterestTag';
+import MyInterestTag from './components/profile-edit/MyInterestTag';
 
 export default function ProfileEdit() {
   const colorScheme = useColorScheme();
@@ -19,6 +23,30 @@ export default function ProfileEdit() {
 
   const nickname = '혜안';
   const [profileImage, setProfileImage] = useState(null);
+
+  const myChannels = [
+    {
+      type: 'youtube',
+      id: '@suucong',
+      isMain: true,
+      icon: require('../assets/images/youtube_logo.png'),
+    },
+    {
+      type: 'tiktok',
+      id: '@suucong',
+      isMain: false,
+      icon: require('../assets/images/tiktok_logo.png'),
+    },
+    {
+      type: 'instagram',
+      id: '@suucong',
+      isMain: false,
+      icon: require('../assets/images/instagram_logo.png'),
+    },
+  ];
+
+  const allInterests = ['일상/밈', '게임', '패션', '음악', '뷰티', '반려동물'];
+  const myInterests = ['일상/밈', '게임', '패션'];
 
   const pickImage = async () => {
     const permissionResult =
@@ -50,43 +78,74 @@ export default function ProfileEdit() {
               source={require('../assets/images/profile.png')}
               style={styles.avatar}
             />
-            <TouchableOpacity style={styles.editButton} onPress={pickImage}>
-              <Svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <G clipPath="url(#clip0_1046_3548)">
-                  <Circle cx="12" cy="12" r="12" fill="#959595" />
-                  <Path
-                    d="M5.21729 17.7971C5.21729 18.5335 5.81424 19.1304 6.55062 19.1304H7.64626C7.99989 19.1304 8.33903 18.99 8.58907 18.7399L18.1875 9.14154C18.7082 8.62081 18.7081 7.77655 18.1874 7.25586L17.0915 6.16012C16.5708 5.63947 15.7266 5.6395 15.2059 6.16019L5.60779 15.7587C5.35776 16.0087 5.21729 16.3478 5.21729 16.7014V17.7971Z"
-                    fill="#454545"
-                  />
-                  <Path
-                    d="M13.1677 8.19861L16.149 11.1799L13.1677 8.19861Z"
-                    fill="#454545"
-                  />
-                  <Path
-                    d="M13.1677 8.19861L16.149 11.1799"
-                    stroke="black"
-                    strokeWidth="0.666667"
-                    strokeLinejoin="round"
-                  />
-                </G>
-                <Defs>
-                  <ClipPath id="clip0_1046_3548">
-                    <Rect width="24" height="24" fill="white" />
-                  </ClipPath>
-                </Defs>
-              </Svg>
-            </TouchableOpacity>
+            <Pressable style={styles.editButton} onPress={pickImage}>
+              <EditIcon />
+            </Pressable>
           </View>
           <Text style={styles.name}>{nickname}</Text>
         </View>
-
-        {/* 여기에 다음 단계에서 섹션들 추가 */}
+        <View style={styles.infoSection}>
+          <View style={styles.boxContainer}>
+            <View style={styles.rowContainer}>
+              <Text style={styles.boxTitleText}>내 채널 정보</Text>
+              <AddIcon />
+            </View>
+            <View style={styles.channelContainer}>
+              {myChannels.map((channel, index) => (
+                <View key={index} style={styles.rowContainer}>
+                  <View style={styles.channel}>
+                    <Image
+                      source={channel.icon}
+                      style={styles.channelLogoImage}
+                    />
+                    <Text style={styles.detailText}>{channel.id}</Text>
+                    {channel.isMain && (
+                      <View style={styles.defaultChannelLogo}>
+                        <Text style={styles.defaultChannelText}>대표</Text>
+                      </View>
+                    )}
+                  </View>
+                  <DeleteIcon />
+                </View>
+              ))}
+            </View>
+          </View>
+          <View style={styles.boxContainer}>
+            <View style={styles.myInfoContainer}>
+              <Text style={styles.boxTitleText}>생년월일</Text>
+              <Text style={styles.detailText}>2000.00.00</Text>
+            </View>
+            <View style={styles.myInfoContainer}>
+              <Text style={styles.boxTitleText}>성별</Text>
+              <Text style={styles.detailText}>여성</Text>
+            </View>
+          </View>
+          <View style={styles.boxContainer}>
+            <View style={styles.interestHeaderContainer}>
+              <Text style={styles.boxTitleText}>관심분야</Text>
+              <View style={styles.myInterestTagContainer}>
+                {myInterests.map((tag, index) => (
+                  <MyInterestTag
+                    key={index}
+                    label={tag}
+                    onRemove={() => console.log(`${tag} 삭제`)}
+                    isDark={isDark}
+                  />
+                ))}
+              </View>
+            </View>
+            <View style={styles.interestTagContainer}>
+              {allInterests.map((tag, index) => (
+                <InterestTag
+                  key={index}
+                  label={tag}
+                  onClick={() => console.log(`${tag} 추가`)}
+                  isDark={isDark}
+                />
+              ))}
+            </View>
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -102,11 +161,10 @@ const getStyles = isDark => {
     safeAreaBg: colors.background,
 
     container: {
-      paddingHorizontal: 24,
+      paddingHorizontal: 16,
       paddingTop: 32,
       paddingBottom: 40,
       backgroundColor: colors.background,
-      flex: 1,
     },
     title: {
       fontSize: 20,
@@ -128,7 +186,7 @@ const getStyles = isDark => {
       width: 120,
       height: 120,
       borderRadius: 60,
-      backgroundColor: '#fff',
+      backgroundColor: '#cccccc',
     },
     editButton: {
       position: 'absolute',
@@ -138,9 +196,81 @@ const getStyles = isDark => {
       height: 28,
     },
     name: {
-      fontSize: 22,
+      fontSize: 20,
       fontWeight: '700',
       color: colors.textColor,
+    },
+    infoSection: {
+      borderRadius: 20,
+      marginTop: 16,
+      gap: 20,
+    },
+    boxContainer: {
+      backgroundColor: '#F4F2F2',
+      borderRadius: 16,
+      paddingVertical: 20,
+      paddingHorizontal: 16,
+      gap: 20,
+    },
+    rowContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    boxTitleText: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.textColor,
+    },
+    channelContainer: {
+      gap: 20,
+    },
+    channel: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
+    detailText: {
+      fontSize: 16,
+      fontWeight: 500,
+    },
+    defaultChannelLogo: {
+      borderWidth: 1.5,
+      borderColor: '#A3CC52',
+      paddingHorizontal: 8,
+      borderRadius: 99,
+      gap: 10,
+    },
+    defaultChannelText: {
+      fontSize: 12,
+      color: '#A3CC52',
+      fontWeight: 500,
+    },
+    channelLogoImage: {
+      width: 20,
+      height: 20,
+    },
+    myInfoContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 16,
+    },
+    interestHeaderContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 13,
+    },
+    myInterestTagContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 7,
+    },
+    interestTagContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flexWrap: 'wrap',
+      rowGap: 12,
+      columnGap: 10,
     },
   };
 };
