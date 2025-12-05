@@ -394,7 +394,6 @@ const getStyles = isDark => {
       justifyContent: 'center',
       marginTop: 35,
       flexDirection: 'row',
-      justifyItems: 'center',
       alignContent: 'center',
       gap: 30,
     },

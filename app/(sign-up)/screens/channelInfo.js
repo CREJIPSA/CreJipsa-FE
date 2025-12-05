@@ -306,7 +306,7 @@ export default function ChannelInfo() {
                 }}
               >
                 <Image source={tiktokLogo} style={{ width: 40, height: 40 }} />
-                <Text style={styles.modalOptionText}>Tiktok</Text>
+                <Text style={styles.modalOptionText}>TikTok</Text>
               </Pressable>
             </View>
           </View>
