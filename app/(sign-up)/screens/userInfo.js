@@ -1,7 +1,7 @@
 import GenderFemaleIcon from '@/assets/svgs/signup-gender-female-icon';
 import GenderMaleIcon from '@/assets/svgs/signup-gender-male-icon';
 import { Ionicons } from '@expo/vector-icons';
-import { useContext, useState } from 'react';
+import { memo, useContext, useEffect, useState } from 'react';
 import {
   Modal,
   Pressable,
@@ -19,6 +19,57 @@ export default function UserInfo() {
   const { isDark, styles } = useThemedStyle(getStyles);
   const { step, form, updateForm, handleNextStep } = useContext(StepContext);
   const [isGenderModalVisible, setIsGenderModalVisible] = useState(false);
+  const [isTermModalVisible, setIsTermModalVisible] = useState(true); // 약관 모달 표시 여부
+  const [isAllTermsChecked, setIsAllTermsChecked] = useState(false); // 전체 약관 동의 여부
+  const [isTerm1Checked, setIsTerm1Checked] = useState(false); // 14세 이상 동의 여부
+  const [isTerm2Checked, setIsTerm2Checked] = useState(false); // 서비스 이용 약관 동의 여부
+  const [isTerm3Checked, setIsTerm3Checked] = useState(false); // 개인정보 보호 방침 동의 여부
+  const [isTerm4Checked, setIsTerm4Checked] = useState(false); // 마케팅 수신 동의 여부
+  const [isTermConfirmed, setIsTermConfirmed] = useState(true); // 약관 동의 확인 여부
+
+  // 전체 약관 동의 상태 동기화
+  useEffect(() => {
+    if (isTerm1Checked && isTerm2Checked && isTerm3Checked && isTerm4Checked) {
+      setIsAllTermsChecked(true);
+    } else {
+      setIsAllTermsChecked(false);
+    }
+  }, [isTerm1Checked, isTerm2Checked, isTerm3Checked, isTerm4Checked]);
+
+  // 약관 컴포넌트
+  const TermOption = memo(function TermOption({ label, isChecked, onPress }) {
+    return (
+      <View style={styles.termOption}>
+        <Pressable onPress={onPress}>
+          <Ionicons
+            name="checkmark-circle"
+            size={24}
+            color={
+              isChecked
+                ? isDark
+                  ? '#CCFF66'
+                  : '#C6E945'
+                : isDark
+                  ? '#B7B7B7'
+                  : '#B7B7B7'
+            }
+          />
+        </Pressable>
+        <View>
+          <Text
+            style={{ color: isDark ? '#FAFAFA' : '#141414', marginLeft: 10 }}
+          >
+            {label}
+          </Text>
+          {label === '모두 동의' && (
+            <Text style={styles.termOptionSubText}>
+              약관 및 개인정보보호방침, 마케팅 수신에 동의합니다.
+            </Text>
+          )}
+        </View>
+      </View>
+    );
+  });
 
   return (
     <View style={styles.formContainer}>
@@ -79,6 +130,93 @@ export default function UserInfo() {
           onSubmitEditing={handleNextStep}
         />
       </View>
+      {/* 약관 모달 */}
+      <Modal
+        visible={isTermModalVisible}
+        transparent={true}
+        animationType="slide"
+        statusBarTranslucent={true}
+        onRequestClose={() => setIsTermModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View
+            style={[
+              styles.modalContainer,
+              { paddingBottom: insets.bottom + 53 },
+            ]}
+          >
+            <Text style={styles.modalText}>약관에 동의해주세요</Text>
+            <View style={styles.termModalOptionContainer}>
+              <TermOption
+                label="모두 동의"
+                isChecked={isAllTermsChecked}
+                onPress={() => {
+                  setIsAllTermsChecked(!isAllTermsChecked);
+                  setIsTerm1Checked(!isAllTermsChecked);
+                  setIsTerm2Checked(!isAllTermsChecked);
+                  setIsTerm3Checked(!isAllTermsChecked);
+                  setIsTerm4Checked(!isAllTermsChecked);
+                }}
+              />
+              <View
+                style={{
+                  height: 0.5,
+                  marginVertical: 10,
+                  backgroundColor: isDark ? '#F4F2F2' : '#1B1B1B',
+                  alignSelf: 'stretch',
+                  marginRight: 16,
+                }}
+              />
+              <TermOption
+                label="(필수) 만 14세 이상이에요"
+                isChecked={isTerm1Checked}
+                onPress={() => setIsTerm1Checked(!isTerm1Checked)}
+              />
+              <TermOption
+                label="(필수) 서비스 이용 약관 동의"
+                isChecked={isTerm2Checked}
+                onPress={() => setIsTerm2Checked(!isTerm2Checked)}
+              />
+              <TermOption
+                label="(필수) 개인정보 보호 방침 동의"
+                isChecked={isTerm3Checked}
+                onPress={() => setIsTerm3Checked(!isTerm3Checked)}
+              />
+              <TermOption
+                label="(선택) 마케팅 수신 동의"
+                isChecked={isTerm4Checked}
+                onPress={() => setIsTerm4Checked(!isTerm4Checked)}
+              />
+              {!isTermConfirmed && (
+                // 필수 약관 미동의 시 경고 문구 표시(추후 수정)
+                <Text
+                  style={{
+                    color: 'red',
+                    fontStyle: 'italic',
+                    justifyContent: 'center',
+                    marginTop: 10,
+                  }}
+                >
+                  필수 약관에 모두 동의해 주세요.
+                </Text>
+              )}
+            </View>
+            <Pressable
+              style={styles.termConfirmButton}
+              onPress={() => {
+                if (isTerm1Checked && isTerm2Checked && isTerm3Checked) {
+                  setIsTermModalVisible(false);
+                  setIsTermConfirmed(true);
+                } else {
+                  setIsTermConfirmed(false);
+                }
+              }}
+            >
+              <Text style={styles.termConfirmButtonText}>동의합니다.</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       {/* 성별 선택 모달 */}
       <Modal
         visible={isGenderModalVisible}
@@ -218,6 +356,38 @@ const getStyles = isDark => {
     },
     dimmedOption: {
       opacity: 0.3,
+    },
+    termModalOptionContainer: {
+      width: '100%',
+      paddingRight: 16,
+      marginTop: 25,
+      gap: 10,
+    },
+    termOption: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    termOptionSubText: {
+      color: isDark ? '#FAFAFA' : '#141414',
+      marginLeft: 10,
+      fontSize: 12,
+      fontWeight: '100',
+    },
+    termConfirmButton: {
+      width: '100%',
+      height: 40,
+      justifyContent: 'center',
+      alignSelf: 'center',
+      alignItems: 'center',
+      backgroundColor: isDark ? '#CCFF66' : '#C6E945',
+      borderRadius: 100,
+      marginTop: 30,
+      marginRight: 16,
+    },
+    termConfirmButtonText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: '#000000',
     },
     genderModalOptionContainer: {
       width: '100%',

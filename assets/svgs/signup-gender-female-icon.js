@@ -1,9 +1,10 @@
 import Svg, { Path } from 'react-native-svg';
 
 export default function SignupGenderFemaleIcon({ size, color }) {
+  const aspectRatio = 49 / 79;
   return (
     <Svg
-      width={size}
+      width={size * aspectRatio}
       height={size}
       viewBox="0 0 49 79"
       fill="none"
