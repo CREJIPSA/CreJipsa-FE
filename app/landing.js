@@ -42,7 +42,7 @@ export default function Landing() {
         <Pressable
           style={styles.kakaoLoginButton}
           // 추후 카카오 로그인 연동 필요
-          onPress={() => router.push('/sign-up')}
+          onPress={() => router.push('/(sign-up)')}
         >
           <Image
             source={require('../assets/images/kakao_logo.png')}
