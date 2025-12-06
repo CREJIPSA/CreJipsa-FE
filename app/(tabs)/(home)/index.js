@@ -1,17 +1,10 @@
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  useColorScheme,
-} from 'react-native';
+import useThemedStyle from '@/app/hooks/use-themed-style';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import RealTimeTrend from '../../components/realtime-trend';
 import TrendKeywordCard from '../../components/trend-keyword-card';
 
 export default function Home() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const styles = getStyles(isDark);
+  const { styles } = useThemedStyle(getStyles);
 
   {
     /* 실시간 트렌드 */
@@ -203,20 +196,19 @@ export default function Home() {
       <View style={styles.sectionHeader}>
         <Text style={styles.titleText}>트렌드 리포트</Text>
       </View>
-      {fieldData.map(fieldData => (
-        <View key={fieldData.field}>
+      {fieldData.map(field => (
+        <View key={field.field}>
           <View style={styles.fieldSectionHeader}>
             <Text style={styles.fieldText}>
-              이번주{' '}
-              <Text style={{ fontWeight: 'bold' }}>{fieldData.field}</Text>{' '}
+              이번주 <Text style={{ fontWeight: 'bold' }}>{field.field}</Text>{' '}
               분야의 트렌드 추천
             </Text>
           </View>
           {/* FlexWrap Layout */}
           <View style={styles.trendReportCardContainer}>
             {/* 트렌드 키워드 카드 매핑 */}
-            {fieldData.data.map((data, index) => (
-              <TrendKeywordCard key={index} icon={fieldData.icon} data={data} />
+            {field.data.map((data, index) => (
+              <TrendKeywordCard key={index} icon={field.icon} data={data} />
             ))}
           </View>
         </View>

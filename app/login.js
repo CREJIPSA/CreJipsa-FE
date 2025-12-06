@@ -7,18 +7,16 @@ import {
   Text,
   TextInput,
   View,
-  useColorScheme,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import kakaoLogo from '../assets/images/kakao_logo.png';
 import { AuthContext } from './_layout';
+import useThemedStyle from './hooks/use-themed-style';
 
 export default function Login() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const styles = getStyles(isDark);
+  const { isDark, styles } = useThemedStyle(getStyles);
   const [userId, setUserId] = useState('');
   const [userPw, setUserPw] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -148,7 +146,7 @@ const getStyles = isDark =>
     authOptionsText: {
       color: isDark ? '#FAFAFA' : '#000000',
       fontSize: 14,
-      fontWeight: 'lighter',
+      fontWeight: '100',
     },
     buttonContainer: {
       flex: 1,

@@ -1,10 +1,9 @@
 import RealTimeTrend from '@/app/components/realtime-trend';
-import { View, useColorScheme } from 'react-native';
+import { View } from 'react-native';
+import useThemedStyle from '../../hooks/use-themed-style';
 
 export default function Fashion() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const styles = getStyles(isDark);
+  const { styles } = useThemedStyle(getStyles);
 
   const tagAndTitles = [
     {
