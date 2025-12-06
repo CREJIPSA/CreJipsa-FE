@@ -10,7 +10,7 @@ import InterestTag from './components/profile-edit/InterestTag';
 import MyInterestTag from './components/profile-edit/MyInterestTag';
 
 export default function ProfileEdit() {
-  const { isDark, styles, colors } = useThemedStyle(getStyles);
+  const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
 
   const nickname = '혜안';
   const [profileImage, setProfileImage] = useState(null);
@@ -84,8 +84,8 @@ export default function ProfileEdit() {
             <View style={styles.rowContainer}>
               <Text style={styles.boxTitleText}>내 채널 정보</Text>
               <AddIcon
-                fillColor={colors.pointColor}
-                color={colors.iconPrimaryColor}
+                fillColor={primaryColors.pointColor}
+                color={primaryColors.iconPrimaryColor}
                 isDark={isDark}
               />
             </View>
@@ -104,7 +104,7 @@ export default function ProfileEdit() {
                       </View>
                     )}
                   </View>
-                  <DeleteIcon color={colors.color} />
+                  <DeleteIcon color={primaryColors.color} />
                 </View>
               ))}
             </View>
