@@ -146,7 +146,7 @@ const getStyles = isDark =>
     authOptionsText: {
       color: isDark ? '#FAFAFA' : '#000000',
       fontSize: 14,
-      fontWeight: 'lighter',
+      fontWeight: '100',
     },
     buttonContainer: {
       flex: 1,

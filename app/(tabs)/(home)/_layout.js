@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import instagramLogo from '../../../assets/images/instagram_logo.png';
-import tictokLogo from '../../../assets/images/tiktok_logo.png';
+import tiktokLogo from '../../../assets/images/tiktok_logo.png';
 import youtubeLogo from '../../../assets/images/youtube_logo.png';
 import AlarmIcon from '../../../assets/svgs/home-alarm-icon';
 import SearchIcon from '../../../assets/svgs/home-search-icon';
@@ -24,7 +24,7 @@ export default function HomeLayout() {
   const platformOptions = [
     { key: 'youtube', logo: youtubeLogo, name: 'YouTube' },
     { key: 'instagram', logo: instagramLogo, name: 'Instagram' },
-    { key: 'tictok', logo: tictokLogo, name: 'TicTok' },
+    { key: 'tiktok', logo: tiktokLogo, name: 'TikTok' },
   ];
   const [selectedPlatform, setSelectedPlatform] = useState('youtube');
   const [isPlatformDropdownVisible, setIsPlatformDropdownVisible] =
@@ -35,8 +35,8 @@ export default function HomeLayout() {
         return { logo: youtubeLogo, name: 'Youtube' };
       case 'instagram':
         return { logo: instagramLogo, name: 'Instagram' };
-      case 'tictok':
-        return { logo: tictokLogo, name: 'TicTok' };
+      case 'tiktok':
+        return { logo: tiktokLogo, name: 'TikTok' };
       default:
         return { logo: youtubeLogo, name: 'YouTube' };
     }
