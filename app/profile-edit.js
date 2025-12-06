@@ -228,7 +228,7 @@ const getStyles = isDark => {
     },
     detailText: {
       lineHeight: 16,
-      fontWeight: 500,
+      fontWeight: '500',
       color: colors.textColor,
     },
     defaultChannelLogo: {
@@ -241,7 +241,7 @@ const getStyles = isDark => {
     defaultChannelText: {
       fontSize: 12,
       color: '#A3CC52',
-      fontWeight: 500,
+      fontWeight: '500',
     },
     channelLogoImage: {
       width: 20,
