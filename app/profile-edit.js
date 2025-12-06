@@ -91,20 +91,22 @@ export default function ProfileEdit() {
             </View>
             <View style={styles.channelContainer}>
               {myChannels.map((channel, index) => (
-                <View key={index} style={styles.rowContainer}>
-                  <View style={styles.channel}>
-                    <Image
-                      source={channel.icon}
-                      style={styles.channelLogoImage}
-                    />
-                    <Text style={styles.detailText}>{channel.id}</Text>
-                    {channel.isMain && (
-                      <View style={styles.defaultChannelLogo}>
-                        <Text style={styles.defaultChannelText}>대표</Text>
-                      </View>
-                    )}
+                <View key={index} style={styles.channelRowContainer}>
+                  <View style={styles.rowContainer}>
+                    <View style={styles.channel}>
+                      <Image
+                        source={channel.icon}
+                        style={styles.channelLogoImage}
+                      />
+                      <Text style={styles.detailText}>{channel.id}</Text>
+                      {channel.isMain && (
+                        <View style={styles.defaultChannelLogo}>
+                          <Text style={styles.defaultChannelText}>대표</Text>
+                        </View>
+                      )}
+                    </View>
+                    <DeleteIcon color={primaryColors.color} />
                   </View>
-                  <DeleteIcon color={primaryColors.color} />
                 </View>
               ))}
             </View>
@@ -150,27 +152,23 @@ export default function ProfileEdit() {
   );
 }
 
-const getStyles = isDark => {
-  const colors = {
-    background: isDark ? '#202020' : '#FCFCFC',
-    textColor: isDark ? 'white' : 'black',
-    boxColor: isDark ? '#323232' : '#F4F2F2',
-  };
+const getStyles = (isDark, primaryColors) => {
+  const boxColor = isDark ? '#323232' : '#F4F2F2';
 
   return {
-    safeAreaBg: colors.background,
+    safeAreaBg: primaryColors.background,
 
     container: {
       paddingHorizontal: 16,
       paddingTop: 32,
       paddingBottom: 40,
-      backgroundColor: colors.background,
+      backgroundColor: primaryColors.background,
     },
     title: {
       fontSize: 20,
       fontWeight: '700',
       marginBottom: 32,
-      color: colors.textColor,
+      color: primaryColors.color,
     },
     profileSection: {
       alignItems: 'center',
@@ -178,27 +176,27 @@ const getStyles = isDark => {
       gap: 20,
     },
     avatarContainer: {
-      width: 120,
-      height: 120,
+      width: 130,
+      height: 130,
       position: 'relative',
     },
     avatar: {
-      width: 120,
-      height: 120,
+      width: 130,
+      height: 130,
       borderRadius: 60,
       backgroundColor: '#cccccc',
     },
     editButton: {
       position: 'absolute',
       top: 0,
-      left: 120,
+      left: 130,
       width: 28,
       height: 28,
     },
     name: {
       fontSize: 20,
       fontWeight: '700',
-      color: colors.textColor,
+      color: primaryColors.color,
     },
     infoSection: {
       borderRadius: 20,
@@ -206,7 +204,7 @@ const getStyles = isDark => {
       gap: 20,
     },
     boxContainer: {
-      backgroundColor: colors.boxColor,
+      backgroundColor: boxColor,
       borderRadius: 16,
       paddingVertical: 20,
       paddingHorizontal: 16,
@@ -220,10 +218,14 @@ const getStyles = isDark => {
     boxTitleText: {
       fontSize: 18,
       fontWeight: '700',
-      color: colors.textColor,
+      color: primaryColors.color,
     },
     channelContainer: {
       gap: 20,
+    },
+    channelRowContainer: {
+      flexDirection: 'column',
+      gap: 8,
     },
     channel: {
       flexDirection: 'row',
@@ -231,9 +233,10 @@ const getStyles = isDark => {
       gap: 6,
     },
     detailText: {
-      lineHeight: 16,
+      fontSize: 16,
+      lineHeight: 24,
       fontWeight: '500',
-      color: colors.textColor,
+      color: primaryColors.color,
     },
     defaultChannelLogo: {
       borderWidth: 1.5,
