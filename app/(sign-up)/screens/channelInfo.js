@@ -1,7 +1,7 @@
-import instagramLogo from '@/assets/images/instagram_logo.png';
-import tiktokLogo from '@/assets/images/tiktok_logo.png';
-import youtubeLogo from '@/assets/images/youtube_logo.png';
-import RemoveChannelIcon from '@/assets/svgs/signup-remove-channel-icon.js';
+import instagramLogo from '@/assets/images/platform_logo/instagram_logo.png';
+import tiktokLogo from '@/assets/images/platform_logo/tiktok_logo.png';
+import youtubeLogo from '@/assets/images/platform_logo/youtube_logo.png';
+import RemoveChannelIcon from '@/assets/svgs/signup/remove-channel-icon.js';
 import { Ionicons } from '@expo/vector-icons';
 import { memo, useContext, useEffect, useState } from 'react';
 import {

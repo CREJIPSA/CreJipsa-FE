@@ -1,5 +1,5 @@
-import GenderFemaleIcon from '@/assets/svgs/signup-gender-female-icon';
-import GenderMaleIcon from '@/assets/svgs/signup-gender-male-icon';
+import GenderFemaleIcon from '@/assets/svgs/signup/gender-female-icon';
+import GenderMaleIcon from '@/assets/svgs/signup/gender-male-icon';
 import { Ionicons } from '@expo/vector-icons';
 import { memo, useContext, useEffect, useState } from 'react';
 import {

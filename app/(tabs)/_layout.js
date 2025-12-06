@@ -1,8 +1,8 @@
-import TabFeedIcon from '@/assets/svgs/tab-feed-icon';
-import TabHomeIcon from '@/assets/svgs/tab-home-icon';
-import TabMyIcon from '@/assets/svgs/tab-my-icon';
-import TabSearchIcon from '@/assets/svgs/tab-search-icon';
-import TabStoryboardIcon from '@/assets/svgs/tab-storyboard-icon';
+import TabFeedIcon from '@/assets/svgs/tab_icon/tab-feed-icon';
+import TabHomeIcon from '@/assets/svgs/tab_icon/tab-home-icon';
+import TabMyIcon from '@/assets/svgs/tab_icon/tab-my-icon';
+import TabSearchIcon from '@/assets/svgs/tab_icon/tab-search-icon';
+import TabStoryboardIcon from '@/assets/svgs/tab_icon/tab-storyboard-icon';
 import { Tabs } from 'expo-router';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

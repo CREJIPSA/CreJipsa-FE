@@ -5,10 +5,10 @@ import Svg, { ClipPath, Defs, Path, Image as SvgImage } from 'react-native-svg';
 import useThemedStyle from '../hooks/use-themed-style';
 
 const images = {
-  trendRank1Image: require('../../assets/images/trend_rank1.png'),
-  trendRank2Image: require('../../assets/images/trend_rank2.png'),
-  trendRank3Image: require('../../assets/images/trend_rank3.png'),
-  trendRank4Image: require('../../assets/images/trend_rank4.png'),
+  trendRank1Image: require('../../assets/images/graphic/trend_rank1.png'),
+  trendRank2Image: require('../../assets/images/graphic/trend_rank2.png'),
+  trendRank3Image: require('../../assets/images/graphic/trend_rank3.png'),
+  trendRank4Image: require('../../assets/images/graphic/trend_rank4.png'),
 };
 
 function TrendCard({ width, height, path, children, imageUrl, contentStyle }) {

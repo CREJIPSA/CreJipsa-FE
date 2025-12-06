@@ -5,11 +5,11 @@ import { withLayoutContext } from 'expo-router';
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import instagramLogo from '../../../assets/images/instagram_logo.png';
-import tiktokLogo from '../../../assets/images/tiktok_logo.png';
-import youtubeLogo from '../../../assets/images/youtube_logo.png';
-import AlarmIcon from '../../../assets/svgs/home-alarm-icon';
-import SearchIcon from '../../../assets/svgs/home-search-icon';
+import instagramLogo from '../../../assets/images/platform_logo/instagram_logo.png';
+import tiktokLogo from '../../../assets/images/platform_logo/tiktok_logo.png';
+import youtubeLogo from '../../../assets/images/platform_logo/youtube_logo.png';
+import AlarmIcon from '../../../assets/svgs/home/home-alarm-icon';
+import SearchIcon from '../../../assets/svgs/home/home-search-icon';
 import useThemedStyle from '../../hooks/use-themed-style';
 
 const { Navigator } = createMaterialTopTabNavigator();
