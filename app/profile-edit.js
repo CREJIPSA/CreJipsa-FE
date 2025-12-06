@@ -227,7 +227,7 @@ const getStyles = isDark => {
       gap: 6,
     },
     detailText: {
-      fontSize: 16,
+      lineHeight: 16,
       fontWeight: 500,
       color: colors.textColor,
     },
