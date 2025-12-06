@@ -1,16 +1,16 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
+import AddIcon from '@/assets/svgs/my/add-icon';
+import EditIcon from '@/assets/svgs/my/edit-icon.js';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AddIcon from '../assets/svgs/add.svg';
-import DeleteIcon from '../assets/svgs/delete.svg';
-import EditIcon from '../assets/svgs/edit.svg';
+import DeleteIcon from '../assets/svgs/my/delete-icon.js';
 import InterestTag from './components/profile-edit/InterestTag';
 import MyInterestTag from './components/profile-edit/MyInterestTag';
 
 export default function ProfileEdit() {
-  const { isDark, styles } = useThemedStyle(getStyles);
+  const { isDark, styles, colors } = useThemedStyle(getStyles);
 
   const nickname = '혜안';
   const [profileImage, setProfileImage] = useState(null);
@@ -70,7 +70,7 @@ export default function ProfileEdit() {
               style={styles.avatar}
             />
             <Pressable style={styles.editButton} onPress={pickImage}>
-              <EditIcon />
+              <EditIcon isDark={isDark} />
             </Pressable>
           </View>
           <Text style={styles.name}>{nickname}</Text>
@@ -79,7 +79,11 @@ export default function ProfileEdit() {
           <View style={styles.boxContainer}>
             <View style={styles.rowContainer}>
               <Text style={styles.boxTitleText}>내 채널 정보</Text>
-              <AddIcon />
+              <AddIcon
+                fillColor={colors.pointColor}
+                color={colors.iconPrimaryColor}
+                isDark={isDark}
+              />
             </View>
             <View style={styles.channelContainer}>
               {myChannels.map((channel, index) => (
@@ -96,7 +100,7 @@ export default function ProfileEdit() {
                       </View>
                     )}
                   </View>
-                  <DeleteIcon />
+                  <DeleteIcon color={colors.color} />
                 </View>
               ))}
             </View>
@@ -146,6 +150,7 @@ const getStyles = isDark => {
   const colors = {
     background: isDark ? '#202020' : '#FCFCFC',
     textColor: isDark ? 'white' : 'black',
+    boxColor: isDark ? '#323232' : '#F4F2F2',
   };
 
   return {
@@ -197,7 +202,7 @@ const getStyles = isDark => {
       gap: 20,
     },
     boxContainer: {
-      backgroundColor: '#F4F2F2',
+      backgroundColor: colors.boxColor,
       borderRadius: 16,
       paddingVertical: 20,
       paddingHorizontal: 16,
@@ -224,6 +229,7 @@ const getStyles = isDark => {
     detailText: {
       fontSize: 16,
       fontWeight: 500,
+      color: colors.textColor,
     },
     defaultChannelLogo: {
       borderWidth: 1.5,

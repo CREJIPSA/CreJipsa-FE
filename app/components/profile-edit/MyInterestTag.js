@@ -1,5 +1,5 @@
 import { Pressable, Text } from 'react-native';
-import DeleteIcon from '../../../assets/svgs/delete.svg';
+import DeleteIcon from '../../../assets/svgs/my/delete-icon.js';
 
 export default function MyInterestTag({ label, onRemove, isDark }) {
   const styles = getStyles(isDark);

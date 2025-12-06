@@ -11,9 +11,7 @@ export default function InterestTag({ label, onClick, isDark }) {
 }
 
 const getStyles = isDark => {
-  const colors = {
-    basicColor: isDark ? 'white' : 'black',
-  };
+  const basicColor = isDark ? 'white' : 'black';
 
   return {
     tag: {
@@ -21,11 +19,12 @@ const getStyles = isDark => {
       paddingVertical: 5,
       borderRadius: 20,
       borderWidth: 1,
-      borderColor: colors.basicColor,
+      borderColor: basicColor,
     },
     tagText: {
       fontSize: 14,
       fontWeight: '500',
+      color: basicColor,
     },
   };
 };
