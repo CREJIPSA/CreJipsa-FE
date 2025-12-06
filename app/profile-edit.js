@@ -66,7 +66,11 @@ export default function ProfileEdit() {
         <View style={styles.profileSection}>
           <View style={styles.avatarContainer}>
             <Image
-              source={require('../assets/images/profile.png')}
+              source={
+                profileImage
+                  ? { uri: profileImage }
+                  : require('../assets/images/profile.png')
+              }
               style={styles.avatar}
             />
             <Pressable style={styles.editButton} onPress={pickImage}>
