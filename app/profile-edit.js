@@ -242,12 +242,13 @@ const getStyles = (isDark, primaryColors) => {
     defaultChannelLogo: {
       borderWidth: 1.5,
       borderColor: '#A3CC52',
+      paddingVertical: 4,
       paddingHorizontal: 8,
       borderRadius: 99,
-      gap: 10,
     },
     defaultChannelText: {
       fontSize: 12,
+      lineHeight: 12,
       color: '#A3CC52',
       fontWeight: '500',
     },
