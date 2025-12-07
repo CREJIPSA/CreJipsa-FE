@@ -154,6 +154,7 @@ export default function ProfileEdit() {
 
 const getStyles = (isDark, primaryColors) => {
   const boxColor = isDark ? '#323232' : '#F4F2F2';
+  const AVATAR_SIZE = 130;
 
   return {
     safeAreaBg: primaryColors.background,
@@ -181,15 +182,15 @@ const getStyles = (isDark, primaryColors) => {
       position: 'relative',
     },
     avatar: {
-      width: 130,
-      height: 130,
-      borderRadius: 60,
+      width: AVATAR_SIZE,
+      height: AVATAR_SIZE,
+      borderRadius: AVATAR_SIZE / 2,
       backgroundColor: '#cccccc',
     },
     editButton: {
       position: 'absolute',
       top: 0,
-      left: 130,
+      left: AVATAR_SIZE,
       width: 28,
       height: 28,
     },
