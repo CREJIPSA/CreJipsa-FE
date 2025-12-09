@@ -2,6 +2,7 @@ import useThemedStyle from '@/app/hooks/use-themed-style';
 import Comments from '@/assets/svgs/feed/comment.js';
 import Likes from '@/assets/svgs/feed/like.js';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Fragment } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import RealTimeTrend from '../../components/realtime-trend';
 import TrendKeywordCard from '../../components/trend-keyword-card';
@@ -226,12 +227,12 @@ export default function Home() {
         <View style={styles.latestFeedContents}>
           {/* 최근 피드 콘텐츠 더미 */}
           {latestFeeds.map((feed, index) => (
-            <>
-              <View key={index}>{latestFeed(feed)}</View>
+            <Fragment key={index}>
+              <View>{latestFeed(feed)}</View>
               {index !== latestFeeds.length - 1 && (
                 <View style={styles.divider} />
               )}
-            </>
+            </Fragment>
           ))}
         </View>
       </View>
@@ -328,8 +329,9 @@ const getStyles = isDark => {
     tipTitleContainer: {
       position: 'absolute',
       bottom: 20,
-      left: '50%',
-      transform: [{ translateX: '-50%' }],
+      left: 0,
+      right: 0,
+      alignItems: 'center',
     },
     tipTitleText: {
       fontSize: 24,
