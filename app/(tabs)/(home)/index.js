@@ -1,5 +1,6 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import RealTimeTrend from '../../components/realtime-trend';
 import TrendKeywordCard from '../../components/trend-keyword-card';
 
@@ -20,7 +21,7 @@ export default function Home() {
   ];
 
   {
-    /* 트렌드 리포트 */
+    /* 분야별 트렌드 추천 */
   }
   {
     /* 트렌드 키워드 카드 더미 데이터 */
@@ -101,71 +102,105 @@ export default function Home() {
     return { firstRow, secondRow };
   };
 
+  // 분야별 트렌츠 추천 섹션 렌더링
+  const renderSection = (section, sectionIndex) => {
+    const showTag = Array.isArray(section.items);
+    const { firstRow, secondRow } = splitIntoTwoRows(
+      normalizedTrendData(section),
+    );
+    return (
+      <View key={sectionIndex}>
+        {/* 섹션 헤더 */}
+        <View style={styles.fieldSectionHeader}>
+          <Text style={styles.headerText}>
+            이번주{' '}
+            <Text
+              style={{
+                fontWeight: 'bold',
+                color: isDark ? '#CCFF66' : '#C6E945',
+              }}
+            >
+              {getSectionTitle(section)}
+            </Text>{' '}
+            분야의 트렌드 추천
+          </Text>
+        </View>
+        <View style={styles.trendRecommendContainer}>
+          {/* 첫 번째 스크롤뷰 */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.trendKeywordCardContainer}
+          >
+            {firstRow.map((item, index) => (
+              <TrendKeywordCard
+                key={index}
+                tag={item.tag}
+                title={item.title}
+                showTag={showTag} // 태그 표시 여부
+              />
+            ))}
+          </ScrollView>
+          {/* 두 번째 스크롤뷰 */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.trendKeywordCardContainer}
+          >
+            {secondRow.map((item, index) => (
+              <TrendKeywordCard
+                key={index}
+                tag={item.tag}
+                title={item.title}
+                showTag={showTag} // 태그 표시 여부
+              />
+            ))}
+          </ScrollView>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <ScrollView style={styles.mainContainer}>
       {/* 실시간 트렌드 */}
       <RealTimeTrend rankTrends={rankTrends} />
-      {/* 트렌드 리포트 */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.titleText}>트렌드 리포트</Text>
-      </View>
-      {trendData.map((section, sectionIndex) => {
-        const showTag = Array.isArray(section.items);
-        const { firstRow, secondRow } = splitIntoTwoRows(
-          normalizedTrendData(section),
-        );
-        return (
-          <View key={sectionIndex}>
-            {/* 섹션 헤더 */}
-            <View style={styles.fieldSectionHeader}>
-              <Text style={styles.fieldText}>
-                이번주{' '}
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    color: isDark ? '#CCFF66' : '#C6E945',
-                  }}
-                >
-                  {getSectionTitle(section)}
-                </Text>{' '}
-                분야의 트렌드 추천
-              </Text>
-            </View>
-            <View style={styles.trendRecommendContainer}>
-              {/* 첫 번째 스크롤뷰 */}
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.trendKeywordCardContainer}
-              >
-                {firstRow.map((item, index) => (
-                  <TrendKeywordCard
-                    key={index}
-                    tag={item.tag}
-                    title={item.title}
-                    showTag={showTag} // 태그 표시 여부
-                  />
-                ))}
-              </ScrollView>
-              {/* 두 번째 스크롤뷰 */}
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.trendKeywordCardContainer}
-              >
-                {secondRow.map((item, index) => (
-                  <TrendKeywordCard
-                    key={index}
-                    tag={item.tag}
-                    title={item.title}
-                    showTag={showTag} // 태그 표시 여부
-                  />
-                ))}
-              </ScrollView>
-            </View>
+      {/* 분야별 트렌드 추천 */}
+      {/* 전체 트렌드 추천 */}
+      {renderSection(trendData[0], 0)}
+      {/* 이번주 팁 */}
+      <View style={styles.tipContainer}>
+        <Text style={styles.headerText}>이번주 팁</Text>
+        <View style={styles.tipContent}>
+          <Image
+            source={require('@/assets/images/this_week_tip.png')}
+            style={styles.tipImage}
+          />
+          <LinearGradient
+            colors={['rgba(102, 102, 102, 0.06)', '#252525']}
+            style={styles.tipContentGradient}
+          />
+          <View style={styles.authorContainer}>
+            <Image
+              source={require('@/assets/images/this_week_tip_author.png')}
+              style={styles.authorImage}
+            />
+            <Text style={styles.authorText}>김동률</Text>
           </View>
-        );
-      })}
+          <View style={styles.tipTitleContainer}>
+            <Text style={styles.tipTitleText}>
+              멋진 영상을 촬영하는{'\n'}
+              10가지 방법
+            </Text>
+          </View>
+        </View>
+      </View>
+      {/* 관심분야 트렌드 추천 */}
+      {trendData
+        .slice(1)
+        .map((section, sectionIndex) =>
+          renderSection(section, sectionIndex + 1),
+        )}
     </ScrollView>
   );
 }
@@ -208,7 +243,7 @@ const getStyles = isDark => {
       paddingHorizontal: 16,
       paddingTop: 20,
     },
-    fieldText: {
+    headerText: {
       fontSize: 20,
       color: colors.text,
     },
@@ -219,6 +254,54 @@ const getStyles = isDark => {
     },
     trendKeywordCardContainer: {
       paddingLeft: 16,
+    },
+    tipContainer: {
+      paddingHorizontal: 16,
+      marginBottom: 40,
+      gap: 20,
+    },
+    tipContent: {
+      flex: 1,
+      position: 'relative',
+      borderRadius: 10,
+    },
+    tipImage: {
+      width: '100%',
+    },
+    tipContentGradient: {
+      width: '100%',
+      height: '100%',
+      position: 'absolute',
+    },
+    authorContainer: {
+      flexDirection: 'row',
+      position: 'absolute',
+      top: 20,
+      right: 18,
+      gap: 4,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    authorImage: {
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+    },
+    authorText: {
+      fontSize: 16,
+      color: '#FFFFFF',
+    },
+    tipTitleContainer: {
+      position: 'absolute',
+      bottom: 20,
+      left: '50%',
+      transform: [{ translateX: '-50%' }],
+    },
+    tipTitleText: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#FFFFFF',
+      textAlign: 'center',
     },
   });
 };
