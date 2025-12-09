@@ -1,4 +1,6 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
+import Comments from '@/assets/svgs/feed/comment.js';
+import Likes from '@/assets/svgs/feed/like.js';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import RealTimeTrend from '../../components/realtime-trend';
@@ -7,12 +9,7 @@ import TrendKeywordCard from '../../components/trend-keyword-card';
 export default function Home() {
   const { isDark, styles } = useThemedStyle(getStyles);
 
-  {
-    /* 실시간 트렌드 */
-  }
-  {
-    /* 실시간 트렌드 더미 데이터  */
-  }
+  // 실시간 트렌드 더미 데이터
   const rankTrends = [
     'AOA 짧은 치마',
     '배틀 그라운드',
@@ -20,12 +17,7 @@ export default function Home() {
     '샤넬 챌린지',
   ];
 
-  {
-    /* 분야별 트렌드 추천 */
-  }
-  {
-    /* 트렌드 키워드 카드 더미 데이터 */
-  }
+  // 분야별 트렌드 추천 더미 데이터
   const trendData = [
     {
       items: [
@@ -75,6 +67,14 @@ export default function Home() {
         ],
       },
     },
+  ];
+
+  // 최근 피드 더미 데이터
+  const latestFeeds = [
+    { title: '어도비 프리미어 도와주세요', likes: 120, comments: 45 },
+    { title: '프리미어 영상 미디어가 이상해요', likes: 85, comments: 30 },
+    { title: '혹시 프리미어 쓰시는 분 계신가요?', likes: 60, comments: 15 },
+    { title: '프리미어 임포트', likes: 40, comments: 10 },
   ];
 
   const normalizedTrendData = section => {
@@ -161,6 +161,25 @@ export default function Home() {
     );
   };
 
+  // 최근 피드 컴포넌트
+  const latestFeed = feed => {
+    return (
+      <View style={styles.latestFeed}>
+        <Text style={styles.feedTitleText}>{feed.title}</Text>
+        <View style={styles.feedInfoContainer}>
+          <View style={styles.feedInfo}>
+            <Likes size={12} color={isDark ? '#D3D3D3' : '#666666'} />
+            <Text style={styles.feedInfoText}>{feed.likes}</Text>
+          </View>
+          <View style={styles.feedInfo}>
+            <Comments size={13} color={isDark ? '#D3D3D3' : '#666666'} />
+            <Text style={styles.feedInfoText}>{feed.comments}</Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <ScrollView style={styles.mainContainer}>
       {/* 실시간 트렌드 */}
@@ -201,6 +220,21 @@ export default function Home() {
         .map((section, sectionIndex) =>
           renderSection(section, sectionIndex + 1),
         )}
+      {/* 최근 피드 */}
+      <View style={styles.latestFeedContainer}>
+        <Text style={styles.headerText}>최근 피드</Text>
+        <View style={styles.latestFeedContents}>
+          {/* 최근 피드 콘텐츠 더미 */}
+          {latestFeeds.map((feed, index) => (
+            <>
+              <View key={index}>{latestFeed(feed)}</View>
+              {index !== latestFeeds.length - 1 && (
+                <View style={styles.divider} />
+              )}
+            </>
+          ))}
+        </View>
+      </View>
     </ScrollView>
   );
 }
@@ -302,6 +336,43 @@ const getStyles = isDark => {
       fontWeight: 'bold',
       color: '#FFFFFF',
       textAlign: 'center',
+    },
+    latestFeedContainer: {
+      paddingHorizontal: 16,
+      marginTop: 30,
+      marginBottom: 80,
+    },
+    latestFeedContents: {
+      gap: 16,
+      marginTop: 35,
+    },
+    latestFeed: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    feedTitleText: {
+      fontSize: 14,
+      color: colors.text,
+      marginLeft: 3,
+    },
+    feedInfoContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      gap: 20,
+    },
+    feedInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+    },
+    feedInfoText: {
+      fontSize: 14,
+      color: isDark ? '#D3D3D3' : '#666666',
+    },
+    divider: {
+      height: 1,
+      backgroundColor: isDark ? '#323232' : '#E6E6E6',
     },
   });
 };
