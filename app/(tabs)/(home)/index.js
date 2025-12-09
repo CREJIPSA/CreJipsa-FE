@@ -298,10 +298,13 @@ const getStyles = isDark => {
     tipContent: {
       flex: 1,
       position: 'relative',
+      aspectRatio: 1,
       borderRadius: 10,
     },
     tipImage: {
       width: '100%',
+      height: '100%',
+      resizeMode: 'cover',
     },
     tipContentGradient: {
       width: '100%',
