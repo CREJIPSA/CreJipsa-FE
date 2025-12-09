@@ -5,28 +5,11 @@ import useThemedStyle from '../../hooks/use-themed-style';
 export default function Music() {
   const { styles } = useThemedStyle(getStyles);
 
-  const tagAndTitles = [
-    {
-      tag: '음악',
-      title: '멜론',
-    },
-    {
-      tag: '음악',
-      title: '올데이프로젝트',
-    },
-    {
-      tag: '음악',
-      title: '화사',
-    },
-    {
-      tag: '음악',
-      title: '아이브',
-    },
-  ];
+  const rankTrends = ['멜론', '올데이프로젝트', '화사', '아이브'];
 
   return (
     <View style={styles.mainContainer}>
-      <RealTimeTrend tagAndTitles={tagAndTitles} />
+      <RealTimeTrend rankTrends={rankTrends} />
     </View>
   );
 }

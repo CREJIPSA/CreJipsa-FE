@@ -5,28 +5,11 @@ import useThemedStyle from '../../hooks/use-themed-style';
 export default function Pet() {
   const { styles } = useThemedStyle(getStyles);
 
-  const tagAndTitles = [
-    {
-      tag: '반려동물',
-      title: '고양이',
-    },
-    {
-      tag: '반려동물',
-      title: '고양이',
-    },
-    {
-      tag: '반려동물',
-      title: '킹율',
-    },
-    {
-      tag: '반려동물',
-      title: '우유',
-    },
-  ];
+  const rankTrends = ['고양이', '강아지', '킹율', '우유'];
 
   return (
     <View style={styles.mainContainer}>
-      <RealTimeTrend tagAndTitles={tagAndTitles} />
+      <RealTimeTrend rankTrends={rankTrends} />
     </View>
   );
 }

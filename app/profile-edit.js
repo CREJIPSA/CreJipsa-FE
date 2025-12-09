@@ -20,19 +20,19 @@ export default function ProfileEdit() {
       type: 'youtube',
       id: '@suucong',
       isMain: true,
-      icon: require('../assets/images/youtube_logo.png'),
+      icon: require('../assets/images/platform_logo/youtube_logo.png'),
     },
     {
       type: 'tiktok',
       id: '@suucong',
       isMain: false,
-      icon: require('../assets/images/tiktok_logo.png'),
+      icon: require('../assets/images/platform_logo/tiktok_logo.png'),
     },
     {
       type: 'instagram',
       id: '@suucong',
       isMain: false,
-      icon: require('../assets/images/instagram_logo.png'),
+      icon: require('../assets/images/platform_logo/instagram_logo.png'),
     },
   ];
 

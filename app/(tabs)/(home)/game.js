@@ -5,28 +5,11 @@ import useThemedStyle from '../../hooks/use-themed-style';
 export default function Game() {
   const { styles } = useThemedStyle(getStyles);
 
-  const tagAndTitles = [
-    {
-      tag: '게임',
-      title: '배틀 그라운드',
-    },
-    {
-      tag: '게임',
-      title: '롤',
-    },
-    {
-      tag: '게임',
-      title: '오버워치',
-    },
-    {
-      tag: '게임',
-      title: 'RPG',
-    },
-  ];
+  const rankTrends = ['배틀 그라운드', '롤', '오버워치', 'RPG'];
 
   return (
     <View style={styles.mainContainer}>
-      <RealTimeTrend tagAndTitles={tagAndTitles} />
+      <RealTimeTrend rankTrends={rankTrends} />
     </View>
   );
 }

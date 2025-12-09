@@ -12,23 +12,11 @@ export default function Home() {
   {
     /* 실시간 트렌드 더미 데이터  */
   }
-  const tagAndTitles = [
-    {
-      tag: '음악',
-      title: 'AOA 짧은 치마',
-    },
-    {
-      tag: '음악',
-      title: '샤넬 챌린지',
-    },
-    {
-      tag: '게임',
-      title: '배틀 그라운드',
-    },
-    {
-      tag: '뷰티',
-      title: '올리브영',
-    },
+  const rankTrends = [
+    'AOA 짧은 치마',
+    '배틀 그라운드',
+    '올영 세일',
+    '샤넬 챌린지',
   ];
 
   {
@@ -116,7 +104,7 @@ export default function Home() {
   return (
     <ScrollView style={styles.mainContainer}>
       {/* 실시간 트렌드 */}
-      <RealTimeTrend tagAndTitles={tagAndTitles} />
+      <RealTimeTrend rankTrends={rankTrends} />
       {/* 트렌드 리포트 */}
       <View style={styles.sectionHeader}>
         <Text style={styles.titleText}>트렌드 리포트</Text>
@@ -192,24 +180,6 @@ const getStyles = isDark => {
     mainContainer: {
       flex: 1,
       backgroundColor: colors.background,
-    },
-    sectionHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingHorizontal: 16,
-      paddingTop: 30,
-      marginBottom: 20,
-    },
-    titleText: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: colors.text,
-    },
-    lastUpdateText: {
-      fontSize: 12,
-      color: isDark ? '#D3D3D3' : '#666',
-      textAlign: 'right',
     },
     trendCardTopContainer: {
       flexDirection: 'row',
