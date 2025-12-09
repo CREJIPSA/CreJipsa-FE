@@ -228,7 +228,7 @@ export default function Home() {
           {/* 최근 피드 콘텐츠 더미 */}
           {latestFeeds.map((feed, index) => (
             <Fragment key={index}>
-              <View>{latestFeed(feed)}</View>
+              {latestFeed(feed)}
               {index !== latestFeeds.length - 1 && (
                 <View style={styles.divider} />
               )}
