@@ -4,8 +4,8 @@ import Likes from '@/assets/svgs/feed/like.js';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Fragment } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
-import RealTimeTrend from '../../components/realtime-trend';
-import TrendKeywordCard from '../../components/trend-keyword-card';
+import RealTimeTrend from '../../../components/realtime-trend';
+import TrendKeywordCard from '../../../components/trend-keyword-card';
 
 export default function Home() {
   const { isDark, styles } = useThemedStyle(getStyles);

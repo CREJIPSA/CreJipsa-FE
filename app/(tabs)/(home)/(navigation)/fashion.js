@@ -1,11 +1,11 @@
+import RealTimeTrend from '@/app/components/realtime-trend';
 import { View } from 'react-native';
-import RealTimeTrend from '../../components/realtime-trend';
-import useThemedStyle from '../../hooks/use-themed-style';
+import useThemedStyle from '../../../hooks/use-themed-style';
 
-export default function Sports() {
+export default function Fashion() {
   const { styles } = useThemedStyle(getStyles);
 
-  const rankTrends = ['마라톤', '야구', '축구', '농구'];
+  const rankTrends = ['무신사', '에이블리', '블랙 프라이데이', '지그재그'];
 
   return (
     <View style={styles.mainContainer}>
