@@ -75,90 +75,95 @@ export default function Trend() {
           onPress={() => router.back()}
         />
       </View>
-      {/* 트렌드 분석 */}
-      <ImageBackground
-        source={require('@/assets/images/graphic/trend-report-bg.png')}
-        style={styles.bgImage}
-      >
-        <View style={styles.trendReportContainer}>
-          <View style={styles.trendContainer}>
-            <Text style={styles.trendText}>{trend}</Text>
-            <Text style={styles.lastUpdatedText}>
-              마지막 업데이트{'\n'}
-              {lastUpdateTime}
-            </Text>
-          </View>
-          <View style={styles.buttonContainer}>
-            <Pressable>
-              <AddBtn size={24} />
-            </Pressable>
-            <Pressable>
-              <ShareBtn size={24} />
-            </Pressable>
-          </View>
-          <View style={styles.analysisContainer}>
-            <View style={styles.analysisBox}>
-              <View style={styles.expectedViewsLabel}>
-                <View style={styles.label}>
-                  <Text style={styles.labelText}>예상 조회수</Text>
-                </View>
-              </View>
-              <Text
-                style={[styles.valueText, { fontSize: 24, textAlign: 'right' }]}
-              >
-                3,049회
+      <View style={styles.body}>
+        {/* 트렌드 분석 */}
+        <ImageBackground
+          source={require('@/assets/images/graphic/trend-report-bg.png')}
+          style={styles.bgImage}
+        >
+          <View style={styles.trendReportContainer}>
+            <View style={styles.trendContainer}>
+              <Text style={styles.trendText}>{trend}</Text>
+              <Text style={styles.lastUpdatedText}>
+                마지막 업데이트{'\n'}
+                {lastUpdateTime}
               </Text>
             </View>
-            <View style={[styles.analysisBox, { paddingVertical: 16 }]}>
-              <View style={styles.labelContainer}>
-                <View style={styles.label}>
-                  <Text style={styles.labelText}>실시간 키워드</Text>
+            <View style={styles.buttonContainer}>
+              <Pressable>
+                <AddBtn size={24} />
+              </Pressable>
+              <Pressable>
+                <ShareBtn size={24} />
+              </Pressable>
+            </View>
+            <View style={styles.analysisContainer}>
+              <View style={styles.analysisBox}>
+                <View style={styles.expectedViewsLabel}>
+                  <View style={styles.label}>
+                    <Text style={styles.labelText}>예상 조회수</Text>
+                  </View>
                 </View>
-                <Text style={styles.valueText}>1위</Text>
+                <Text
+                  style={[
+                    styles.valueText,
+                    { fontSize: 24, textAlign: 'right' },
+                  ]}
+                >
+                  3,049회
+                </Text>
               </View>
-              <View style={styles.labelContainer}>
-                <View style={styles.label}>
-                  <Text style={styles.labelText}>음악 분야</Text>
+              <View style={[styles.analysisBox, { paddingVertical: 16 }]}>
+                <View style={styles.labelContainer}>
+                  <View style={styles.label}>
+                    <Text style={styles.labelText}>실시간 키워드</Text>
+                  </View>
+                  <Text style={styles.valueText}>1위</Text>
                 </View>
-                <Text style={styles.valueText}>1위</Text>
+                <View style={styles.labelContainer}>
+                  <View style={styles.label}>
+                    <Text style={styles.labelText}>음악 분야</Text>
+                  </View>
+                  <Text style={styles.valueText}>1위</Text>
+                </View>
               </View>
             </View>
           </View>
+        </ImageBackground>
+        {/* 관련 영상 */}
+        <View style={styles.relatedVideosContainer}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.titleText}>관련 영상</Text>
+            <Pressable style={styles.seeMoreContainer}>
+              <Text style={styles.seeMore}>더보기</Text>
+              <Ionicons
+                name="chevron-forward"
+                size={14}
+                color={isDark ? '#E6E6E6' : '#666666'}
+              />
+            </Pressable>
+          </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.videoContainer}
+          >
+            {relatedVideos.map((video, index) => (
+              <RelatedVideo
+                key={index}
+                title={video.title}
+                views={video.views}
+                thumbnailUrl={video.thumbnailUrl}
+              />
+            ))}
+          </ScrollView>
         </View>
-      </ImageBackground>
-      {/* 관련 영상 */}
-      <View style={styles.relatedVideosContainer}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>관련 영상</Text>
-          <Pressable style={styles.seeMoreContainer}>
-            <Text style={styles.seeMore}>더보기</Text>
-            <Ionicons
-              name="chevron-forward"
-              size={14}
-              color={isDark ? '#E6E6E6' : '#666666'}
-            />
-          </Pressable>
-        </View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.videoContainer}
-        >
-          {relatedVideos.map((video, index) => (
-            <RelatedVideo
-              key={index}
-              title={video.title}
-              views={video.views}
-              thumbnailUrl={video.thumbnailUrl}
-            />
-          ))}
-        </ScrollView>
       </View>
     </View>
   );
 }
 
-const getStyles = isDark => ({
+const getStyles = (isDark, primaryColors) => ({
   mainContainer: {
     flex: 1,
     backgroundColor: isDark ? '#141414' : '#FAFAFA',
@@ -166,6 +171,10 @@ const getStyles = isDark => ({
   header: {
     paddingVertical: 10,
     paddingLeft: 15,
+  },
+  body: {
+    flex: 1,
+    backgroundColor: primaryColors.background,
   },
   bgImage: {
     overflow: 'hidden',
@@ -247,7 +256,7 @@ const getStyles = isDark => ({
   titleText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: isDark ? '#FAFAFA' : '#141414',
+    color: primaryColors.color,
   },
   seeMoreContainer: {
     flexDirection: 'row',
