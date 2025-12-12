@@ -1,42 +1,24 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import Comments from '@/assets/svgs/feed/comment.js';
+import Likes from '@/assets/svgs/feed/like.js';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Fragment } from 'react';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import RealTimeTrend from '../../components/realtime-trend';
 import TrendKeywordCard from '../../components/trend-keyword-card';
 
 export default function Home() {
   const { isDark, styles } = useThemedStyle(getStyles);
 
-  {
-    /* 실시간 트렌드 */
-  }
-  {
-    /* 실시간 트렌드 더미 데이터  */
-  }
-  const tagAndTitles = [
-    {
-      tag: '음악',
-      title: 'AOA 짧은 치마',
-    },
-    {
-      tag: '음악',
-      title: '샤넬 챌린지',
-    },
-    {
-      tag: '게임',
-      title: '배틀 그라운드',
-    },
-    {
-      tag: '뷰티',
-      title: '올리브영',
-    },
+  // 실시간 트렌드 더미 데이터
+  const rankTrends = [
+    'AOA 짧은 치마',
+    '배틀 그라운드',
+    '올영 세일',
+    '샤넬 챌린지',
   ];
 
-  {
-    /* 트렌드 리포트 */
-  }
-  {
-    /* 트렌드 키워드 카드 더미 데이터 */
-  }
+  // 분야별 트렌드 추천 더미 데이터
   const trendData = [
     {
       items: [
@@ -88,6 +70,14 @@ export default function Home() {
     },
   ];
 
+  // 최근 피드 더미 데이터
+  const latestFeeds = [
+    { title: '어도비 프리미어 도와주세요', likes: 120, comments: 45 },
+    { title: '프리미어 영상 미디어가 이상해요', likes: 85, comments: 30 },
+    { title: '혹시 프리미어 쓰시는 분 계신가요?', likes: 60, comments: 15 },
+    { title: '프리미어 임포트', likes: 40, comments: 10 },
+  ];
+
   const normalizedTrendData = section => {
     // 전체 트렌드 추천
     if (Array.isArray(section.items)) {
@@ -113,71 +103,139 @@ export default function Home() {
     return { firstRow, secondRow };
   };
 
+  // 분야별 트렌츠 추천 섹션 렌더링
+  const renderSection = (section, sectionIndex) => {
+    const showTag = Array.isArray(section.items);
+    const { firstRow, secondRow } = splitIntoTwoRows(
+      normalizedTrendData(section),
+    );
+    return (
+      <View key={sectionIndex}>
+        {/* 섹션 헤더 */}
+        <View style={styles.fieldSectionHeader}>
+          <Text style={styles.headerText}>
+            이번주{' '}
+            <Text
+              style={{
+                fontWeight: 'bold',
+                color: isDark ? '#CCFF66' : '#C6E945',
+              }}
+            >
+              {getSectionTitle(section)}
+            </Text>{' '}
+            분야의 트렌드 추천
+          </Text>
+        </View>
+        <View style={styles.trendRecommendContainer}>
+          {/* 첫 번째 스크롤뷰 */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.trendKeywordCardContainer}
+          >
+            {firstRow.map((item, index) => (
+              <TrendKeywordCard
+                key={index}
+                tag={item.tag}
+                title={item.title}
+                showTag={showTag} // 태그 표시 여부
+              />
+            ))}
+          </ScrollView>
+          {/* 두 번째 스크롤뷰 */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.trendKeywordCardContainer}
+          >
+            {secondRow.map((item, index) => (
+              <TrendKeywordCard
+                key={index}
+                tag={item.tag}
+                title={item.title}
+                showTag={showTag} // 태그 표시 여부
+              />
+            ))}
+          </ScrollView>
+        </View>
+      </View>
+    );
+  };
+
+  // 최근 피드 컴포넌트
+  const latestFeed = feed => {
+    return (
+      <View style={styles.latestFeed}>
+        <Text style={styles.feedTitleText}>{feed.title}</Text>
+        <View style={styles.feedInfoContainer}>
+          <View style={styles.feedInfo}>
+            <Likes size={12} color={isDark ? '#D3D3D3' : '#666666'} />
+            <Text style={styles.feedInfoText}>{feed.likes}</Text>
+          </View>
+          <View style={styles.feedInfo}>
+            <Comments size={13} color={isDark ? '#D3D3D3' : '#666666'} />
+            <Text style={styles.feedInfoText}>{feed.comments}</Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <ScrollView style={styles.mainContainer}>
       {/* 실시간 트렌드 */}
-      <RealTimeTrend tagAndTitles={tagAndTitles} />
-      {/* 트렌드 리포트 */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.titleText}>트렌드 리포트</Text>
-      </View>
-      {trendData.map((section, sectionIndex) => {
-        const showTag = Array.isArray(section.items);
-        const { firstRow, secondRow } = splitIntoTwoRows(
-          normalizedTrendData(section),
-        );
-        return (
-          <View key={sectionIndex}>
-            {/* 섹션 헤더 */}
-            <View style={styles.fieldSectionHeader}>
-              <Text style={styles.fieldText}>
-                이번주{' '}
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    color: isDark ? '#CCFF66' : '#C6E945',
-                  }}
-                >
-                  {getSectionTitle(section)}
-                </Text>{' '}
-                분야의 트렌드 추천
-              </Text>
-            </View>
-            <View style={styles.trendRecommendContainer}>
-              {/* 첫 번째 스크롤뷰 */}
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.trendKeywordCardContainer}
-              >
-                {firstRow.map((item, index) => (
-                  <TrendKeywordCard
-                    key={index}
-                    tag={item.tag}
-                    title={item.title}
-                    showTag={showTag} // 태그 표시 여부
-                  />
-                ))}
-              </ScrollView>
-              {/* 두 번째 스크롤뷰 */}
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.trendKeywordCardContainer}
-              >
-                {secondRow.map((item, index) => (
-                  <TrendKeywordCard
-                    key={index}
-                    tag={item.tag}
-                    title={item.title}
-                    showTag={showTag} // 태그 표시 여부
-                  />
-                ))}
-              </ScrollView>
-            </View>
+      <RealTimeTrend rankTrends={rankTrends} />
+      {/* 분야별 트렌드 추천 */}
+      {/* 전체 트렌드 추천 */}
+      {renderSection(trendData[0], 0)}
+      {/* 이번주 팁 */}
+      <View style={styles.tipContainer}>
+        <Text style={styles.headerText}>이번주 팁</Text>
+        <View style={styles.tipContent}>
+          <Image
+            source={require('@/assets/images/this_week_tip.png')}
+            style={styles.tipImage}
+          />
+          <LinearGradient
+            colors={['rgba(102, 102, 102, 0.06)', '#252525']}
+            style={styles.tipContentGradient}
+          />
+          <View style={styles.authorContainer}>
+            <Image
+              source={require('@/assets/images/this_week_tip_author.png')}
+              style={styles.authorImage}
+            />
+            <Text style={styles.authorText}>김동률</Text>
           </View>
-        );
-      })}
+          <View style={styles.tipTitleContainer}>
+            <Text style={styles.tipTitleText}>
+              멋진 영상을 촬영하는{'\n'}
+              10가지 방법
+            </Text>
+          </View>
+        </View>
+      </View>
+      {/* 관심분야 트렌드 추천 */}
+      {trendData
+        .slice(1)
+        .map((section, sectionIndex) =>
+          renderSection(section, sectionIndex + 1),
+        )}
+      {/* 최근 피드 */}
+      <View style={styles.latestFeedContainer}>
+        <Text style={styles.headerText}>최근 피드</Text>
+        <View style={styles.latestFeedContents}>
+          {/* 최근 피드 콘텐츠 더미 */}
+          {latestFeeds.map((feed, index) => (
+            <Fragment key={index}>
+              {latestFeed(feed)}
+              {index !== latestFeeds.length - 1 && (
+                <View style={styles.divider} />
+              )}
+            </Fragment>
+          ))}
+        </View>
+      </View>
     </ScrollView>
   );
 }
@@ -192,24 +250,6 @@ const getStyles = isDark => {
     mainContainer: {
       flex: 1,
       backgroundColor: colors.background,
-    },
-    sectionHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingHorizontal: 16,
-      paddingTop: 30,
-      marginBottom: 20,
-    },
-    titleText: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: colors.text,
-    },
-    lastUpdateText: {
-      fontSize: 12,
-      color: isDark ? '#D3D3D3' : '#666',
-      textAlign: 'right',
     },
     trendCardTopContainer: {
       flexDirection: 'row',
@@ -238,7 +278,7 @@ const getStyles = isDark => {
       paddingHorizontal: 16,
       paddingTop: 20,
     },
-    fieldText: {
+    headerText: {
       fontSize: 20,
       color: colors.text,
     },
@@ -249,6 +289,95 @@ const getStyles = isDark => {
     },
     trendKeywordCardContainer: {
       paddingLeft: 16,
+    },
+    tipContainer: {
+      paddingHorizontal: 16,
+      marginBottom: 40,
+      gap: 20,
+    },
+    tipContent: {
+      flex: 1,
+      position: 'relative',
+      aspectRatio: 1,
+      borderRadius: 10,
+    },
+    tipImage: {
+      width: '100%',
+      height: '100%',
+      resizeMode: 'cover',
+    },
+    tipContentGradient: {
+      width: '100%',
+      height: '100%',
+      position: 'absolute',
+    },
+    authorContainer: {
+      flexDirection: 'row',
+      position: 'absolute',
+      top: 20,
+      right: 18,
+      gap: 4,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    authorImage: {
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+    },
+    authorText: {
+      fontSize: 16,
+      color: '#FFFFFF',
+    },
+    tipTitleContainer: {
+      position: 'absolute',
+      bottom: 20,
+      left: 0,
+      right: 0,
+      alignItems: 'center',
+    },
+    tipTitleText: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#FFFFFF',
+      textAlign: 'center',
+    },
+    latestFeedContainer: {
+      paddingHorizontal: 16,
+      marginTop: 30,
+      marginBottom: 80,
+    },
+    latestFeedContents: {
+      gap: 16,
+      marginTop: 35,
+    },
+    latestFeed: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    feedTitleText: {
+      fontSize: 14,
+      color: colors.text,
+      marginLeft: 3,
+    },
+    feedInfoContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      gap: 20,
+    },
+    feedInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+    },
+    feedInfoText: {
+      fontSize: 14,
+      color: isDark ? '#D3D3D3' : '#666666',
+    },
+    divider: {
+      height: 1,
+      backgroundColor: isDark ? '#323232' : '#E6E6E6',
     },
   });
 };

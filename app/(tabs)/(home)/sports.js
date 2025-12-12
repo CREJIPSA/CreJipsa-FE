@@ -5,28 +5,11 @@ import useThemedStyle from '../../hooks/use-themed-style';
 export default function Sports() {
   const { styles } = useThemedStyle(getStyles);
 
-  const tagAndTitles = [
-    {
-      tag: '스포츠',
-      title: '마라톤',
-    },
-    {
-      tag: '스포츠',
-      title: '야구',
-    },
-    {
-      tag: '스포츠',
-      title: '축구',
-    },
-    {
-      tag: '스포츠',
-      title: '농구',
-    },
-  ];
+  const rankTrends = ['마라톤', '야구', '축구', '농구'];
 
   return (
     <View style={styles.mainContainer}>
-      <RealTimeTrend tagAndTitles={tagAndTitles} />
+      <RealTimeTrend rankTrends={rankTrends} />
     </View>
   );
 }
