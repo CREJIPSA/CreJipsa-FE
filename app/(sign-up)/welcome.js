@@ -1,7 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useContext, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyle from '../hooks/use-themed-style';
 import { StepContext } from './step-context';
@@ -34,8 +33,10 @@ export default function Welcome() {
           gap: 30,
         }}
       >
-        {/* 추후 로고 대체 */}
-        <Ionicons name="checkmark-circle-outline" size={100} color="#C6E945" />
+        <Image
+          source={require('@/assets/images/kzipsa_logo.png')}
+          style={{ width: 100, height: 100 }}
+        />
         <Text
           style={styles.completedText}
         >{`${form.userInfo.username}님, 환영합니다!\n가입이 완료되었습니다`}</Text>

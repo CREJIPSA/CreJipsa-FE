@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Redirect, useRouter } from 'expo-router';
 import { useContext } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -9,7 +8,7 @@ import useThemedStyle from './hooks/use-themed-style';
 export default function Landing() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { isDark, styles } = useThemedStyle(getStyles);
+  const { styles } = useThemedStyle(getStyles);
 
   const { user } = useContext(AuthContext);
   const isLoggedIn = !!user;
@@ -27,11 +26,9 @@ export default function Landing() {
       ]}
     >
       <View style={styles.logoContainer}>
-        {/* 추후 로고 대체 */}
-        <Ionicons
-          name="checkmark-circle-outline"
-          size={150}
-          color={isDark ? '#CCFF66' : '#000000'}
+        <Image
+          source={require('@/assets/images/kzipsa_logo.png')}
+          style={{ width: 100, height: 100 }}
         />
       </View>
       <View style={styles.textContainer}>
@@ -64,7 +61,7 @@ const getStyles = isDark =>
       backgroundColor: isDark ? '#202020' : '#FCFCFC',
     },
     logoContainer: {
-      flex: 6,
+      flex: 7,
       justifyContent: 'center',
       alignItems: 'center',
     },
