@@ -16,7 +16,6 @@ export default function Trend() {
   const insets = useSafeAreaInsets();
   const { trend } = useLocalSearchParams();
   const [toastVisible, setToastVisible] = useState(false);
-  console.log('Trend Param:', trend);
 
   // (임시) 현재 시간을 마지막 업데이트로 설정
   const lastUpdateTime = format(new Date(), 'yyyy년 MM월 dd일 HH:mm');
