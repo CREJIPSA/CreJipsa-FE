@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyle from '../../hooks/use-themed-style';
@@ -66,10 +66,20 @@ export default function Trend() {
     },
   ];
 
+  // 타이머 정리
+  const toastTimeoutRef = useRef(null);
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // 토스트
   const showToast = () => {
     setToastVisible(true);
-    return setTimeout(() => {
+    toastTimeoutRef.current = setTimeout(() => {
       setToastVisible(false);
     }, 1500);
   };
