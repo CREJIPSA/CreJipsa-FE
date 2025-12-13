@@ -236,7 +236,9 @@ const RealTimeTrend = ({ rankTrends }) => {
           <Pressable
             onPress={() => {
               console.log('Rank 1 Trend Card Pressed');
-              router.push(`/(tabs)/(home)/${rankTrends[0]}`);
+              router.push(
+                `/(tabs)/(home)/${encodeURIComponent(rankTrends[0])}`,
+              );
             }}
           >
             <RealTimeTrendCard
@@ -249,7 +251,9 @@ const RealTimeTrend = ({ rankTrends }) => {
             style={styles.rank4TrendCard}
             onPress={() => {
               console.log('Rank 4 Trend Card Pressed');
-              router.push(`/(tabs)/(home)/${rankTrends[3]}`);
+              router.push(
+                `/(tabs)/(home)/${encodeURIComponent(rankTrends[3])}`,
+              );
             }}
           >
             <RealTimeTrendCard
@@ -263,7 +267,9 @@ const RealTimeTrend = ({ rankTrends }) => {
           <Pressable
             onPress={() => {
               console.log('Rank 2 Trend Card Pressed');
-              router.push(`/(tabs)/(home)/${rankTrends[1]}`);
+              router.push(
+                `/(tabs)/(home)/${encodeURIComponent(rankTrends[1])}`,
+              );
             }}
           >
             <RealTimeTrendCard
@@ -276,7 +282,9 @@ const RealTimeTrend = ({ rankTrends }) => {
             style={styles.rank3TrendCard}
             onPress={() => {
               console.log('Rank 3 Trend Card Pressed');
-              router.push(`/(tabs)/(home)/${rankTrends[2]}`);
+              router.push(
+                `/(tabs)/(home)/${encodeURIComponent(rankTrends[2])}`,
+              );
             }}
           >
             <RealTimeTrendCard
