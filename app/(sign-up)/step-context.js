@@ -31,6 +31,7 @@ export default function StepProvider({ children }) {
 
   const [step, setStep] = useState(1); // 회원가입 단계
   const [title, setTitle] = useState(getStepTitle(1, form)); // 단계별 제목
+  const [signupCompleted, setSignupCompleted] = useState(false); // 회원가입 완료 여부
 
   const [form, setForm] = useState({
     // 회원가입 폼 데이터
@@ -78,6 +79,7 @@ export default function StepProvider({ children }) {
         channelInfo: nextChannelInfo,
       });
       router.push('/(sign-up)/welcome');
+      setSignupCompleted(true);
       return;
     }
     setStep(prev => {
@@ -113,6 +115,8 @@ export default function StepProvider({ children }) {
         form,
         updateForm,
         addChannel,
+        signupCompleted,
+        setSignupCompleted,
       }}
     >
       {children}

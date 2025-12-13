@@ -4,13 +4,16 @@ import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyle from '../hooks/use-themed-style';
 import StepProvider, { StepContext } from './step-context';
+import TermProvider from './term-context';
 
 export default function SignUpLayout() {
   const pathname = usePathname();
 
   return (
     <StepProvider>
-      {pathname === '/welcome' ? <Slot /> : <SignUpContent />}
+      <TermProvider>
+        {pathname === '/welcome' ? <Slot /> : <SignUpContent />}
+      </TermProvider>
     </StepProvider>
   );
 }
@@ -40,13 +43,16 @@ function SignUpContent() {
       </View>
       {/* 푸터 */}
       <View style={styles.footerContainer}>
-        <Pressable style={styles.backButton} onPress={handleBackStep}>
-          <Text style={styles.backButtonText}>뒤로가기</Text>
-        </Pressable>
-        <Pressable style={styles.nextButton} onPress={handleNextStep}>
-          <Text style={styles.nextButtonText}>
-            {step === 3 ? '완료' : '다음'}
-          </Text>
+        {step > 3 && (
+          <Pressable style={styles.backButton} onPress={handleBackStep}>
+            <Text style={styles.backButtonText}>뒤로가기</Text>
+          </Pressable>
+        )}
+        <Pressable
+          style={[styles.nextButton, step < 4 && { width: '90%' }]}
+          onPress={handleNextStep}
+        >
+          <Text style={styles.nextButtonText}>다음</Text>
         </Pressable>
       </View>
     </View>

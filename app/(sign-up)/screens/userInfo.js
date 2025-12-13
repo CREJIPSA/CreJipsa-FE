@@ -1,7 +1,7 @@
 import GenderFemaleIcon from '@/assets/svgs/signup/gender-female-icon';
 import GenderMaleIcon from '@/assets/svgs/signup/gender-male-icon';
 import { Ionicons } from '@expo/vector-icons';
-import { memo, useContext, useEffect, useState } from 'react';
+import { memo, useContext, useState } from 'react';
 import {
   Modal,
   Pressable,
@@ -13,37 +13,22 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyle from '../../hooks/use-themed-style';
 import { StepContext } from '../step-context';
+import { TermContext } from '../term-context';
 
 export default function UserInfo() {
   const insets = useSafeAreaInsets();
   const { isDark, styles } = useThemedStyle(getStyles);
   const { step, form, updateForm, handleNextStep } = useContext(StepContext);
   const [isGenderModalVisible, setIsGenderModalVisible] = useState(false);
-  const [isTermModalVisible, setIsTermModalVisible] = useState(true); // 약관 모달 표시 여부
-  const [isAllTermsChecked, setIsAllTermsChecked] = useState(false); // 전체 약관 동의 여부
-  const [isTerm1Checked, setIsTerm1Checked] = useState(false); // 14세 이상 동의 여부
-  const [isTerm2Checked, setIsTerm2Checked] = useState(false); // 서비스 이용 약관 동의 여부
-  const [isTerm3Checked, setIsTerm3Checked] = useState(false); // 개인정보 보호 방침 동의 여부
-  const [isTerm4Checked, setIsTerm4Checked] = useState(false); // 마케팅 수신 동의 여부
-  const [isTermConfirmed, setIsTermConfirmed] = useState(false); // 필수 약관 동의 확인 여부
-
-  // 전체 약관 동의 상태 동기화
-  useEffect(() => {
-    if (isTerm1Checked && isTerm2Checked && isTerm3Checked && isTerm4Checked) {
-      setIsAllTermsChecked(true);
-    } else {
-      setIsAllTermsChecked(false);
-    }
-  }, [isTerm1Checked, isTerm2Checked, isTerm3Checked, isTerm4Checked]);
-
-  // 필수 약관 동의 상태 동기화
-  useEffect(() => {
-    if (isTerm1Checked && isTerm2Checked && isTerm3Checked) {
-      setIsTermConfirmed(true);
-    } else {
-      setIsTermConfirmed(false);
-    }
-  }, [isTerm1Checked, isTerm2Checked, isTerm3Checked]);
+  // 약관
+  const {
+    terms,
+    setTerms,
+    termsOptions,
+    setTermsOptions,
+    handleAllTermsCheck,
+    handleFinalConfirmation,
+  } = useContext(TermContext);
 
   // 약관 컴포넌트
   const TermOption = memo(function TermOption({ label, isChecked, onPress }) {
@@ -141,11 +126,13 @@ export default function UserInfo() {
       </View>
       {/* 약관 모달 */}
       <Modal
-        visible={isTermModalVisible}
+        visible={termsOptions.isTermModalVisible}
         transparent={true}
         animationType="slide"
         statusBarTranslucent={true}
-        onRequestClose={() => setIsTermModalVisible(false)}
+        onRequestClose={() =>
+          setTermsOptions(prev => ({ ...prev, isTermModalVisible: false }))
+        }
       >
         <View style={styles.modalBackground}>
           <View
@@ -158,57 +145,48 @@ export default function UserInfo() {
             <View style={styles.termModalOptionContainer}>
               <TermOption
                 label="모두 동의"
-                isChecked={isAllTermsChecked}
+                isChecked={termsOptions.isAllTermsChecked}
                 onPress={() => {
-                  setIsAllTermsChecked(!isAllTermsChecked);
-                  setIsTerm1Checked(!isAllTermsChecked);
-                  setIsTerm2Checked(!isAllTermsChecked);
-                  setIsTerm3Checked(!isAllTermsChecked);
-                  setIsTerm4Checked(!isAllTermsChecked);
+                  handleAllTermsCheck();
                 }}
               />
-              <View
-                style={{
-                  height: 0.5,
-                  marginVertical: 10,
-                  backgroundColor: isDark ? '#F4F2F2' : '#1B1B1B',
-                  alignSelf: 'stretch',
-                  marginRight: 16,
-                }}
-              />
+              <View style={styles.divider} />
               <TermOption
                 label="(필수) 만 14세 이상이에요"
-                isChecked={isTerm1Checked}
-                onPress={() => setIsTerm1Checked(!isTerm1Checked)}
+                isChecked={terms.term1}
+                onPress={() => setTerms({ ...terms, term1: !terms.term1 })}
               />
               <TermOption
                 label="(필수) 서비스 이용 약관 동의"
-                isChecked={isTerm2Checked}
-                onPress={() => setIsTerm2Checked(!isTerm2Checked)}
+                isChecked={terms.term2}
+                onPress={() => setTerms({ ...terms, term2: !terms.term2 })}
               />
               <TermOption
                 label="(필수) 개인정보 보호 방침 동의"
-                isChecked={isTerm3Checked}
-                onPress={() => setIsTerm3Checked(!isTerm3Checked)}
+                isChecked={terms.term3}
+                onPress={() => setTerms({ ...terms, term3: !terms.term3 })}
               />
               <TermOption
                 label="(선택) 마케팅 수신 동의"
-                isChecked={isTerm4Checked}
-                onPress={() => setIsTerm4Checked(!isTerm4Checked)}
+                isChecked={terms.term4}
+                onPress={() => setTerms({ ...terms, term4: !terms.term4 })}
               />
             </View>
             <Pressable
               style={[
                 styles.termConfirmButton,
-                !isTermConfirmed && { backgroundColor: '#E6E6E6' },
+                termsOptions.isTermConfirmed && {
+                  backgroundColor: isDark ? '#CCFF66' : '#C6E945',
+                },
               ]}
               onPress={() => {
-                if (isTerm1Checked && isTerm2Checked && isTerm3Checked) {
-                  setIsTermModalVisible(false);
-                  setIsTermConfirmed(true);
-                } else {
-                  setIsTermConfirmed(false);
+                if (termsOptions.isTermConfirmed) {
+                  setTermsOptions(prev => ({
+                    ...prev,
+                    isTermModalVisible: false,
+                  }));
                 }
+                handleFinalConfirmation();
               }}
             >
               <Text style={styles.termConfirmButtonText}>동의합니다.</Text>
@@ -362,6 +340,13 @@ const getStyles = isDark => {
       marginTop: 25,
       gap: 10,
     },
+    divider: {
+      height: 0.5,
+      marginVertical: 10,
+      backgroundColor: isDark ? '#F4F2F2' : '#1B1B1B',
+      alignSelf: 'stretch',
+      marginRight: 16,
+    },
     termOption: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -378,7 +363,7 @@ const getStyles = isDark => {
       justifyContent: 'center',
       alignSelf: 'center',
       alignItems: 'center',
-      backgroundColor: isDark ? '#CCFF66' : '#C6E945',
+      backgroundColor: '#E6E6E6',
       borderRadius: 100,
       marginTop: 30,
       marginRight: 16,
