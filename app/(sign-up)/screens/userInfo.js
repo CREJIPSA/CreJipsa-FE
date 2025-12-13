@@ -25,7 +25,7 @@ export default function UserInfo() {
   const [isTerm2Checked, setIsTerm2Checked] = useState(false); // 서비스 이용 약관 동의 여부
   const [isTerm3Checked, setIsTerm3Checked] = useState(false); // 개인정보 보호 방침 동의 여부
   const [isTerm4Checked, setIsTerm4Checked] = useState(false); // 마케팅 수신 동의 여부
-  const [isTermConfirmed, setIsTermConfirmed] = useState(true); // 약관 동의 확인 여부
+  const [isTermConfirmed, setIsTermConfirmed] = useState(false); // 필수 약관 동의 확인 여부
 
   // 전체 약관 동의 상태 동기화
   useEffect(() => {
@@ -35,6 +35,15 @@ export default function UserInfo() {
       setIsAllTermsChecked(false);
     }
   }, [isTerm1Checked, isTerm2Checked, isTerm3Checked, isTerm4Checked]);
+
+  // 필수 약관 동의 상태 동기화
+  useEffect(() => {
+    if (isTerm1Checked && isTerm2Checked && isTerm3Checked) {
+      setIsTermConfirmed(true);
+    } else {
+      setIsTermConfirmed(false);
+    }
+  }, [isTerm1Checked, isTerm2Checked, isTerm3Checked]);
 
   // 약관 컴포넌트
   const TermOption = memo(function TermOption({ label, isChecked, onPress }) {
@@ -187,22 +196,12 @@ export default function UserInfo() {
                 isChecked={isTerm4Checked}
                 onPress={() => setIsTerm4Checked(!isTerm4Checked)}
               />
-              {!isTermConfirmed && (
-                // 필수 약관 미동의 시 경고 문구 표시(추후 수정)
-                <Text
-                  style={{
-                    color: 'red',
-                    fontStyle: 'italic',
-                    justifyContent: 'center',
-                    marginTop: 10,
-                  }}
-                >
-                  필수 약관에 모두 동의해 주세요.
-                </Text>
-              )}
             </View>
             <Pressable
-              style={styles.termConfirmButton}
+              style={[
+                styles.termConfirmButton,
+                !isTermConfirmed && { backgroundColor: '#E6E6E6' },
+              ]}
               onPress={() => {
                 if (isTerm1Checked && isTerm2Checked && isTerm3Checked) {
                   setIsTermModalVisible(false);
