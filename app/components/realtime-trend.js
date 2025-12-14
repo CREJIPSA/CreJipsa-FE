@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Dimensions, Image, Text, View } from 'react-native';
+import { Dimensions, Image, Pressable, Text, View } from 'react-native';
 import Svg, { ClipPath, Defs, Path, Image as SvgImage } from 'react-native-svg';
 import useThemedStyle from '../hooks/use-themed-style';
 
@@ -181,6 +182,7 @@ const RealTimeTrendCard = ({
 };
 
 const RealTimeTrend = ({ rankTrends }) => {
+  const router = useRouter();
   const { styles } = useThemedStyle(getStyles);
 
   const viewWidth = Dimensions.get('window').width;
@@ -231,32 +233,62 @@ const RealTimeTrend = ({ rankTrends }) => {
           </Text>
         </View>
         <View style={styles.trendCardTopContainer}>
-          <RealTimeTrendCard
-            {...realTimeTrendData[0]}
-            inputTitle={rankTrends[0]}
-            styles={styles}
-          />
-          <View style={styles.rank4TrendCard}>
+          <Pressable
+            onPress={() => {
+              router.push(
+                `/(tabs)/(home)/${encodeURIComponent(rankTrends[0])}`,
+              );
+            }}
+          >
+            <RealTimeTrendCard
+              {...realTimeTrendData[0]}
+              inputTitle={rankTrends[0]}
+              styles={styles}
+            />
+          </Pressable>
+          <Pressable
+            style={styles.rank4TrendCard}
+            onPress={() => {
+              router.push(
+                `/(tabs)/(home)/${encodeURIComponent(rankTrends[3])}`,
+              );
+            }}
+          >
             <RealTimeTrendCard
               {...realTimeTrendData[3]}
               inputTitle={rankTrends[3]}
               styles={styles}
             />
-          </View>
+          </Pressable>
         </View>
         <View style={styles.trendCardBottomContainer}>
-          <RealTimeTrendCard
-            {...realTimeTrendData[1]}
-            inputTitle={rankTrends[1]}
-            styles={styles}
-          />
-          <View style={styles.rank3TrendCard}>
+          <Pressable
+            onPress={() => {
+              router.push(
+                `/(tabs)/(home)/${encodeURIComponent(rankTrends[1])}`,
+              );
+            }}
+          >
+            <RealTimeTrendCard
+              {...realTimeTrendData[1]}
+              inputTitle={rankTrends[1]}
+              styles={styles}
+            />
+          </Pressable>
+          <Pressable
+            style={styles.rank3TrendCard}
+            onPress={() => {
+              router.push(
+                `/(tabs)/(home)/${encodeURIComponent(rankTrends[2])}`,
+              );
+            }}
+          >
             <RealTimeTrendCard
               {...realTimeTrendData[2]}
               inputTitle={rankTrends[2]}
               styles={styles}
             />
-          </View>
+          </Pressable>
         </View>
       </View>
     </>

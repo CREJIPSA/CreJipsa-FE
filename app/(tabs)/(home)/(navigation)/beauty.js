@@ -1,11 +1,11 @@
 import { View } from 'react-native';
-import RealTimeTrend from '../../components/realtime-trend';
-import useThemedStyle from '../../hooks/use-themed-style';
+import RealTimeTrend from '../../../components/realtime-trend';
+import useThemedStyle from '../../../hooks/use-themed-style';
 
-export default function Music() {
+export default function Beauty() {
   const { styles } = useThemedStyle(getStyles);
 
-  const rankTrends = ['멜론', '올데이프로젝트', '화사', '아이브'];
+  const rankTrends = ['올리브영', '롬앤', '다이소 뷰티템', '올영 블프'];
 
   return (
     <View style={styles.mainContainer}>

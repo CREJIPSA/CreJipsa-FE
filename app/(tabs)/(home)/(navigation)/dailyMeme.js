@@ -1,6 +1,6 @@
 import { View } from 'react-native';
-import RealTimeTrend from '../../components/realtime-trend';
-import useThemedStyle from '../../hooks/use-themed-style';
+import RealTimeTrend from '../../../components/realtime-trend';
+import useThemedStyle from '../../../hooks/use-themed-style';
 
 export default function DailyMeme() {
   const { styles } = useThemedStyle(getStyles);
