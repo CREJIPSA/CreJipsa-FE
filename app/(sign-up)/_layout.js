@@ -1,8 +1,9 @@
 import { Slot, usePathname } from 'expo-router';
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyle from '../hooks/use-themed-style';
+import UserInfo from './screens/userInfo';
 import StepProvider, { StepContext } from './step-context';
 import TermProvider from './term-context';
 
@@ -21,8 +22,22 @@ export default function SignUpLayout() {
 function SignUpContent() {
   const insets = useSafeAreaInsets();
   const { styles } = useThemedStyle(getStyles);
-  const { step, handleBackStep, handleNextStep, title } =
+  const { step, handleNextStep, handleBackStep, title } =
     useContext(StepContext);
+
+  const userInfoRef = useRef(null);
+
+  const handleNextButtonClick = async () => {
+    if (userInfoRef.current) {
+      const isValid = await userInfoRef.current.validateAndGoNext();
+      if (isValid) {
+        console.log('유효성 검사 통과, 다음 단계로 이동');
+        handleNextStep();
+      } else {
+        console.log('유효성 검사 실패, 현재 단계에 머무름');
+      }
+    }
+  };
 
   return (
     <View
@@ -39,7 +54,7 @@ function SignUpContent() {
       </View>
       {/* 바디 */}
       <View style={styles.bodyContainer}>
-        <Slot />
+        <UserInfo ref={userInfoRef} />
       </View>
       {/* 푸터 */}
       <View style={styles.footerContainer}>
@@ -50,7 +65,10 @@ function SignUpContent() {
         )}
         <Pressable
           style={[styles.nextButton, step < 4 && { width: '90%' }]}
-          onPress={handleNextStep}
+          onPress={async () => {
+            await handleNextButtonClick();
+            console.log('step: ', step);
+          }}
         >
           <Text style={styles.nextButtonText}>다음</Text>
         </Pressable>

@@ -33,62 +33,27 @@ export default function StepProvider({ children }) {
   const [title, setTitle] = useState(getStepTitle(1, form)); // 단계별 제목
   const [signupCompleted, setSignupCompleted] = useState(false); // 회원가입 완료 여부
 
+  // 회원가입 폼 데이터
   const [form, setForm] = useState({
-    // 회원가입 폼 데이터
-    userInfo: {
-      username: '',
-      birth: '',
-      gender: '',
-    },
+    userInfo: { username: '', birthday: '', gender: '' },
     channelInfo: [],
-    tempChannel: {
-      platform: '',
-      channelId: '',
-      interests: [],
-    },
   });
 
-  const updateForm = patch => {
+  const updateForm = (section, data) => {
     setForm(prev => ({
       ...prev,
-      ...patch,
-    }));
-  };
-
-  const addChannel = channel => {
-    setForm(prev => ({
-      ...prev,
-      channelInfo: [...prev.channelInfo, channel],
+      [section]: data,
     }));
   };
 
   const handleNextStep = () => {
     if (step === 7) {
-      addChannel(form.tempChannel);
-      const nextChannelInfo = [...form.channelInfo, form.tempChannel];
-      updateForm({
-        channelInfo: [...form.channelInfo, form.tempChannel],
-        tempChannel: {
-          platform: '',
-          channelId: '',
-          interests: [],
-        },
-      });
-      console.log('⚪ Final sign-up data:', {
-        ...form,
-        channelInfo: nextChannelInfo,
-      });
       router.push('/(sign-up)/welcome');
       setSignupCompleted(true);
       return;
+    } else {
+      setStep(prev => Math.min(prev + 1, 7));
     }
-    setStep(prev => {
-      const next = Math.min(prev + 1, 7);
-      if (next <= 4) {
-        console.log('🟢 Current userInfo:', form.userInfo);
-      }
-      return next;
-    });
   };
 
   const handleBackStep = () => {
@@ -106,15 +71,15 @@ export default function StepProvider({ children }) {
   return (
     <StepContext.Provider
       value={{
+        form,
+        setForm,
+        updateForm,
         step,
         setStep,
         title,
         setTitle,
         handleNextStep,
         handleBackStep,
-        form,
-        updateForm,
-        addChannel,
         signupCompleted,
         setSignupCompleted,
       }}
