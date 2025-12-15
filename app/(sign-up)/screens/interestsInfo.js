@@ -14,7 +14,7 @@ import { StepContext } from '../step-context';
 export default forwardRef(function InterestsInfo(props, ref) {
   const { styles } = useThemedStyle(getStyles);
   const { step, handleNextStep } = useContext(StepContext);
-  const { onFormChange } = props;
+  const { onFormStatusChange } = props;
 
   // 단계 전환 조건
   const signupSchema = Yup.object().shape({
@@ -52,14 +52,12 @@ export default forwardRef(function InterestsInfo(props, ref) {
   });
 
   useEffect(() => {
-    const isComplete =
-      formik.values.interests.length >= 1 &&
-      formik.values.interests.length <= 3;
-    if (onFormChange) {
-      onFormChange(isComplete);
+    const interestsArray = formik.values.interests || [];
+    const isComplete = interestsArray.length >= 1;
+    if (onFormStatusChange) {
+      onFormStatusChange(isComplete);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onFormChange]);
+  }, [onFormStatusChange, formik.values.interests]);
 
   useImperativeHandle(ref, () => ({
     validateAndGoNext: handleStepValidation,
@@ -94,14 +92,18 @@ export default forwardRef(function InterestsInfo(props, ref) {
   const interests = formik.values.interests || [];
   const toggle = option => {
     // 최대 3개 선택 제한
+    let newInterests = interests;
     if (interests.includes(option)) {
-      const newInterests = interests.filter(item => item !== option);
-      formik.setFieldValue('interests', newInterests);
+      newInterests = interests.filter(item => item !== option);
     } else {
       if (interests.length < 3) {
-        const newInterests = [...interests, option];
-        formik.setFieldValue('interests', newInterests);
+        newInterests = [...interests, option];
       }
+    }
+    formik.setFieldValue('interests', newInterests);
+    if (onFormStatusChange) {
+      const isComplete = newInterests.length >= 1;
+      onFormStatusChange(isComplete);
     }
   };
 

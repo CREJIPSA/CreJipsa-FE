@@ -1,5 +1,5 @@
 import { Slot, usePathname } from 'expo-router';
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyle from '../hooks/use-themed-style';
@@ -34,6 +34,11 @@ function SignUpContent() {
   const handleFormChange = isComplete => {
     setIsNextButtonActive(isComplete);
   };
+
+  useEffect(() => {
+    // 초기에는 다음 버튼 비활성화
+    setIsNextButtonActive(false);
+  }, [step]);
 
   const handleNextButtonClick = async () => {
     if (userInfoRef.current) {
@@ -73,7 +78,12 @@ function SignUpContent() {
         {step <= 3 && (
           <UserInfo ref={userInfoRef} onFormStatusChange={handleFormChange} />
         )}
-        {step === 4 && <InterestsInfo ref={interestsInfoRef} />}
+        {step === 4 && (
+          <InterestsInfo
+            ref={interestsInfoRef}
+            onFormStatusChange={handleFormChange}
+          />
+        )}
       </View>
       {/* 푸터 */}
       <View style={styles.footerContainer}>
@@ -89,11 +99,8 @@ function SignUpContent() {
             !isNextButtonActive && styles.nextButtonDimmed,
           ]}
           onPress={async () => {
-            if (isNextButtonActive) {
-              await handleNextButtonClick();
-            }
+            await handleNextButtonClick();
           }}
-          disabled={!isNextButtonActive}
         >
           <Text
             style={[

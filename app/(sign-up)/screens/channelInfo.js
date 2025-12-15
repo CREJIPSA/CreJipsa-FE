@@ -4,7 +4,7 @@ import youtubeLogo from '@/assets/images/platform_logo/youtube_logo.png';
 import RemoveChannelIcon from '@/assets/svgs/signup/remove-channel-icon.js';
 import { Ionicons } from '@expo/vector-icons';
 import { useFormik } from 'formik';
-import { memo, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   Image,
   Modal,
@@ -32,10 +32,6 @@ export default function ChannelInfo() {
       Yup.object().shape({
         channelId: Yup.string().required('채널 아이디를 입력해주세요.'),
         platform: Yup.string().required('채널 플랫폼을 선택해주세요.'),
-        interests: Yup.array()
-          .of(Yup.string())
-          .min(1, '관심 분야를 최소 1개 선택해주세요.')
-          .required('관심 분야를 선택해주세요.'),
       }),
     ),
   });
@@ -70,31 +66,6 @@ export default function ChannelInfo() {
     }
   }, []);
 
-  // 관심분야 선택 칩 컴포넌트
-  const chipOptions = [
-    '일상/밈',
-    '게임',
-    '패션',
-    '음악',
-    '뷰티',
-    '반려동물',
-    '스포츠',
-  ];
-  const Chip = memo(function Chip({ label, isSelected, onPress }) {
-    return (
-      <Pressable
-        style={[isSelected ? styles.selectedChip : styles.baseChip]}
-        onPress={onPress}
-      >
-        <Text
-          style={[isSelected ? styles.selectedChipText : styles.baseChipText]}
-        >
-          {label}
-        </Text>
-      </Pressable>
-    );
-  });
-
   return (
     <View style={styles.formContainer}>
       {formik.values.myChannels.map((channel, index) => (
@@ -117,37 +88,6 @@ export default function ChannelInfo() {
               }}
               onSubmitEditing={handleNextStep}
             />
-          </View>
-          {/* 관심분야 선택 폼 */}
-          <View
-            style={[
-              styles.inputContainer,
-              { display: step >= 5 ? 'flex' : 'none' },
-            ]}
-          >
-            <Text style={styles.inputTitle}>관심 분야 ( 중복 가능 )</Text>
-            <View style={styles.interestFieldOptionContainer}>
-              {chipOptions.map(option => (
-                <Chip
-                  key={option}
-                  label={option}
-                  isSelected={formik.values.myChannels[
-                    index
-                  ].interests.includes(option)}
-                  onPress={() => {
-                    const prev =
-                      formik.values.myChannels[index].interests || [];
-                    const next = prev.includes(option)
-                      ? prev.filter(item => item !== option)
-                      : [...prev, option];
-                    formik.setFieldValue(
-                      `myChannels[${index}].interests`,
-                      next,
-                    );
-                  }}
-                />
-              ))}
-            </View>
           </View>
           {/* 채널 플랫폼 선택 폼 */}
           <View
