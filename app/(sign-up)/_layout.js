@@ -1,5 +1,5 @@
 import { Slot, usePathname } from 'expo-router';
-import { useContext, useRef } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyle from '../hooks/use-themed-style';
@@ -26,6 +26,11 @@ function SignUpContent() {
     useContext(StepContext);
 
   const userInfoRef = useRef(null);
+  // 다음 버튼 활성화 상태
+  const [isNextButtonActive, setIsNextButtonActive] = useState(false);
+  const handleFormChange = isComplete => {
+    setIsNextButtonActive(isComplete);
+  };
 
   const handleNextButtonClick = async () => {
     if (userInfoRef.current) {
@@ -54,7 +59,7 @@ function SignUpContent() {
       </View>
       {/* 바디 */}
       <View style={styles.bodyContainer}>
-        <UserInfo ref={userInfoRef} />
+        <UserInfo ref={userInfoRef} onFormStatusChange={handleFormChange} />
       </View>
       {/* 푸터 */}
       <View style={styles.footerContainer}>
@@ -64,13 +69,27 @@ function SignUpContent() {
           </Pressable>
         )}
         <Pressable
-          style={[styles.nextButton, step < 4 && { width: '90%' }]}
+          style={[
+            styles.nextButton,
+            step < 4 && { width: '90%' },
+            !isNextButtonActive && styles.nextButtonDimmed,
+          ]}
           onPress={async () => {
-            await handleNextButtonClick();
-            console.log('step: ', step);
+            if (isNextButtonActive) {
+              await handleNextButtonClick();
+              console.log('step: ', step);
+            }
           }}
+          disabled={!isNextButtonActive}
         >
-          <Text style={styles.nextButtonText}>다음</Text>
+          <Text
+            style={[
+              styles.nextButtonText,
+              !isNextButtonActive && styles.nextButtonTextDimmed,
+            ]}
+          >
+            다음
+          </Text>
         </Pressable>
       </View>
     </View>
@@ -125,9 +144,15 @@ const getStyles = isDark => ({
     alignItems: 'center',
     borderRadius: 100,
   },
+  nextButtonDimmed: {
+    backgroundColor: '#7A993D',
+  },
   nextButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#000000',
+  },
+  nextButtonTextDimmed: {
+    color: '#D3D3D3',
   },
 });

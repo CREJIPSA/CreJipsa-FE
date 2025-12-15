@@ -6,6 +6,7 @@ import {
   forwardRef,
   memo,
   useContext,
+  useEffect,
   useImperativeHandle,
   useState,
 } from 'react';
@@ -28,6 +29,7 @@ export default forwardRef(function UserInfo(props, ref) {
   const { isDark, styles } = useThemedStyle(getStyles);
   const { step, handleNextStep, updateForm } = useContext(StepContext);
   const [isGenderModalVisible, setIsGenderModalVisible] = useState(false);
+  const { onFormStatusChange } = props;
 
   // 회원가입 단계 전환 조건
   const signupSchema = Yup.object().shape({
@@ -71,6 +73,43 @@ export default forwardRef(function UserInfo(props, ref) {
     }
     return false;
   };
+
+  //  버튼 활성화 상태 관리
+  const checkAllRequiredFieldsFilled = (
+    currentStep,
+    baseValues,
+    changedField,
+    changedValue,
+  ) => {
+    let currentValues = baseValues || {};
+    if (changedField) {
+      currentValues = { ...baseValues, [changedField]: changedValue };
+    }
+
+    const fieldsToCheck = [];
+    if (currentStep >= 1) fieldsToCheck.push('username');
+    if (currentStep >= 2) fieldsToCheck.push('birth');
+    if (currentStep >= 3) fieldsToCheck.push('gender');
+
+    return fieldsToCheck.every(
+      field => currentValues[field] && currentValues[field].length > 0,
+    );
+  };
+
+  useEffect(() => {
+    if (!formik.values) return;
+    const currentFormikValues = formik.values || {};
+    const isComplete = checkAllRequiredFieldsFilled(
+      step,
+      currentFormikValues,
+      '',
+      '',
+    );
+    if (onFormStatusChange) {
+      onFormStatusChange(isComplete);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, onFormStatusChange]);
 
   useImperativeHandle(ref, () => ({
     validateAndGoNext: handleStepValidation,
@@ -168,9 +207,20 @@ export default forwardRef(function UserInfo(props, ref) {
         <TextInput
           style={styles.inputForm}
           value={formik.values.birth}
+          placeholder="0000.00.00."
+          placeholderTextColor={isDark ? '#AAAAAA' : '#555555'}
           onChangeText={text => {
             formik.handleChange('birth')(text);
             updateForm('userInfo', { ...formik.values, birth: text });
+            if (props.onFormStatusChange) {
+              const isComplete = checkAllRequiredFieldsFilled(
+                step,
+                formik.values,
+                'birth',
+                text,
+              );
+              props.onFormStatusChange(isComplete);
+            }
           }}
           onBlur={formik.handleBlur('birth')}
           onSubmitEditing={async () => {
@@ -197,6 +247,15 @@ export default forwardRef(function UserInfo(props, ref) {
           onChangeText={text => {
             formik.handleChange('username')(text);
             updateForm('userInfo', { ...formik.values, username: text });
+            if (props.onFormStatusChange) {
+              const isComplete = checkAllRequiredFieldsFilled(
+                step,
+                formik.values,
+                'username',
+                text,
+              );
+              props.onFormStatusChange(isComplete);
+            }
           }}
           onBlur={formik.handleBlur('username')}
           onSubmitEditing={async () => {
@@ -326,10 +385,23 @@ export default forwardRef(function UserInfo(props, ref) {
                   formik.values.gender === '여성' && styles.dimmedOption,
                 ]}
                 onPress={async () => {
-                  await formik.setFieldValue('gender', '남성');
+                  const newGenderValue = '남성';
+                  await formik.setFieldValue('gender', newGenderValue);
                   await formik.setFieldTouched('gender', true);
-                  updateForm('userInfo', { ...formik.values, gender: '남성' });
+                  updateForm('userInfo', {
+                    ...formik.values,
+                    gender: newGenderValue,
+                  });
                   await handleStepValidation();
+                  if (props.onFormStatusChange) {
+                    const isComplete = checkAllRequiredFieldsFilled(
+                      step,
+                      formik.values,
+                      'gender',
+                      newGenderValue,
+                    );
+                    props.onFormStatusChange(isComplete);
+                  }
                 }}
               >
                 <GenderMaleIcon
@@ -352,10 +424,23 @@ export default forwardRef(function UserInfo(props, ref) {
                   formik.values.gender === '남성' && styles.dimmedOption,
                 ]}
                 onPress={async () => {
-                  await formik.setFieldValue('gender', '여성');
+                  const newGenderValue = '여성';
+                  await formik.setFieldValue('gender', newGenderValue);
                   await formik.setFieldTouched('gender', true);
-                  updateForm('userInfo', { ...formik.values, gender: '여성' });
+                  updateForm('userInfo', {
+                    ...formik.values,
+                    gender: newGenderValue,
+                  });
                   await handleStepValidation();
+                  if (props.onFormStatusChange) {
+                    const isComplete = checkAllRequiredFieldsFilled(
+                      step,
+                      formik.values,
+                      'gender',
+                      newGenderValue,
+                    );
+                    props.onFormStatusChange(isComplete);
+                  }
                 }}
               >
                 <GenderFemaleIcon
