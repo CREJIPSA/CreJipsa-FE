@@ -14,9 +14,9 @@ function getStepTitle(step, form) {
     case 3:
       return `성별은 어떻게 되시나요?`;
     case 4:
-      return `${form.userInfo.username}님이 운영하시는\n채널의 플랫폼 형태를 알려주세요.`;
+      return `${form.userInfo.username}님의 관심 분야를 선택해주세요.\n(최대 3개)`;
     case 5:
-      return `${form.userInfo.username}님이 운영하시는\n채널의 관심 분야를 알려주세요!`;
+      return `${form.userInfo.username}님이 운영하시는\n채널의 플랫폼 형태를 알려주세요.`;
     case 6:
       return `${form.userInfo.username}님이 운영하시는\n채널의 아이디를 알려주세요.`;
     case 7:
@@ -36,6 +36,7 @@ export default function StepProvider({ children }) {
   // 회원가입 폼 데이터
   const [form, setForm] = useState({
     userInfo: { username: '', birthday: '', gender: '' },
+    interests: [],
     channelInfo: [],
   });
 

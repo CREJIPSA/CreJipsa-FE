@@ -3,6 +3,7 @@ import { useContext, useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyle from '../hooks/use-themed-style';
+import InterestsInfo from './screens/interestsInfo';
 import UserInfo from './screens/userInfo';
 import StepProvider, { StepContext } from './step-context';
 import TermProvider from './term-context';
@@ -26,6 +27,8 @@ function SignUpContent() {
     useContext(StepContext);
 
   const userInfoRef = useRef(null);
+  const interestsInfoRef = useRef(null);
+
   // 다음 버튼 활성화 상태
   const [isNextButtonActive, setIsNextButtonActive] = useState(false);
   const handleFormChange = isComplete => {
@@ -35,6 +38,14 @@ function SignUpContent() {
   const handleNextButtonClick = async () => {
     if (userInfoRef.current) {
       const isValid = await userInfoRef.current.validateAndGoNext();
+      if (isValid) {
+        console.log('유효성 검사 통과, 다음 단계로 이동');
+        handleNextStep();
+      } else {
+        console.log('유효성 검사 실패, 현재 단계에 머무름');
+      }
+    } else if (interestsInfoRef.current) {
+      const isValid = await interestsInfoRef.current.validateAndGoNext();
       if (isValid) {
         console.log('유효성 검사 통과, 다음 단계로 이동');
         handleNextStep();
@@ -59,7 +70,10 @@ function SignUpContent() {
       </View>
       {/* 바디 */}
       <View style={styles.bodyContainer}>
-        <UserInfo ref={userInfoRef} onFormStatusChange={handleFormChange} />
+        {step <= 3 && (
+          <UserInfo ref={userInfoRef} onFormStatusChange={handleFormChange} />
+        )}
+        {step === 4 && <InterestsInfo ref={interestsInfoRef} />}
       </View>
       {/* 푸터 */}
       <View style={styles.footerContainer}>
@@ -77,7 +91,6 @@ function SignUpContent() {
           onPress={async () => {
             if (isNextButtonActive) {
               await handleNextButtonClick();
-              console.log('step: ', step);
             }
           }}
           disabled={!isNextButtonActive}
