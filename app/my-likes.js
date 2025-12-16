@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FilterComponent from './components/my/FilterComponent';
@@ -12,14 +13,30 @@ export default function MyLikes() {
     return <PostItem post={item} />;
   };
 
+  const [openedFilter, setOpenedFilter] = useState(null);
+
+  const toggleFilter = filterName => {
+    setOpenedFilter(openedFilter === filterName ? null : filterName);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>내 좋아요함</Text>
       </View>
       <View style={styles.filterContainer}>
-        <FilterComponent text={'전체'} />
-        <FilterComponent text={'최신순'} />
+        <FilterComponent
+          text={'전체'}
+          isOpen={openedFilter === 'category'}
+          onPress={() => toggleFilter('category')}
+          options={['전체', '일반', '팁', '같이 촬영해요']}
+        />
+        <FilterComponent
+          text={'최신순'}
+          isOpen={openedFilter === 'sort'}
+          onPress={() => toggleFilter('sort')}
+          options={['최신순', '인기순', '과거순']}
+        />
       </View>
       <FlatList
         style={styles.contentsListContainer}
@@ -54,7 +71,8 @@ const getStyles = (isDark, primaryColors) => {
       marginTop: 16,
       marginLeft: 19,
       flexDirection: 'row',
-      gap: 20,
+      gap: 16,
+      zIndex: 100,
     },
 
     contentsListContainer: {
