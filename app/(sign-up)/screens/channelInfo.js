@@ -339,12 +339,22 @@ export default forwardRef(function ChannelInfo(props, ref) {
       {/* 채널 추가 정보 */}
       <View
         style={{
-          display: step === 8 ? 'flex' : 'none',
+          display: step >= 5 && step <= 8 ? 'flex' : 'none',
           width: '100%',
+          flex: 1,
         }}
       >
         {form.channelInfo?.length > 0 ? (
-          <View style={styles.addedChannelContainer}>
+          <View
+            style={[
+              styles.addedChannelContainer,
+              {
+                ...(step >= 5 &&
+                  step <= 7 &&
+                  styles.addedChannelBottomContainer),
+              },
+            ]}
+          >
             {form.channelInfo.map((channel, index) => (
               <View
                 key={channel.channelId || String(index)}
@@ -495,6 +505,11 @@ const getStyles = isDark => {
       gap: 10,
       justifyContent: 'center',
       alignSelf: 'center',
+    },
+    addedChannelBottomContainer: {
+      flexDirection: 'column-reverse',
+      position: 'absolute',
+      bottom: 20,
     },
     addedChannelButton: {
       flexDirection: 'row',
