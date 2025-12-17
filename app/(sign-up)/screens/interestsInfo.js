@@ -13,7 +13,7 @@ import { StepContext } from '../step-context';
 
 export default forwardRef(function InterestsInfo(props, ref) {
   const { styles } = useThemedStyle(getStyles);
-  const { step, handleNextStep } = useContext(StepContext);
+  const { step, handleNextStep, updateForm } = useContext(StepContext);
   const { onFormStatusChange } = props;
 
   // 단계 전환 조건
@@ -21,6 +21,18 @@ export default forwardRef(function InterestsInfo(props, ref) {
     interests: Yup.array()
       .min(1, '관심 분야를 최소 1개 이상 선택해주세요.')
       .required('관심 분야를 선택해주세요.'),
+  });
+
+  // formik 초기 설정
+  const formik = useFormik({
+    initialValues: {
+      interests: [],
+    },
+    validationSchema: signupSchema,
+    onSubmit: values => {
+      console.log('Form values:', values);
+      handleNextStep();
+    },
   });
 
   // 유효성 검사
@@ -35,22 +47,13 @@ export default forwardRef(function InterestsInfo(props, ref) {
     const error = await formik.validateForm();
     const hasError = fieldsToValidate.some(field => error[field]);
     if (!hasError) {
+      updateForm('interests', formik.values.interests);
       return true;
     }
     return false;
   };
 
-  const formik = useFormik({
-    initialValues: {
-      interests: [],
-    },
-    validationSchema: signupSchema,
-    onSubmit: values => {
-      console.log('Form values:', values);
-      handleNextStep();
-    },
-  });
-
+  // 하나라도 선택해야 다음 단계 이동 가능
   useEffect(() => {
     const interestsArray = formik.values.interests || [];
     const isComplete = interestsArray.length >= 1;
@@ -128,11 +131,6 @@ export default forwardRef(function InterestsInfo(props, ref) {
           ))}
         </View>
       </View>
-      {step === 4 && formik.errors.interests && formik.touched.interests && (
-        <Text style={{ color: 'red', marginLeft: 16, marginTop: 4 }}>
-          {formik.errors.interests}
-        </Text>
-      )}
     </View>
   );
 });

@@ -20,6 +20,7 @@ function getStepTitle(step, form) {
     case 6:
       return `${form.userInfo.username}님이 운영하시는\n채널의 아이디를 알려주세요.`;
     case 7:
+    case 8:
       return `정보가 모두 맞나요?`;
     default:
       return '';
@@ -45,23 +46,26 @@ export default function StepProvider({ children }) {
       ...prev,
       [section]: data,
     }));
+    console.log('⚪current form data:', { ...form, [section]: data });
   };
 
   const handleNextStep = () => {
-    if (step === 7) {
+    if (step === 8) {
       router.push('/(sign-up)/welcome');
       setSignupCompleted(true);
       return;
     } else {
-      setStep(prev => Math.min(prev + 1, 7));
+      setStep(prev => Math.min(prev + 1, 8));
     }
   };
 
   const handleBackStep = () => {
-    if (step > 1) {
-      setStep(prev => Math.max(prev - 1, 1));
-    } else {
+    if (step === 1) {
       router.back();
+    } else if (step === 8) {
+      setStep(5);
+    } else {
+      setStep(prev => Math.max(prev - 1, 1));
     }
   };
 

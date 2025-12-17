@@ -1,10 +1,15 @@
 import instagramLogo from '@/assets/images/platform_logo/instagram_logo.png';
 import tiktokLogo from '@/assets/images/platform_logo/tiktok_logo.png';
 import youtubeLogo from '@/assets/images/platform_logo/youtube_logo.png';
-import RemoveChannelIcon from '@/assets/svgs/signup/remove-channel-icon.js';
 import { Ionicons } from '@expo/vector-icons';
 import { useFormik } from 'formik';
-import { useContext, useEffect, useState } from 'react';
+import {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 import {
   Image,
   Modal,
@@ -19,281 +24,377 @@ import * as Yup from 'yup';
 import useThemedStyle from '../../hooks/use-themed-style';
 import { StepContext } from '../step-context.js';
 
-export default function ChannelInfo() {
+export default forwardRef(function ChannelInfo(props, ref) {
   const insets = useSafeAreaInsets();
   const { isDark, styles } = useThemedStyle(getStyles);
-  const { step, setStep, handleNextStep } = useContext(StepContext);
+  const { form, step, setStep, handleNextStep, updateForm } =
+    useContext(StepContext);
+  const { onFormStatusChange } = props;
 
   const [isPlatformModalVisible, setPlatformModalVisible] = useState(false);
 
   // 회원가입 단계 전환 조건
-  const signupSchema = Yup.object().shape({
-    myChannels: Yup.array().of(
-      Yup.object().shape({
-        channelId: Yup.string().required('채널 아이디를 입력해주세요.'),
-        platform: Yup.string().required('채널 플랫폼을 선택해주세요.'),
-      }),
-    ),
+  const tempChannelSchema = Yup.object().shape({
+    channelId: Yup.string().required('채널 아이디를 입력해주세요.'),
+    platform: Yup.string().required('채널 플랫폼을 선택해주세요.'),
   });
 
+  // formik 초기 설정
   const formik = useFormik({
     initialValues: {
-      myChannels: [],
+      platform: '',
+      channelId: '',
     },
-    validationSchema: signupSchema,
+    validationSchema: tempChannelSchema,
     onSubmit: values => {
       console.log('Form values:', values);
     },
   });
 
-  const addChannel = () => {
-    const newChannel = {
-      channelId: '',
-      platform: '',
-      interests: [],
-    };
-    // 빈 채널 우선 추가
-    formik.setFieldValue('myChannels', [
-      ...formik.values.myChannels,
-      newChannel,
-    ]);
+  // 현재 입력 채널
+  const [tempChannel, setTempChannel] = useState({
+    platform: '',
+    channelId: '',
+  });
+
+  // 채널 추가
+  const addChannel = async tempChannel => {
+    const isValid = await handleStepValidation();
+    if (isValid) {
+      updateForm('channelInfo', [
+        ...form.channelInfo,
+        { platform: tempChannel.platform, channelId: tempChannel.channelId },
+      ]);
+      // 초기화
+      setTempChannel({ platform: '', channelId: '' });
+    }
   };
 
-  useEffect(() => {
-    // 첫 채널 추가
-    if (formik.values.myChannels.length === 0) {
-      addChannel();
+  // 유효성 검사
+  const handleStepValidation = async () => {
+    const fieldsToValidate = [];
+    if (step >= 5) {
+      fieldsToValidate.push('platform');
     }
-  }, []);
+    if (step >= 6) {
+      fieldsToValidate.push('channelId');
+    }
+    const newTouched = fieldsToValidate.reduce((acc, field) => {
+      acc[field] = true;
+      return acc;
+    }, {});
+    formik.setTouched({ ...formik.touched, ...newTouched }, false);
+    const errors = await formik.validateForm();
+    const hasErrors = fieldsToValidate.some(field => errors[field]);
+    if (!hasErrors) {
+      return true;
+    }
+    return false;
+  };
+
+  //  버튼 활성화 상태 관리
+  const checkAllRequiredFieldsFilled = currentStep => {
+    if (currentStep === 7) {
+      return tempChannel.platform !== '' && tempChannel.channelId !== '';
+    }
+    const fieldsToValidate = [];
+    if (currentStep >= 5) {
+      fieldsToValidate.push(tempChannel.platform);
+    }
+    if (currentStep >= 6) {
+      fieldsToValidate.push(tempChannel.channelId);
+    }
+    return fieldsToValidate.every(value => value && value.trim() !== '');
+  };
+
+  // 필수 항목 모두 입력해야 다음 단계 이동 가능
+  useEffect(() => {
+    if (step === 7) {
+      if (onFormStatusChange) {
+        if (tempChannel.platform !== '' && tempChannel.channelId !== '') {
+          onFormStatusChange(true);
+        } else {
+          onFormStatusChange(false);
+        }
+      }
+    }
+    const isComplete = checkAllRequiredFieldsFilled(step);
+    if (onFormStatusChange) {
+      onFormStatusChange(isComplete);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, tempChannel, onFormStatusChange]);
+
+  useImperativeHandle(ref, () => ({
+    validateAndGoNext: handleStepValidation,
+  }));
+
+  // 채널 정보 최종 저장
+  useEffect(() => {
+    if (step !== 8) return;
+    (async () => {
+      await addChannel(tempChannel);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
+  useEffect(() => {
+    if (!onFormStatusChange) return;
+    if (step === 8) {
+      onFormStatusChange((form.channelInfo?.length ?? 0) > 0);
+      return;
+    }
+    const isComplete = checkAllRequiredFieldsFilled(step);
+    onFormStatusChange(isComplete);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.channelInfo, step]);
 
   return (
     <View style={styles.formContainer}>
-      {formik.values.myChannels.map((channel, index) => (
-        <View key={index}>
-          {/* 채널 아이디 입력 폼 */}
-          <View
-            style={[
-              styles.inputContainer,
-              { display: step >= 6 ? 'flex' : 'none' },
-            ]}
+      {/* 채널 아이디 입력 폼 */}
+      <View
+        style={[
+          styles.inputContainer,
+          { display: step >= 6 && step <= 7 ? 'flex' : 'none' },
+        ]}
+      >
+        <Text style={styles.inputTitle}>채널 아이디</Text>
+        <TextInput
+          style={styles.inputForm}
+          placeholder="@크집사"
+          placeholderTextColor={isDark ? '#A5A5A5' : '#B7B7B7'}
+          value={tempChannel.channelId}
+          onChangeText={text => {
+            setTempChannel({ ...tempChannel, channelId: text });
+            formik.setFieldValue('channelId', text);
+            if (props.onFormStatusChange) {
+              const isComplete = checkAllRequiredFieldsFilled(step);
+              props.onFormStatusChange(isComplete);
+            }
+          }}
+          onBlur={() => {
+            formik.setFieldTouched('channelId', true);
+          }}
+          onSubmitEditing={async () => {
+            const isValid = await handleStepValidation();
+            if (isValid) {
+              handleNextStep();
+            }
+          }}
+        />
+      </View>
+      {/* 채널 플랫폼 선택 폼 */}
+      <View
+        style={[
+          styles.inputContainer,
+          { display: step >= 5 && step <= 7 ? 'flex' : 'none' },
+        ]}
+      >
+        <Text style={styles.inputTitle}>채널 플랫폼</Text>
+        <View style={[styles.inputForm, styles.platformInputFormContainer]}>
+          <Text style={styles.platformInputText}>
+            {tempChannel.platform === ''
+              ? '채널 플랫폼 선택'
+              : tempChannel.platform}
+          </Text>
+          <Pressable
+            onPress={() => {
+              setPlatformModalVisible(true);
+            }}
           >
-            <Text style={styles.inputTitle}>채널 아이디</Text>
-            <TextInput
-              style={styles.inputForm}
-              placeholder="@크집사"
-              placeholderTextColor={isDark ? '#A5A5A5' : '#B7B7B7'}
-              value={formik.values.myChannels[index].channelId}
-              onChangeText={text => {
-                formik.setFieldValue(`myChannels[${index}].channelId`, text);
-              }}
-              onSubmitEditing={handleNextStep}
+            <Ionicons
+              name="chevron-down"
+              size={24}
+              style={styles.defaultColor}
             />
-          </View>
-          {/* 채널 플랫폼 선택 폼 */}
+          </Pressable>
+        </View>
+      </View>
+      <Modal
+        visible={isPlatformModalVisible}
+        transparent={true}
+        animationType="slide"
+        statusBarTranslucent={true}
+        onRequestClose={() => setPlatformModalVisible(false)}
+      >
+        <Pressable
+          style={styles.modalBackground}
+          onPress={() => setPlatformModalVisible(false)}
+        >
           <View
             style={[
-              styles.inputContainer,
-              { display: step >= 4 ? 'flex' : 'none' },
+              styles.modalContainer,
+              { paddingBottom: insets.bottom + 53 },
             ]}
           >
-            <Text style={styles.inputTitle}>채널 플랫폼</Text>
-            <View style={[styles.inputForm, styles.platformInputFormContainer]}>
-              <Text style={styles.platformInputText}>
-                {formik.values.myChannels[index].platform === ''
-                  ? '채널 플랫폼 선택'
-                  : formik.values.myChannels[index].platform}
-              </Text>
+            <Text style={styles.modalText}>
+              채널 플랫폼을 한가지만 선택해주세요.
+            </Text>
+            <View style={styles.platformModalOptionContainer}>
               <Pressable
-                onPress={() => {
-                  setPlatformModalVisible(true);
+                style={[
+                  styles.platformModalOption,
+                  tempChannel.platform === '인스타그램' && {
+                    borderWidth: 0.5,
+                    borderColor: isDark ? '#E3FFAB' : '#CCFF66',
+                  },
+                  !(
+                    tempChannel.platform === '' ||
+                    tempChannel.platform === '인스타그램'
+                  ) && styles.dimmedOption,
+                ]}
+                onPress={async () => {
+                  await formik.setFieldValue('platform', '인스타그램', true);
+                  setTempChannel({ ...tempChannel, platform: '인스타그램' });
+                  if (props.onFormStatusChange) {
+                    const isComplete = checkAllRequiredFieldsFilled(step);
+                    props.onFormStatusChange(isComplete);
+                  }
                 }}
               >
-                <Ionicons
-                  name="chevron-down"
-                  size={24}
-                  style={styles.defaultColor}
+                <Image
+                  source={instagramLogo}
+                  style={{ width: 40, height: 40 }}
                 />
+                <Text style={styles.modalOptionText}>Instagram</Text>
+              </Pressable>
+              <Pressable
+                style={[
+                  styles.platformModalOption,
+                  tempChannel.platform === '유튜브' && {
+                    borderWidth: 0.5,
+                    borderColor: isDark ? '#E3FFAB' : '#CCFF66',
+                  },
+                  !(
+                    tempChannel.platform === '' ||
+                    tempChannel.platform === '유튜브'
+                  ) && styles.dimmedOption,
+                ]}
+                onPress={async () => {
+                  await formik.setFieldValue('platform', '유튜브', true);
+                  setTempChannel({ ...tempChannel, platform: '유튜브' });
+                  if (props.onFormStatusChange) {
+                    const isComplete = checkAllRequiredFieldsFilled(step);
+                    props.onFormStatusChange(isComplete);
+                  }
+                }}
+              >
+                <Image source={youtubeLogo} style={{ width: 40, height: 40 }} />
+                <Text style={styles.modalOptionText}>Youtube</Text>
+              </Pressable>
+              <Pressable
+                style={[
+                  styles.platformModalOption,
+                  tempChannel.platform === '틱톡' && {
+                    borderWidth: 0.5,
+                    borderColor: isDark ? '#E3FFAB' : '#CCFF66',
+                  },
+                  !(
+                    tempChannel.platform === '' ||
+                    tempChannel.platform === '틱톡'
+                  ) && styles.dimmedOption,
+                ]}
+                onPress={async () => {
+                  await formik.setFieldValue('platform', '틱톡', true);
+                  setTempChannel({ ...tempChannel, platform: '틱톡' });
+                  if (props.onFormStatusChange) {
+                    const isComplete = checkAllRequiredFieldsFilled(step);
+                    props.onFormStatusChange(isComplete);
+                  }
+                }}
+              >
+                <Image source={tiktokLogo} style={{ width: 40, height: 40 }} />
+                <Text style={styles.modalOptionText}>TikTok</Text>
               </Pressable>
             </View>
           </View>
-          {/* 채널 추가 버튼 */}
-          <View>
-            <Pressable
-              style={[
-                styles.addChannelButton,
-                { display: step >= 7 ? 'flex' : 'none' },
-              ]}
-              onPress={() => {
-                addChannel();
-                setStep(4);
-              }}
-            >
-              <Ionicons name="add" size={24} style={styles.defaultColor} />
-              <Text
-                style={[
-                  styles.defaultColor,
-                  {
-                    fontSize: 12,
-                    fontWeight: 'normal',
-                  },
-                ]}
+        </Pressable>
+      </Modal>
+      {/* 채널 추가 버튼 */}
+      <View>
+        <Pressable
+          style={[
+            styles.addChannelButton,
+            { display: step === 7 ? 'flex' : 'none' },
+          ]}
+          onPress={() => {
+            addChannel(tempChannel);
+            setStep(5);
+          }}
+        >
+          <Ionicons name="add" size={24} style={styles.defaultColor} />
+          <Text
+            style={[
+              styles.defaultColor,
+              {
+                fontSize: 12,
+                fontWeight: 'normal',
+              },
+            ]}
+          >
+            채널 추가
+          </Text>
+        </Pressable>
+      </View>
+      {/* 채널 추가 정보 */}
+      <View
+        style={{
+          display: step === 8 ? 'flex' : 'none',
+          width: '100%',
+        }}
+      >
+        {form.channelInfo?.length > 0 ? (
+          <View style={styles.addedChannelContainer}>
+            {form.channelInfo.map((channel, index) => (
+              <View
+                key={channel.channelId || String(index)}
+                style={styles.addedChannelButton}
               >
-                채널 추가
-              </Text>
-            </Pressable>
+                <View style={styles.addedChannelInfo}>
+                  <Image
+                    source={
+                      channel.platform === '인스타그램'
+                        ? instagramLogo
+                        : channel.platform === '유튜브'
+                          ? youtubeLogo
+                          : tiktokLogo
+                    }
+                    style={{ width: 15, height: 15 }}
+                  />
+                  <Text style={styles.addedChannelText}>
+                    {channel.channelId}
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={() =>
+                    updateForm(
+                      'channelInfo',
+                      form.channelInfo.filter((_, i) => i !== index),
+                    )
+                  }
+                >
+                  <Ionicons
+                    name="close-outline"
+                    size={12}
+                    style={styles.defaultColor}
+                  />
+                </Pressable>
+              </View>
+            ))}
           </View>
-          {/* 채널 추가 정보 */}
-          <View
+        ) : (
+          <Text
             style={{
-              display: step >= 4 && step <= 7 ? 'flex' : 'none',
-              position: 'absolute',
-              flexDirection: 'column-reverse',
-              width: '100%',
-              bottom: 20,
+              color: isDark ? '#FAFAFA' : '#141414',
             }}
           >
-            {formik.values.myChannels && (
-              <View style={styles.addedChannelContainer}>
-                {formik.values.myChannels.map((channel, index) => (
-                  <View
-                    key={channel.channelId || String(index)}
-                    style={styles.addedChannelButton}
-                  >
-                    <Text style={styles.addedChannelText}>
-                      {channel.channelId}
-                    </Text>
-                    <Pressable
-                      style={styles.removeChannelButton}
-                      onPress={() =>
-                        formik.setFieldValue(
-                          'myChannels',
-                          formik.values.myChannels.filter(
-                            (_, i) => i !== index,
-                          ),
-                        )
-                      }
-                    >
-                      <RemoveChannelIcon
-                        color={isDark ? '#FAFAFA' : '#141414'}
-                      />
-                      <Text style={styles.removeChannelButtonText}>삭제</Text>
-                    </Pressable>
-                  </View>
-                ))}
-              </View>
-            )}
-          </View>
-          {/* 플랫폼 선택 모달 */}
-          <Modal
-            visible={isPlatformModalVisible}
-            transparent={true}
-            animationType="slide"
-            statusBarTranslucent={true}
-            onRequestClose={() => setPlatformModalVisible(false)}
-          >
-            <Pressable
-              style={styles.modalBackground}
-              onPress={() => setPlatformModalVisible(false)}
-            >
-              <View
-                style={[
-                  styles.modalContainer,
-                  { paddingBottom: insets.bottom + 53 },
-                ]}
-              >
-                <Text style={styles.modalText}>
-                  채널 플랫폼을 한가지만 선택해주세요.
-                </Text>
-                <View style={styles.platformModalOptionContainer}>
-                  <Pressable
-                    style={[
-                      styles.platformModalOption,
-                      formik.values.myChannels[index].platform ===
-                        '인스타그램' && {
-                        borderWidth: 0.5,
-                        borderColor: isDark ? '#E3FFAB' : '#CCFF66',
-                      },
-                      !(
-                        formik.values.myChannels[index].platform === '' ||
-                        formik.values.myChannels[index].platform ===
-                          '인스타그램'
-                      ) && styles.dimmedOption,
-                    ]}
-                    onPress={() => {
-                      formik.setFieldValue(
-                        `myChannels[${index}].platform`,
-                        '인스타그램',
-                      );
-                      setPlatformModalVisible(false);
-                    }}
-                  >
-                    <Image
-                      source={instagramLogo}
-                      style={{ width: 40, height: 40 }}
-                    />
-                    <Text style={styles.modalOptionText}>Instagram</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[
-                      styles.platformModalOption,
-                      formik.values.myChannels[index].platform === '유튜브' && {
-                        borderWidth: 0.5,
-                        borderColor: isDark ? '#E3FFAB' : '#CCFF66',
-                      },
-                      !(
-                        formik.values.myChannels[index].platform === '' ||
-                        formik.values.myChannels[index].platform === '유튜브'
-                      ) && styles.dimmedOption,
-                    ]}
-                    onPress={() => {
-                      formik.setFieldValue(
-                        `myChannels[${index}].platform`,
-                        '유튜브',
-                      );
-                      setPlatformModalVisible(false);
-                    }}
-                  >
-                    <Image
-                      source={youtubeLogo}
-                      style={{ width: 40, height: 40 }}
-                    />
-                    <Text style={styles.modalOptionText}>Youtube</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[
-                      styles.platformModalOption,
-                      formik.values.myChannels[index].platform === '틱톡' && {
-                        borderWidth: 0.5,
-                        borderColor: isDark ? '#E3FFAB' : '#CCFF66',
-                      },
-                      !(
-                        formik.values.myChannels[index].platform === '' ||
-                        formik.values.myChannels[index].platform === '틱톡'
-                      ) && styles.dimmedOption,
-                    ]}
-                    onPress={() => {
-                      formik.setFieldValue(
-                        `myChannels[${index}].platform`,
-                        '틱톡',
-                      );
-                      setPlatformModalVisible(false);
-                    }}
-                  >
-                    <Image
-                      source={tiktokLogo}
-                      style={{ width: 40, height: 40 }}
-                    />
-                    <Text style={styles.modalOptionText}>TikTok</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </Pressable>
-          </Modal>
-        </View>
-      ))}
+            등록된 채널이 없습니다.
+          </Text>
+        )}
+      </View>
     </View>
   );
-}
+});
 
 const getStyles = isDark => {
   const defaultColor = isDark ? '#FAFAFA' : '#141414';
@@ -303,11 +404,11 @@ const getStyles = isDark => {
     },
     formContainer: {
       flex: 1,
-      gap: 40,
     },
     inputContainer: {
       gap: 5,
       marginHorizontal: 16,
+      marginBottom: 40,
     },
     inputTitle: {
       color: defaultColor,
@@ -321,15 +422,6 @@ const getStyles = isDark => {
       fontSize: 18,
       color: defaultColor,
     },
-    interestFieldOptionContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 12,
-      paddingTop: 20,
-      paddingBottom: 10,
-      borderBottomWidth: 0.5,
-      borderBottomColor: defaultColor,
-    },
     platformInputFormContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -339,38 +431,6 @@ const getStyles = isDark => {
     platformInputText: {
       fontSize: 18,
       color: defaultColor,
-    },
-    baseChip: {
-      height: 30,
-      paddingHorizontal: 10,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: isDark ? '#323232' : '#E6E6E6',
-      borderRadius: 20,
-      borderWidth: 1,
-      borderColor: defaultColor,
-      boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.1)',
-    },
-    baseChipText: {
-      color: defaultColor,
-      fontSize: 14,
-      fontWeight: 'normal',
-    },
-    selectedChip: {
-      height: 30,
-      paddingHorizontal: 10,
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderColor: isDark ? '#CCFF66' : '#141414',
-      borderWidth: 1,
-      borderRadius: 16,
-      boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.1)',
-      backgroundColor: isDark ? null : '#CCFF66',
-    },
-    selectedChipText: {
-      fontSize: 14,
-      fontWeight: 'normal',
-      color: isDark ? '#CCFF66' : '#141414',
     },
     modalBackground: {
       flex: 1,
@@ -446,25 +506,14 @@ const getStyles = isDark => {
       borderWidth: 0.5,
       borderColor: isDark ? '#FAFAFA' : '#141414',
     },
+    addedChannelInfo: {
+      flexDirection: 'row',
+      gap: 4,
+      alignItems: 'center',
+    },
     addedChannelText: {
       fontSize: 12,
       fontWeight: 'normal',
-      color: isDark ? '#FAFAFA' : '#141414',
-    },
-    removeChannelButton: {
-      width: 70,
-      height: 35,
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: 8,
-      borderWidth: 0.5,
-      borderRadius: 4,
-      borderColor: isDark ? '#FAFAFA' : '#141414',
-      paddingHorizontal: 10,
-    },
-    removeChannelButtonText: {
-      fontSize: 12,
       color: isDark ? '#FAFAFA' : '#141414',
     },
   });

@@ -45,6 +45,20 @@ export default forwardRef(function UserInfo(props, ref) {
     gender: Yup.string().required('성별을 선택해주세요.'),
   });
 
+  // formik 초기 설정
+  const formik = useFormik({
+    initialValues: {
+      username: '',
+      birth: '',
+      gender: '',
+    },
+    validationSchema: signupSchema,
+    onSubmit: values => {
+      console.log('Form values:', values);
+      handleNextStep();
+    },
+  });
+
   // 유효성 검사
   const handleStepValidation = async () => {
     const fieldsToValidate = [];
@@ -96,6 +110,7 @@ export default forwardRef(function UserInfo(props, ref) {
     );
   };
 
+  // 필수 항목 모두 입력해야 다음 단계 이동 가능
   useEffect(() => {
     if (!formik.values) return;
     const currentFormikValues = formik.values || {};
@@ -114,19 +129,6 @@ export default forwardRef(function UserInfo(props, ref) {
   useImperativeHandle(ref, () => ({
     validateAndGoNext: handleStepValidation,
   }));
-
-  const formik = useFormik({
-    initialValues: {
-      username: '',
-      birth: '',
-      gender: '',
-    },
-    validationSchema: signupSchema,
-    onSubmit: values => {
-      console.log('Form values:', values);
-      handleNextStep();
-    },
-  });
 
   // 약관
   const {
@@ -268,21 +270,6 @@ export default forwardRef(function UserInfo(props, ref) {
           autoCapitalize="none"
         />
       </View>
-      {step >= 1 && formik.touched.username && formik.errors.username && (
-        <Text style={{ color: 'red', marginLeft: 16 }}>
-          {formik.errors.username}
-        </Text>
-      )}
-      {step >= 2 && formik.touched.birth && formik.errors.birth && (
-        <Text style={{ color: 'red', marginLeft: 16 }}>
-          {formik.errors.birth}
-        </Text>
-      )}
-      {step >= 3 && formik.touched.gender && formik.errors.gender && (
-        <Text style={{ color: 'red', marginLeft: 16 }}>
-          {formik.errors.gender}
-        </Text>
-      )}
       {/* 약관 모달 */}
       <Modal
         visible={termsOptions.isTermModalVisible}
