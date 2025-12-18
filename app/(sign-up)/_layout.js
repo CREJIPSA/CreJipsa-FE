@@ -1,5 +1,5 @@
 import { Slot, usePathname } from 'expo-router';
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyle from '../hooks/use-themed-style';
@@ -30,6 +30,11 @@ function SignUpContent() {
   const userInfoRef = useRef(null);
   const interestsInfoRef = useRef(null);
   const channelInfoRef = useRef(null);
+
+  // 버튼 상태 초기화 (비활성화)
+  useEffect(() => {
+    setIsNextButtonActive(false);
+  }, [step]);
 
   // 다음 버튼 활성화 상태
   const [isNextButtonActive, setIsNextButtonActive] = useState(false);

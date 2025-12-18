@@ -45,7 +45,7 @@ const getStyles = isDark =>
     completedContainer: {
       flex: 1,
       alignItems: 'center',
-      backgroundColor: isDark ? '#141414' : '#FAFAFA',
+      backgroundColor: isDark ? '#202020' : '#FCFCFC',
     },
     completedTextContainer: {
       paddingTop: 200,

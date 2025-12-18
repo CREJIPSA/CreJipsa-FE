@@ -9,6 +9,7 @@ import {
   useContext,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -107,16 +108,13 @@ export default forwardRef(function ChannelInfo(props, ref) {
 
   // 필수 항목 모두 입력해야 다음 단계 이동 가능
   useEffect(() => {
+    const isComplete = checkAllRequiredFieldsFilled(step);
     if (step === 7) {
       if (onFormStatusChange) {
-        if (tempChannel.platform !== '' && tempChannel.channelId !== '') {
-          onFormStatusChange(true);
-        } else {
-          onFormStatusChange(false);
-        }
+        onFormStatusChange(isComplete);
       }
+      return;
     }
-    const isComplete = checkAllRequiredFieldsFilled(step);
     if (onFormStatusChange) {
       onFormStatusChange(isComplete);
     }
@@ -128,8 +126,12 @@ export default forwardRef(function ChannelInfo(props, ref) {
   }));
 
   // 채널 정보 최종 저장
+  const hasAddedOnStep8 = useRef(false);
   useEffect(() => {
     if (step !== 8) return;
+    if (hasAddedOnStep8.current) return;
+    if (!tempChannel.channelId || !tempChannel.platform) return;
+    hasAddedOnStep8.current = true;
     (async () => {
       await addChannel(tempChannel);
     })();
