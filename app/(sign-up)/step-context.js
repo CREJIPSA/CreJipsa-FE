@@ -43,13 +43,21 @@ export default function StepProvider({ children }) {
   const title = getStepTitle(step, form);
 
   const updateForm = (section, data) => {
-    setForm(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        ...data,
-      },
-    }));
+    setForm(prev => {
+      if (Array.isArray(prev[section])) {
+        return {
+          ...prev,
+          [section]: data,
+        };
+      }
+      return {
+        ...prev,
+        [section]: {
+          ...prev[section],
+          ...data,
+        },
+      };
+    });
   };
 
   const handleNextStep = () => {

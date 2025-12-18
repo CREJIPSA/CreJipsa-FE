@@ -9,7 +9,6 @@ import {
   useContext,
   useEffect,
   useImperativeHandle,
-  useRef,
   useState,
 } from 'react';
 import {
@@ -61,6 +60,7 @@ export default forwardRef(function ChannelInfo(props, ref) {
     const isValid = await handleStepValidation();
     if (isValid) {
       updateForm('channelInfo', [
+        ...form.channelInfo,
         { platform: tempChannel.platform, channelId: tempChannel.channelId },
       ]);
       // 초기화
@@ -112,7 +112,6 @@ export default forwardRef(function ChannelInfo(props, ref) {
       if (onFormStatusChange) {
         onFormStatusChange(isComplete);
       }
-      return;
     }
     if (onFormStatusChange) {
       onFormStatusChange(isComplete);
@@ -125,12 +124,8 @@ export default forwardRef(function ChannelInfo(props, ref) {
   }));
 
   // 채널 정보 최종 저장
-  const hasAddedOnStep8 = useRef(false);
   useEffect(() => {
     if (step !== 8) return;
-    if (hasAddedOnStep8.current) return;
-    if (!tempChannel.channelId || !tempChannel.platform) return;
-    hasAddedOnStep8.current = true;
     (async () => {
       await addChannel(tempChannel);
     })();
@@ -415,7 +410,6 @@ const getStyles = isDark => {
     inputTitle: {
       color: defaultColor,
       fontSize: 12,
-      fontWeight: '100',
     },
     inputForm: {
       height: 42,

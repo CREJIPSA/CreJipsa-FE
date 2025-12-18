@@ -206,7 +206,7 @@ export default forwardRef(function UserInfo(props, ref) {
           style={styles.inputForm}
           value={formik.values.birth}
           placeholder="0000.00.00."
-          placeholderTextColor={isDark ? '#AAAAAA' : '#555555'}
+          placeholderTextColor={isDark ? '#8A8A8A' : '#D3D3D3'}
           onChangeText={text => {
             formik.handleChange('birth')(text);
             updateForm('userInfo', { birth: text });
@@ -453,7 +453,6 @@ const getStyles = isDark => {
     inputTitle: {
       color: textColor,
       fontSize: 12,
-      fontWeight: '100',
     },
     inputForm: {
       height: 42,

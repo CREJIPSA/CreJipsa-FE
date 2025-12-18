@@ -48,6 +48,7 @@ const getStyles = isDark =>
       backgroundColor: isDark ? '#202020' : '#FCFCFC',
     },
     completedTextContainer: {
+      width: '100%',
       paddingTop: 200,
       justifyContent: 'center',
       alignItems: 'center',
@@ -56,7 +57,7 @@ const getStyles = isDark =>
     completedText: {
       textAlign: 'center',
       fontSize: 20,
-      fontWeight: 'normal',
       color: isDark ? '#FAFAFA' : '#141414',
+      width: '100%',
     },
   });

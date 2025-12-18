@@ -140,7 +140,6 @@ const getStyles = isDark => {
     inputTitle: {
       color: defaultColor,
       fontSize: 12,
-      fontWeight: '100',
     },
     interestFieldOptionContainer: {
       flexDirection: 'row',
