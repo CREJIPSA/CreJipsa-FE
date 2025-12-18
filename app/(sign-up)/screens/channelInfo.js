@@ -9,6 +9,7 @@ import {
   useContext,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -132,14 +133,30 @@ export default forwardRef(function ChannelInfo(props, ref) {
   }));
 
   // 채널 정보 최종 저장
+  const hasSavedRef = useRef(false);
   useEffect(() => {
-    if (step !== 8) return;
-    (async () => {
-      await addChannel({
-        platform: formik.values.platform,
-        channelId: formik.values.channelId,
-      });
-    })();
+    if (step !== 8) {
+      hasSavedRef.current = false;
+      return;
+    }
+    if (hasSavedRef.current) return;
+    if (!formik.values.platform || !formik.values.channelId) return;
+
+    const saveFinalChannel = async () => {
+      hasSavedRef.current = true;
+
+      const isDuplicate = form.channelInfo.some(
+        ch =>
+          ch.platform === formik.values.platform &&
+          ch.channelId === formik.values.channelId,
+      );
+      if (!isDuplicate) {
+        await addChannel();
+        formik.setValues({ platform: '', channelId: '' }, false);
+        formik.setTouched({ platform: false, channelId: false }, false);
+      }
+    };
+    saveFinalChannel();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
@@ -160,6 +177,9 @@ export default forwardRef(function ChannelInfo(props, ref) {
     if ((form.channelInfo?.length ?? 0) === 0) {
       formik.setValues({ platform: '', channelId: '' }, false);
       formik.setTouched({ platform: false, channelId: false }, false);
+    }
+    if (step === 8 && (form.channelInfo?.length ?? 0) === 0) {
+      setStep(10);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.channelInfo?.length]);
@@ -356,7 +376,7 @@ export default forwardRef(function ChannelInfo(props, ref) {
         <Pressable
           style={[
             styles.addChannelButton,
-            { display: step === 7 ? 'flex' : 'none' },
+            { display: step === 7 || step === 10 ? 'flex' : 'none' },
           ]}
           onPress={async () => {
             await addChannel(formik.values);
@@ -377,7 +397,7 @@ export default forwardRef(function ChannelInfo(props, ref) {
           flex: 1,
         }}
       >
-        {form.channelInfo?.length > 0 ? (
+        {form.channelInfo?.length > 0 && (
           <View
             style={[
               styles.addedChannelContainer,
@@ -388,54 +408,45 @@ export default forwardRef(function ChannelInfo(props, ref) {
               },
             ]}
           >
-            {form.channelInfo.map((channel, index) => (
-              <View
-                key={`${channel.platform}-${channel.channelId}-${index}`}
-                style={styles.addedChannelButton}
-              >
-                <View style={styles.addedChannelInfo}>
-                  <Image
-                    source={
-                      channel.platform === '인스타그램'
-                        ? instagramLogo
-                        : channel.platform === '유튜브'
-                          ? youtubeLogo
-                          : tiktokLogo
-                    }
-                    style={{ width: 15, height: 15 }}
-                  />
-                  <Text style={styles.addedChannelText}>
-                    {channel.channelId}
-                  </Text>
-                </View>
-                <Pressable
-                  onPress={() =>
-                    updateForm(
-                      'channelInfo',
-                      form.channelInfo.filter((_, i) => i !== index),
-                    )
-                  }
+            {form.channelInfo
+              .filter(ch => ch.platform && ch.channelId)
+              .map((channel, index) => (
+                <View
+                  key={`${channel.platform}-${channel.channelId}-${index}`}
+                  style={styles.addedChannelButton}
                 >
-                  <Ionicons
-                    name="close-outline"
-                    size={12}
-                    style={styles.defaultColor}
-                  />
-                </Pressable>
-              </View>
-            ))}
+                  <View style={styles.addedChannelInfo}>
+                    <Image
+                      source={
+                        channel.platform === '인스타그램'
+                          ? instagramLogo
+                          : channel.platform === '유튜브'
+                            ? youtubeLogo
+                            : tiktokLogo
+                      }
+                      style={{ width: 15, height: 15 }}
+                    />
+                    <Text style={styles.addedChannelText}>
+                      {channel.channelId}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() =>
+                      updateForm(
+                        'channelInfo',
+                        form.channelInfo.filter((_, i) => i !== index),
+                      )
+                    }
+                  >
+                    <Ionicons
+                      name="close-outline"
+                      size={12}
+                      style={styles.defaultColor}
+                    />
+                  </Pressable>
+                </View>
+              ))}
           </View>
-        ) : (
-          step === 8 && (
-            <Text
-              style={{
-                paddingLeft: 16,
-                color: isDark ? '#FAFAFA' : '#141414',
-              }}
-            >
-              등록된 채널이 없습니다.
-            </Text>
-          )
         )}
       </View>
     </View>

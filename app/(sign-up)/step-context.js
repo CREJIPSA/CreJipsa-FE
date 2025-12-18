@@ -22,6 +22,8 @@ function getStepTitle(step, form) {
     case 7:
     case 8:
       return `정보가 모두 맞나요?`;
+    case 10:
+      return `등록된 채널이 없습니다.\n채널을 추가해주세요.`; // 등록된 채널이 없는 경우
     default:
       return '';
   }
