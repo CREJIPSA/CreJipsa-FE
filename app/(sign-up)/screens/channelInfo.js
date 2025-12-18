@@ -1,6 +1,7 @@
 import instagramLogo from '@/assets/images/platform_logo/instagram_logo.png';
 import tiktokLogo from '@/assets/images/platform_logo/tiktok_logo.png';
 import youtubeLogo from '@/assets/images/platform_logo/youtube_logo.png';
+import AddChannelIcon from '@/assets/svgs/signup/add-channel-icon.js';
 import { Ionicons } from '@expo/vector-icons';
 import { useFormik } from 'formik';
 import {
@@ -46,9 +47,6 @@ export default forwardRef(function ChannelInfo(props, ref) {
       channelId: '',
     },
     validationSchema: tempChannelSchema,
-    onSubmit: values => {
-      console.log('Form values:', values);
-    },
   });
 
   // 현재 입력 채널
@@ -322,18 +320,8 @@ export default forwardRef(function ChannelInfo(props, ref) {
             setStep(5);
           }}
         >
-          <Ionicons name="add" size={24} style={styles.defaultColor} />
-          <Text
-            style={[
-              styles.defaultColor,
-              {
-                fontSize: 12,
-                fontWeight: 'normal',
-              },
-            ]}
-          >
-            채널 추가
-          </Text>
+          <AddChannelIcon size={10} color={styles.defaultColor.color} />
+          <Text style={[styles.defaultColor, { fontSize: 12 }]}>채널 추가</Text>
         </Pressable>
       </View>
       {/* 채널 추가 정보 */}
@@ -393,13 +381,16 @@ export default forwardRef(function ChannelInfo(props, ref) {
             ))}
           </View>
         ) : (
-          <Text
-            style={{
-              color: isDark ? '#FAFAFA' : '#141414',
-            }}
-          >
-            등록된 채널이 없습니다.
-          </Text>
+          step === 8 && (
+            <Text
+              style={{
+                paddingLeft: 16,
+                color: isDark ? '#FAFAFA' : '#141414',
+              }}
+            >
+              등록된 채널이 없습니다.
+            </Text>
+          )
         )}
       </View>
     </View>
@@ -491,6 +482,7 @@ const getStyles = isDark => {
     addChannelButton: {
       width: 120,
       height: 50,
+      gap: 10,
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',

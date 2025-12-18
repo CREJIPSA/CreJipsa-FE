@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useState } from 'react';
 
 // 회원가입 단계 컨텍스트
 export const StepContext = createContext();
@@ -31,28 +31,31 @@ export default function StepProvider({ children }) {
   const router = useRouter();
 
   const [step, setStep] = useState(1); // 회원가입 단계
-  const [title, setTitle] = useState(getStepTitle(1, form)); // 단계별 제목
   const [signupCompleted, setSignupCompleted] = useState(false); // 회원가입 완료 여부
 
   // 회원가입 폼 데이터
   const [form, setForm] = useState({
-    userInfo: { username: '', birthday: '', gender: '' },
+    userInfo: { username: '', birth: '', gender: '' },
     interests: [],
     channelInfo: [],
   });
+
+  const title = getStepTitle(step, form);
 
   const updateForm = (section, data) => {
     setForm(prev => ({
       ...prev,
       [section]: data,
     }));
-    console.log('⚪current form data:', { ...form, [section]: data });
   };
 
   const handleNextStep = () => {
     if (step === 8) {
-      router.push('/(sign-up)/welcome');
       setSignupCompleted(true);
+      router.push({
+        pathname: '/(sign-up)/welcome',
+        params: { username: form.userInfo.username },
+      });
       return;
     } else {
       setStep(prev => Math.min(prev + 1, 8));
@@ -69,10 +72,6 @@ export default function StepProvider({ children }) {
     }
   };
 
-  useEffect(() => {
-    setTitle(getStepTitle(step, form));
-  }, [step, form]);
-
   return (
     <StepContext.Provider
       value={{
@@ -82,7 +81,6 @@ export default function StepProvider({ children }) {
         step,
         setStep,
         title,
-        setTitle,
         handleNextStep,
         handleBackStep,
         signupCompleted,

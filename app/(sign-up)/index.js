@@ -3,7 +3,6 @@ import ChannelInfo from './screens/channelInfo';
 import InterestsInfo from './screens/interestsInfo';
 import UserInfo from './screens/userInfo';
 import { StepContext } from './step-context';
-import Welcome from './welcome';
 
 export default function SignUpIndex() {
   const { step } = useContext(StepContext);
@@ -14,11 +13,9 @@ export default function SignUpIndex() {
         <UserInfo />
       ) : step === 4 ? (
         <InterestsInfo />
-      ) : step <= 7 ? (
+      ) : step <= 8 ? (
         <ChannelInfo />
-      ) : (
-        <Welcome />
-      )}
+      ) : null}
     </>
   );
 }

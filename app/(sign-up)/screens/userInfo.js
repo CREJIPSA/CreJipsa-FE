@@ -39,7 +39,7 @@ export default forwardRef(function UserInfo(props, ref) {
     birth: Yup.string()
       .matches(
         /^(19|20)\d{2}\.(0[1-9]|1[0-2])\.(0[1-9]|[12][0-9]|3[01])\.$/,
-        '생년월일을 올바르게 입력해주세요.',
+        '생년월일을 형식에 맞게 입력해주세요.',
       )
       .required('생년월일을 입력해주세요.'),
     gender: Yup.string().required('성별을 선택해주세요.'),
@@ -53,10 +53,6 @@ export default forwardRef(function UserInfo(props, ref) {
       gender: '',
     },
     validationSchema: signupSchema,
-    onSubmit: values => {
-      console.log('Form values:', values);
-      handleNextStep();
-    },
   });
 
   // 유효성 검사

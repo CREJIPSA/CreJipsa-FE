@@ -48,7 +48,6 @@ function SignUpContent() {
     }
     if (isValid) {
       handleNextStep();
-      console.log('유효성 검사 성공');
     }
   };
 
@@ -98,7 +97,6 @@ function SignUpContent() {
           ]}
           onPress={async () => {
             await handleNextButtonClick();
-            console.log('step after next button:', step);
           }}
           disabled={!isNextButtonActive}
         >

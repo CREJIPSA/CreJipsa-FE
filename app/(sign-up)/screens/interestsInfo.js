@@ -13,7 +13,7 @@ import { StepContext } from '../step-context';
 
 export default forwardRef(function InterestsInfo(props, ref) {
   const { styles } = useThemedStyle(getStyles);
-  const { step, handleNextStep, updateForm } = useContext(StepContext);
+  const { step, updateForm } = useContext(StepContext);
   const { onFormStatusChange } = props;
 
   // 단계 전환 조건
@@ -29,10 +29,6 @@ export default forwardRef(function InterestsInfo(props, ref) {
       interests: [],
     },
     validationSchema: signupSchema,
-    onSubmit: values => {
-      console.log('Form values:', values);
-      handleNextStep();
-    },
   });
 
   // 유효성 검사
