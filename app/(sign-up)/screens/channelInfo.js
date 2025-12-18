@@ -35,7 +35,7 @@ export default forwardRef(function ChannelInfo(props, ref) {
   const [isPlatformModalVisible, setPlatformModalVisible] = useState(false);
 
   // 회원가입 단계 전환 조건
-  const tempChannelSchema = Yup.object().shape({
+  const channelSchema = Yup.object().shape({
     channelId: Yup.string()
       .matches(/^@/, '입력 형식이 잘못되었어요.')
       .required('채널 아이디를 입력해주세요.'),
@@ -48,25 +48,20 @@ export default forwardRef(function ChannelInfo(props, ref) {
       platform: '',
       channelId: '',
     },
-    validationSchema: tempChannelSchema,
-  });
-
-  // 현재 입력 채널
-  const [tempChannel, setTempChannel] = useState({
-    platform: '',
-    channelId: '',
+    validationSchema: channelSchema,
   });
 
   // 채널 추가
-  const addChannel = async tempChannel => {
+  const addChannel = async () => {
     const isValid = await handleStepValidation();
     if (isValid) {
       updateForm('channelInfo', [
         ...form.channelInfo,
-        { platform: tempChannel.platform, channelId: tempChannel.channelId },
+        {
+          platform: formik.values.platform,
+          channelId: formik.values.channelId,
+        },
       ]);
-      // 초기화
-      setTempChannel({ platform: '', channelId: '' });
     }
   };
 
@@ -74,10 +69,10 @@ export default forwardRef(function ChannelInfo(props, ref) {
   const handleStepValidation = async () => {
     const fieldsToValidate = [];
     if (step >= 5) {
-      fieldsToValidate.push('platform');
+      fieldsToValidate.push(formik.values.platform);
     }
     if (step >= 6) {
-      fieldsToValidate.push('channelId');
+      fieldsToValidate.push(formik.values.channelId);
     }
     const newTouched = fieldsToValidate.reduce((acc, field) => {
       acc[field] = true;
@@ -93,18 +88,29 @@ export default forwardRef(function ChannelInfo(props, ref) {
   };
 
   //  버튼 활성화 상태 관리
-  const checkAllRequiredFieldsFilled = currentStep => {
+  const checkAllRequiredFieldsFilled = (
+    currentStep,
+    overridePlatform = null,
+    overrideId = null,
+  ) => {
+    const platform =
+      overridePlatform !== null ? overridePlatform : formik.values.platform;
+    const channelId =
+      overrideId !== null ? overrideId : formik.values.channelId;
     if (currentStep === 7) {
-      return tempChannel.platform !== '' && tempChannel.channelId !== '';
+      const isCurrentInputFull = platform !== '' && channelId !== '';
+      const hasAddedChannels = (form.channelInfo?.length ?? 0) > 0;
+      return isCurrentInputFull || hasAddedChannels;
     }
+
     const fieldsToValidate = [];
     if (currentStep >= 5) {
-      fieldsToValidate.push(tempChannel.platform);
+      fieldsToValidate.push(platform);
     }
     if (currentStep >= 6) {
-      fieldsToValidate.push(tempChannel.channelId);
+      fieldsToValidate.push(channelId);
     }
-    return fieldsToValidate.every(value => value && value.trim() !== '');
+    return fieldsToValidate.every(value => value && value.length > 0);
   };
 
   // 필수 항목 모두 입력해야 다음 단계 이동 가능
@@ -119,7 +125,7 @@ export default forwardRef(function ChannelInfo(props, ref) {
       onFormStatusChange(isComplete);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, tempChannel, onFormStatusChange]);
+  }, [step, onFormStatusChange]);
 
   useImperativeHandle(ref, () => ({
     validateAndGoNext: handleStepValidation,
@@ -129,11 +135,15 @@ export default forwardRef(function ChannelInfo(props, ref) {
   useEffect(() => {
     if (step !== 8) return;
     (async () => {
-      await addChannel(tempChannel);
+      await addChannel({
+        platform: formik.values.platform,
+        channelId: formik.values.channelId,
+      });
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
+  // 버튼 활성화 체크
   useEffect(() => {
     if (!onFormStatusChange) return;
     if (step === 8) {
@@ -143,7 +153,16 @@ export default forwardRef(function ChannelInfo(props, ref) {
     const isComplete = checkAllRequiredFieldsFilled(step);
     onFormStatusChange(isComplete);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form.channelInfo, step]);
+  }, [form.channelInfo, step, formik.values.platform, formik.values.channelId]);
+
+  // 채널 정보 모두 삭제 시 입력 폼 초기화
+  useEffect(() => {
+    if ((form.channelInfo?.length ?? 0) === 0) {
+      formik.setValues({ platform: '', channelId: '' }, false);
+      formik.setTouched({ platform: false, channelId: false }, false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.channelInfo?.length]);
 
   return (
     <View style={styles.formContainer}>
@@ -167,12 +186,15 @@ export default forwardRef(function ChannelInfo(props, ref) {
           ]}
           placeholder="@크집사"
           placeholderTextColor={isDark ? '#A5A5A5' : '#B7B7B7'}
-          value={tempChannel.channelId}
+          value={formik.values.channelId}
           onChangeText={text => {
-            setTempChannel({ ...tempChannel, channelId: text });
             formik.setFieldValue('channelId', text);
             if (props.onFormStatusChange) {
-              const isComplete = checkAllRequiredFieldsFilled(step);
+              const isComplete = checkAllRequiredFieldsFilled(
+                step,
+                formik.values.platform,
+                text,
+              );
               props.onFormStatusChange(isComplete);
             }
           }}
@@ -203,9 +225,9 @@ export default forwardRef(function ChannelInfo(props, ref) {
         <Text style={styles.inputTitle}>채널 플랫폼</Text>
         <View style={[styles.inputForm, styles.platformInputFormContainer]}>
           <Text style={styles.platformInputText}>
-            {tempChannel.platform === ''
+            {formik.values.platform === ''
               ? '채널 플랫폼 선택'
-              : tempChannel.platform}
+              : formik.values.platform}
           </Text>
           <Pressable
             onPress={() => {
@@ -244,20 +266,23 @@ export default forwardRef(function ChannelInfo(props, ref) {
               <Pressable
                 style={[
                   styles.platformModalOption,
-                  tempChannel.platform === '인스타그램' && {
+                  formik.values.platform === '인스타그램' && {
                     borderWidth: 0.5,
                     borderColor: isDark ? '#E3FFAB' : '#CCFF66',
                   },
                   !(
-                    tempChannel.platform === '' ||
-                    tempChannel.platform === '인스타그램'
+                    formik.values.platform === '' ||
+                    formik.values.platform === '인스타그램'
                   ) && styles.dimmedOption,
                 ]}
                 onPress={async () => {
-                  await formik.setFieldValue('platform', '인스타그램', true);
-                  setTempChannel({ ...tempChannel, platform: '인스타그램' });
+                  const selected = '인스타그램';
+                  await formik.setFieldValue('platform', selected, true);
                   if (props.onFormStatusChange) {
-                    const isComplete = checkAllRequiredFieldsFilled(step);
+                    const isComplete = checkAllRequiredFieldsFilled(
+                      step,
+                      selected,
+                    );
                     props.onFormStatusChange(isComplete);
                   }
                 }}
@@ -271,20 +296,23 @@ export default forwardRef(function ChannelInfo(props, ref) {
               <Pressable
                 style={[
                   styles.platformModalOption,
-                  tempChannel.platform === '유튜브' && {
+                  formik.values.platform === '유튜브' && {
                     borderWidth: 0.5,
                     borderColor: isDark ? '#E3FFAB' : '#CCFF66',
                   },
                   !(
-                    tempChannel.platform === '' ||
-                    tempChannel.platform === '유튜브'
+                    formik.values.platform === '' ||
+                    formik.values.platform === '유튜브'
                   ) && styles.dimmedOption,
                 ]}
                 onPress={async () => {
-                  await formik.setFieldValue('platform', '유튜브', true);
-                  setTempChannel({ ...tempChannel, platform: '유튜브' });
+                  const selected = '유튜브';
+                  await formik.setFieldValue('platform', selected, true);
                   if (props.onFormStatusChange) {
-                    const isComplete = checkAllRequiredFieldsFilled(step);
+                    const isComplete = checkAllRequiredFieldsFilled(
+                      step,
+                      selected,
+                    );
                     props.onFormStatusChange(isComplete);
                   }
                 }}
@@ -295,20 +323,23 @@ export default forwardRef(function ChannelInfo(props, ref) {
               <Pressable
                 style={[
                   styles.platformModalOption,
-                  tempChannel.platform === '틱톡' && {
+                  formik.values.platform === '틱톡' && {
                     borderWidth: 0.5,
                     borderColor: isDark ? '#E3FFAB' : '#CCFF66',
                   },
                   !(
-                    tempChannel.platform === '' ||
-                    tempChannel.platform === '틱톡'
+                    formik.values.platform === '' ||
+                    formik.values.platform === '틱톡'
                   ) && styles.dimmedOption,
                 ]}
                 onPress={async () => {
-                  await formik.setFieldValue('platform', '틱톡', true);
-                  setTempChannel({ ...tempChannel, platform: '틱톡' });
+                  const selected = '틱톡';
+                  await formik.setFieldValue('platform', selected, true);
                   if (props.onFormStatusChange) {
-                    const isComplete = checkAllRequiredFieldsFilled(step);
+                    const isComplete = checkAllRequiredFieldsFilled(
+                      step,
+                      selected,
+                    );
                     props.onFormStatusChange(isComplete);
                   }
                 }}
@@ -327,8 +358,10 @@ export default forwardRef(function ChannelInfo(props, ref) {
             styles.addChannelButton,
             { display: step === 7 ? 'flex' : 'none' },
           ]}
-          onPress={() => {
-            addChannel(tempChannel);
+          onPress={async () => {
+            await addChannel(formik.values);
+            formik.setValues({ platform: '', channelId: '' });
+            formik.setTouched({ platform: false, channelId: false }, false);
             setStep(5);
           }}
         >
