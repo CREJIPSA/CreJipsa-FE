@@ -78,7 +78,7 @@ export default function StepProvider({ children }) {
   const handleBackStep = () => {
     if (step === 1) {
       router.back();
-    } else if (step === 8) {
+    } else if (step === 8 || step === 10) {
       setStep(5);
     } else {
       setStep(prev => Math.max(prev - 1, 1));
