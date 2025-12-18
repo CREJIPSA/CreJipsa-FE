@@ -100,10 +100,6 @@ export default forwardRef(function InterestsInfo(props, ref) {
       }
     }
     formik.setFieldValue('interests', newInterests);
-    if (onFormStatusChange) {
-      const isComplete = newInterests.length >= 1;
-      onFormStatusChange(isComplete);
-    }
   };
 
   return (
