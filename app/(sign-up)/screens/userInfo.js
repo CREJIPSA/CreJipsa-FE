@@ -34,12 +34,12 @@ export default forwardRef(function UserInfo(props, ref) {
   // 회원가입 단계 전환 조건
   const signupSchema = Yup.object().shape({
     username: Yup.string()
-      .max(10, '이름은 최대 10글자까지 입력 가능합니다.')
+      .max(10, '최대 10글자까지 입력 가능합니다.')
       .required('이름을 입력해주세요.'),
     birth: Yup.string()
       .matches(
-        /^(19|20)\d{2}\.(0[1-9]|1[0-2])\.(0[1-9]|[12][0-9]|3[01])\.$/,
-        '생년월일을 형식에 맞게 입력해주세요.',
+        /^(19|20)\d{2}\.(0[1-9]|1[0-2])\.(0[1-9]|[12][0-9]|3[01])$/,
+        '입력 형식이 잘못되었어요.',
       )
       .required('생년월일을 입력해주세요.'),
     gender: Yup.string().required('성별을 선택해주세요.'),
@@ -203,9 +203,14 @@ export default forwardRef(function UserInfo(props, ref) {
       >
         <Text style={styles.inputTitle}>생년월일 (8자리)</Text>
         <TextInput
-          style={styles.inputForm}
+          style={[
+            styles.inputForm,
+            step === 2 && formik.touched.birth && formik.errors.birth
+              ? { borderBottomColor: '#FF0606' }
+              : {},
+          ]}
           value={formik.values.birth}
-          placeholder="0000.00.00."
+          placeholder="0000.00.00"
           placeholderTextColor={isDark ? '#8A8A8A' : '#D3D3D3'}
           onChangeText={text => {
             formik.handleChange('birth')(text);
@@ -230,6 +235,9 @@ export default forwardRef(function UserInfo(props, ref) {
           returnKeyType="next"
           keyboardType="number-pad"
         />
+        {step === 2 && formik.touched.birth && formik.errors.birth && (
+          <Text style={styles.errorMessage}>{formik.errors.birth}</Text>
+        )}
       </View>
       {/* 이름 입력 폼 */}
       <View
@@ -240,7 +248,14 @@ export default forwardRef(function UserInfo(props, ref) {
       >
         <Text style={styles.inputTitle}>이름 (최대 10글자)</Text>
         <TextInput
-          style={styles.inputForm}
+          style={[
+            styles.inputForm,
+            step === 1 && formik.touched.username && formik.errors.username
+              ? { borderBottomColor: '#FF0606' }
+              : {},
+          ]}
+          placeholder="이름을 입력해주세요."
+          placeholderTextColor={isDark ? '#8A8A8A' : '#D3D3D3'}
           value={formik.values.username}
           onChangeText={text => {
             formik.handleChange('username')(text);
@@ -265,6 +280,9 @@ export default forwardRef(function UserInfo(props, ref) {
           returnKeyType="next"
           autoCapitalize="none"
         />
+        {step === 1 && formik.touched.username && formik.errors.username && (
+          <Text style={styles.errorMessage}>{formik.errors.username}</Text>
+        )}
       </View>
       {/* 약관 모달 */}
       <Modal
@@ -563,6 +581,11 @@ const getStyles = isDark => {
     },
     selectedGenderOptionIconColor: {
       color: isDark ? '#CCFF66' : '#C6E945',
+    },
+    errorMessage: {
+      color: '#FF0606',
+      fontSize: 12,
+      fontWeight: '200',
     },
   });
 };

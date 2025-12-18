@@ -36,7 +36,9 @@ export default forwardRef(function ChannelInfo(props, ref) {
 
   // 회원가입 단계 전환 조건
   const tempChannelSchema = Yup.object().shape({
-    channelId: Yup.string().required('채널 아이디를 입력해주세요.'),
+    channelId: Yup.string()
+      .matches(/^@/, '입력 형식이 잘못되었어요.')
+      .required('채널 아이디를 입력해주세요.'),
     platform: Yup.string().required('채널 플랫폼을 선택해주세요.'),
   });
 
@@ -154,7 +156,15 @@ export default forwardRef(function ChannelInfo(props, ref) {
       >
         <Text style={styles.inputTitle}>채널 아이디</Text>
         <TextInput
-          style={styles.inputForm}
+          style={[
+            styles.inputForm,
+            step >= 6 &&
+            step <= 7 &&
+            formik.touched.channelId &&
+            formik.errors.channelId
+              ? { borderBottomColor: '#FF0606' }
+              : {},
+          ]}
           placeholder="@크집사"
           placeholderTextColor={isDark ? '#A5A5A5' : '#B7B7B7'}
           value={tempChannel.channelId}
@@ -176,6 +186,12 @@ export default forwardRef(function ChannelInfo(props, ref) {
             }
           }}
         />
+        {step >= 6 &&
+          step <= 7 &&
+          formik.touched.channelId &&
+          formik.errors.channelId && (
+            <Text style={styles.errorMessage}>{formik.errors.channelId}</Text>
+          )}
       </View>
       {/* 채널 플랫폼 선택 폼 */}
       <View
@@ -517,6 +533,11 @@ const getStyles = isDark => {
       fontSize: 12,
       fontWeight: 'normal',
       color: isDark ? '#FAFAFA' : '#141414',
+    },
+    errorMessage: {
+      color: '#FF0606',
+      fontSize: 12,
+      fontWeight: '200',
     },
   });
 };
