@@ -90,7 +90,12 @@ export default function My() {
                 />
               </Svg>
             </View>
-            <Text style={styles.menuText}>내 좋아요함</Text>
+            <Text
+              style={styles.menuText}
+              onPress={() => router.push('/my-likes')}
+            >
+              내 좋아요함
+            </Text>
           </View>
           <View style={styles.menuItem}>
             <View style={styles.squareBox}>
