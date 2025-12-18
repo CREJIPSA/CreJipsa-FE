@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   Image,
+  Pressable,
   ScrollView,
   StyleSheet,
   Switch,
@@ -75,7 +76,10 @@ export default function My() {
         </View>
 
         <View style={styles.menuRow}>
-          <View style={styles.menuItem}>
+          <Pressable
+            style={styles.menuItem}
+            onPress={() => router.push('/my-likes')}
+          >
             <View style={styles.squareBox}>
               <Svg
                 width="40"
@@ -90,13 +94,8 @@ export default function My() {
                 />
               </Svg>
             </View>
-            <Text
-              style={styles.menuText}
-              onPress={() => router.push('/my-likes')}
-            >
-              내 좋아요함
-            </Text>
-          </View>
+            <Text style={styles.menuText}>내 좋아요함</Text>
+          </Pressable>
           <View style={styles.menuItem}>
             <View style={styles.squareBox}>
               <Svg
@@ -138,7 +137,10 @@ export default function My() {
             </View>
             <Text style={styles.menuText}>내 키워드함</Text>
           </View>
-          <View style={styles.menuItem}>
+          <Pressable
+            style={styles.menuItem}
+            onPress={() => router.push('/my-posts')}
+          >
             <View style={styles.squareBox}>
               <Svg
                 width="40"
@@ -164,7 +166,7 @@ export default function My() {
               </Svg>
             </View>
             <Text style={styles.menuText}>내가 쓴 글</Text>
-          </View>
+          </Pressable>
           <View style={styles.menuItem}>
             <View style={styles.squareBox}>
               <Svg
