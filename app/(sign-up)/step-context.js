@@ -45,7 +45,10 @@ export default function StepProvider({ children }) {
   const updateForm = (section, data) => {
     setForm(prev => ({
       ...prev,
-      [section]: data,
+      [section]: {
+        ...prev[section],
+        ...data,
+      },
     }));
   };
 

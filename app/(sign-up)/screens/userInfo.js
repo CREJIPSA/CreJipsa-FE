@@ -209,7 +209,7 @@ export default forwardRef(function UserInfo(props, ref) {
           placeholderTextColor={isDark ? '#AAAAAA' : '#555555'}
           onChangeText={text => {
             formik.handleChange('birth')(text);
-            updateForm('userInfo', { ...formik.values, birth: text });
+            updateForm('userInfo', { birth: text });
             if (props.onFormStatusChange) {
               const isComplete = checkAllRequiredFieldsFilled(
                 step,
@@ -244,7 +244,7 @@ export default forwardRef(function UserInfo(props, ref) {
           value={formik.values.username}
           onChangeText={text => {
             formik.handleChange('username')(text);
-            updateForm('userInfo', { ...formik.values, username: text });
+            updateForm('userInfo', { username: text });
             if (props.onFormStatusChange) {
               const isComplete = checkAllRequiredFieldsFilled(
                 step,
@@ -371,10 +371,7 @@ export default forwardRef(function UserInfo(props, ref) {
                   const newGenderValue = '남성';
                   await formik.setFieldValue('gender', newGenderValue);
                   await formik.setFieldTouched('gender', true);
-                  updateForm('userInfo', {
-                    ...formik.values,
-                    gender: newGenderValue,
-                  });
+                  updateForm('userInfo', { gender: newGenderValue });
                   await handleStepValidation();
                   if (props.onFormStatusChange) {
                     const isComplete = checkAllRequiredFieldsFilled(
@@ -410,10 +407,7 @@ export default forwardRef(function UserInfo(props, ref) {
                   const newGenderValue = '여성';
                   await formik.setFieldValue('gender', newGenderValue);
                   await formik.setFieldTouched('gender', true);
-                  updateForm('userInfo', {
-                    ...formik.values,
-                    gender: newGenderValue,
-                  });
+                  updateForm('userInfo', { gender: newGenderValue });
                   await handleStepValidation();
                   if (props.onFormStatusChange) {
                     const isComplete = checkAllRequiredFieldsFilled(

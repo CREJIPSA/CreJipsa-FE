@@ -61,7 +61,6 @@ export default forwardRef(function ChannelInfo(props, ref) {
     const isValid = await handleStepValidation();
     if (isValid) {
       updateForm('channelInfo', [
-        ...form.channelInfo,
         { platform: tempChannel.platform, channelId: tempChannel.channelId },
       ]);
       // 초기화
