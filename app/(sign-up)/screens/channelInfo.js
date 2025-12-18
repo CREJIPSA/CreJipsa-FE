@@ -357,7 +357,7 @@ export default forwardRef(function ChannelInfo(props, ref) {
           >
             {form.channelInfo.map((channel, index) => (
               <View
-                key={channel.channelId || String(index)}
+                key={`${channel.platform}-${channel.channelId}-${index}`}
                 style={styles.addedChannelButton}
               >
                 <View style={styles.addedChannelInfo}>
