@@ -1,5 +1,5 @@
 import Svg, { Path } from 'react-native-svg';
-import useThemedStyle from '../../hooks/use-themed-style';
+import useThemedStyle from '../../app/hooks/use-themed-style';
 
 export default function RankNone() {
   const { isDark } = useThemedStyle(getStyles);

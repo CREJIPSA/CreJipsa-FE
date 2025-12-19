@@ -73,7 +73,7 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
-          name="search-trend"
+          name="search"
           options={{
             tabBarLabel: ({ focused }) => {
               return (

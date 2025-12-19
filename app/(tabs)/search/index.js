@@ -1,14 +1,14 @@
-import RankDown from '@/app/components/search/rank-down.js';
-import RankNone from '@/app/components/search/rank-none.js';
-import RankUp from '@/app/components/search/rank-up.js';
-import SearchIcon from '@/assets/svgs/home/search-icon';
+import RankDown from '@/assets/search/rank-down.js';
+import RankNone from '@/assets/search/rank-none.js';
+import RankUp from '@/assets/search/rank-up.js';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { memo, useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Chip from '../components/chip';
-import useThemedStyle from '../hooks/use-themed-style';
+import Chip from '../../components/chip';
+import SearchBox from '../../components/search/search-box';
+import useThemedStyle from '../../hooks/use-themed-style';
 
 export default function SearchTrend() {
   const insets = useSafeAreaInsets();
@@ -90,20 +90,10 @@ export default function SearchTrend() {
       <View style={styles.header}>
         <Text style={styles.titleText}>검색</Text>
         <View style={styles.searchContainer}>
-          <View style={styles.searchBoxContainer}>
-            <TextInput
-              style={styles.searchBox}
-              value={searchKeyword}
-              onChangeText={setSearchKeyword}
-              placeholder="듀 가나디"
-              placeholderTextColor="#949494"
-              autoCapitalize="none"
-              autoCorrect={false}
-              spellCheck={false}
-              returnKeyType="search"
-            />
-            <SearchIcon size={20} color="#141619" />
-          </View>
+          <SearchBox
+            searchKeyword={searchKeyword}
+            setSearchKeyword={setSearchKeyword}
+          />
           <Pressable
             style={styles.cancelButton}
             onPress={() => setSearchKeyword('')}
@@ -203,20 +193,6 @@ const getStyles = (isDark, primaryColors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 12,
-  },
-  searchBoxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '85%',
-    backgroundColor: isDark ? '#FAFAFA' : '#E6E6E6',
-    borderRadius: 100,
-    paddingHorizontal: 16,
-  },
-  searchBox: {
-    height: 40,
-    fontSize: 18,
-    paddingVertical: 8,
   },
   cancelButton: {
     justifyContent: 'center',
