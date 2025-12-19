@@ -96,7 +96,10 @@ export default function My() {
             </View>
             <Text style={styles.menuText}>내 좋아요함</Text>
           </Pressable>
-          <View style={styles.menuItem}>
+          <Pressable
+            style={styles.menuItem}
+            onPress={() => router.push('/my-trends')}
+          >
             <View style={styles.squareBox}>
               <Svg
                 width="40"
@@ -135,8 +138,8 @@ export default function My() {
                 />
               </Svg>
             </View>
-            <Text style={styles.menuText}>내 키워드함</Text>
-          </View>
+            <Text style={styles.menuText}>내 트렌드함</Text>
+          </Pressable>
           <Pressable
             style={styles.menuItem}
             onPress={() => router.push('/my-posts')}
