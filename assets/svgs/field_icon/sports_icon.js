@@ -1,4 +1,4 @@
-import Svg, { Defs, G, Path, Rect } from 'react-native-svg';
+import Svg, { ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
 
 export default function SportsIcon({ size, color }) {
   return (
@@ -16,9 +16,9 @@ export default function SportsIcon({ size, color }) {
         />
       </G>
       <Defs>
-        <clipPath id="clip0_1285_4616">
+        <ClipPath id="clip0_1285_4616">
           <Rect width="28" height="28" fill="white" />
-        </clipPath>
+        </ClipPath>
       </Defs>
     </Svg>
   );
