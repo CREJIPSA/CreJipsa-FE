@@ -1,9 +1,17 @@
 import instagramLogo from '@/assets/images/platform_logo/instagram_logo.png';
 import tiktokLogo from '@/assets/images/platform_logo/tiktok_logo.png';
 import youtubeLogo from '@/assets/images/platform_logo/youtube_logo.png';
-import RemoveChannelIcon from '@/assets/svgs/signup/remove-channel-icon.js';
+import AddChannelIcon from '@/assets/svgs/signup/add-channel-icon.js';
 import { Ionicons } from '@expo/vector-icons';
-import { memo, useContext, useEffect, useState } from 'react';
+import { useFormik } from 'formik';
+import {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import {
   Image,
   Modal,
@@ -14,94 +22,167 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as Yup from 'yup';
 import useThemedStyle from '../../hooks/use-themed-style';
-import { StepContext } from '../step-context';
+import { StepContext } from '../step-context.js';
 
-export default function ChannelInfo() {
+export default forwardRef(function ChannelInfo(props, ref) {
   const insets = useSafeAreaInsets();
   const { isDark, styles } = useThemedStyle(getStyles);
-  const { step, setStep, form, updateForm, handleNextStep, addChannel } =
+  const { form, step, setStep, handleNextStep, updateForm } =
     useContext(StepContext);
+  const { onFormStatusChange } = props;
 
   const [isPlatformModalVisible, setPlatformModalVisible] = useState(false);
 
-  // 채널 정보 상태 관리
-  const tempChannel = form.tempChannel || {
-    channelId: '',
-    platform: '',
-    interests: [],
-  };
-  const updateTemp = patch => {
-    updateForm({
-      tempChannel: {
-        ...form.tempChannel,
-        ...patch,
-      },
-    });
-  };
-
-  // 채널 관리
-  const handleAddChannel = () => {
-    const newChannel = {
-      channelId: tempChannel.channelId,
-      platform: tempChannel.platform,
-      interests: [...tempChannel.interests],
-    };
-    addChannel(newChannel);
-    // 입력 필드 초기화
-    updateTemp({
-      channelId: '',
-      platform: '',
-      interests: [],
-    });
-  };
-  const removeChannel = channelId => {
-    const updatedChannelInfo = form.channelInfo.filter(
-      channel => channel && channel.channelId !== channelId,
-    );
-    updateForm({
-      channelInfo: updatedChannelInfo,
-    });
-  };
-  useEffect(() => {
-    console.log('🟣 Current channelInfo:', form.channelInfo);
-  }, [form.channelInfo]);
-
-  // 관심분야 선택 칩 컴포넌트
-  const chipOptions = [
-    '일상/밈',
-    '게임',
-    '패션',
-    '음악',
-    '뷰티',
-    '반려동물',
-    '스포츠',
-  ];
-  const Chip = memo(function Chip({ label, isSelected, onPress }) {
-    return (
-      <Pressable
-        style={[isSelected ? styles.selectedChip : styles.baseChip]}
-        onPress={onPress}
-      >
-        <Text
-          style={[isSelected ? styles.selectedChipText : styles.baseChipText]}
-        >
-          {label}
-        </Text>
-      </Pressable>
-    );
+  // 회원가입 단계 전환 조건
+  const channelSchema = Yup.object().shape({
+    channelId: Yup.string()
+      .matches(/^@/, '입력 형식이 잘못되었어요.')
+      .required('채널 아이디를 입력해주세요.'),
+    platform: Yup.string().required('채널 플랫폼을 선택해주세요.'),
   });
 
-  // 선택 칩 상태 관리
-  const interests = tempChannel.interests || [];
-  const toggle = option => {
-    const prev = tempChannel.interests || [];
-    const next = prev.includes(option)
-      ? prev.filter(item => item !== option)
-      : [...prev, option];
-    updateTemp({ interests: next });
-    return next;
+  // formik 초기 설정
+  const formik = useFormik({
+    initialValues: {
+      platform: '',
+      channelId: '',
+    },
+    validationSchema: channelSchema,
+  });
+
+  // 채널 추가
+  const addChannel = async () => {
+    const isValid = await handleStepValidation();
+    if (isValid) {
+      updateForm('channelInfo', [
+        ...form.channelInfo,
+        {
+          platform: formik.values.platform,
+          channelId: formik.values.channelId,
+        },
+      ]);
+    }
   };
+
+  // 유효성 검사
+  const handleStepValidation = async () => {
+    const fieldsToValidate = [];
+    if (step >= 5) {
+      fieldsToValidate.push(formik.values.platform);
+    }
+    if (step >= 6) {
+      fieldsToValidate.push(formik.values.channelId);
+    }
+    const newTouched = fieldsToValidate.reduce((acc, field) => {
+      acc[field] = true;
+      return acc;
+    }, {});
+    formik.setTouched({ ...formik.touched, ...newTouched }, false);
+    const errors = await formik.validateForm();
+    const hasErrors = fieldsToValidate.some(field => errors[field]);
+    if (!hasErrors) {
+      return true;
+    }
+    return false;
+  };
+
+  //  버튼 활성화 상태 관리
+  const checkAllRequiredFieldsFilled = (
+    currentStep,
+    overridePlatform = null,
+    overrideId = null,
+  ) => {
+    const platform =
+      overridePlatform !== null ? overridePlatform : formik.values.platform;
+    const channelId =
+      overrideId !== null ? overrideId : formik.values.channelId;
+    if (currentStep === 7) {
+      const isCurrentInputFull = platform !== '' && channelId !== '';
+      const hasAddedChannels = (form.channelInfo?.length ?? 0) > 0;
+      return isCurrentInputFull || hasAddedChannels;
+    }
+
+    const fieldsToValidate = [];
+    if (currentStep >= 5) {
+      fieldsToValidate.push(platform);
+    }
+    if (currentStep >= 6) {
+      fieldsToValidate.push(channelId);
+    }
+    return fieldsToValidate.every(value => value && value.length > 0);
+  };
+
+  // 필수 항목 모두 입력해야 다음 단계 이동 가능
+  useEffect(() => {
+    const isComplete = checkAllRequiredFieldsFilled(step);
+    if (step === 7) {
+      if (onFormStatusChange) {
+        onFormStatusChange(isComplete);
+      }
+    }
+    if (onFormStatusChange) {
+      onFormStatusChange(isComplete);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, onFormStatusChange]);
+
+  useImperativeHandle(ref, () => ({
+    validateAndGoNext: handleStepValidation,
+  }));
+
+  // 채널 정보 최종 저장
+  const hasSavedRef = useRef(false);
+  useEffect(() => {
+    if (step !== 8) {
+      hasSavedRef.current = false;
+      return;
+    }
+    if (hasSavedRef.current) return;
+    if (!formik.values.platform || !formik.values.channelId) return;
+
+    const saveFinalChannel = async () => {
+      hasSavedRef.current = true;
+
+      const isDuplicate = form.channelInfo.some(
+        ch =>
+          ch.platform === formik.values.platform &&
+          ch.channelId === formik.values.channelId,
+      );
+      if (!isDuplicate) {
+        await addChannel();
+        formik.setValues({ platform: '', channelId: '' }, false);
+        formik.setTouched({ platform: false, channelId: false }, false);
+      }
+    };
+    saveFinalChannel();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
+  // 버튼 활성화 체크
+  useEffect(() => {
+    if (!onFormStatusChange) return;
+    if (step === 8) {
+      onFormStatusChange((form.channelInfo?.length ?? 0) > 0);
+      return;
+    }
+    const isComplete = checkAllRequiredFieldsFilled(step);
+    onFormStatusChange(isComplete);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.channelInfo, step, formik.values.platform, formik.values.channelId]);
+
+  // 채널 정보 모두 삭제 시 입력 폼 초기화
+  useEffect(() => {
+    if ((form.channelInfo?.length ?? 0) === 0) {
+      formik.setValues({ platform: '', channelId: '' }, false);
+      formik.setTouched({ platform: false, channelId: false }, false);
+    }
+    if (step === 8 && (form.channelInfo?.length ?? 0) === 0) {
+      setStep(10);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.channelInfo?.length]);
 
   return (
     <View style={styles.formContainer}>
@@ -109,54 +190,65 @@ export default function ChannelInfo() {
       <View
         style={[
           styles.inputContainer,
-          { display: step >= 6 ? 'flex' : 'none' },
+          { display: step >= 6 && step <= 7 ? 'flex' : 'none' },
         ]}
       >
         <Text style={styles.inputTitle}>채널 아이디</Text>
         <TextInput
-          style={styles.inputForm}
+          style={[
+            styles.inputForm,
+            step >= 6 &&
+            step <= 7 &&
+            formik.touched.channelId &&
+            formik.errors.channelId
+              ? { borderBottomColor: '#FF0606' }
+              : {},
+          ]}
           placeholder="@크집사"
           placeholderTextColor={isDark ? '#A5A5A5' : '#B7B7B7'}
-          value={tempChannel.channelId}
+          value={formik.values.channelId}
           onChangeText={text => {
-            updateTemp({ channelId: text });
+            formik.setFieldValue('channelId', text);
+            if (props.onFormStatusChange) {
+              const isComplete = checkAllRequiredFieldsFilled(
+                step,
+                formik.values.platform,
+                text,
+              );
+              props.onFormStatusChange(isComplete);
+            }
           }}
-          onSubmitEditing={handleNextStep}
+          onBlur={() => {
+            formik.setFieldTouched('channelId', true);
+          }}
+          onSubmitEditing={async () => {
+            const isValid = await handleStepValidation();
+            if (isValid) {
+              handleNextStep();
+            }
+          }}
         />
-      </View>
-      {/* 관심분야 선택 폼 */}
-      <View
-        style={[
-          styles.inputContainer,
-          { display: step >= 5 ? 'flex' : 'none' },
-        ]}
-      >
-        <Text style={styles.inputTitle}>관심 분야 ( 중복 가능 )</Text>
-        <View style={styles.interestFieldOptionContainer}>
-          {chipOptions.map(option => (
-            <Chip
-              key={option}
-              label={option}
-              isSelected={interests.includes(option)}
-              onPress={() => toggle(option)}
-            />
-          ))}
-        </View>
+        {step >= 6 &&
+          step <= 7 &&
+          formik.touched.channelId &&
+          formik.errors.channelId && (
+            <Text style={styles.errorMessage}>{formik.errors.channelId}</Text>
+          )}
       </View>
       {/* 채널 플랫폼 선택 폼 */}
       <View
         style={[
           styles.inputContainer,
-          { display: step >= 4 ? 'flex' : 'none' },
+          { display: step >= 5 && step <= 7 ? 'flex' : 'none' },
         ]}
       >
         <Text style={styles.inputTitle}>채널 플랫폼</Text>
         <View style={[styles.inputForm, styles.platformInputFormContainer]}>
-          {tempChannel.platform === '' ? (
-            <Text style={styles.platformInputText}>채널 플랫폼 선택</Text>
-          ) : (
-            <Text style={styles.platformInputText}>{tempChannel.platform}</Text>
-          )}
+          <Text style={styles.platformInputText}>
+            {formik.values.platform === ''
+              ? '채널 플랫폼 선택'
+              : formik.values.platform}
+          </Text>
           <Pressable
             onPress={() => {
               setPlatformModalVisible(true);
@@ -170,63 +262,6 @@ export default function ChannelInfo() {
           </Pressable>
         </View>
       </View>
-      {/* 채널 추가 버튼 */}
-      <View>
-        <Pressable
-          style={[
-            styles.addChannelButton,
-            { display: step >= 7 ? 'flex' : 'none' },
-          ]}
-          onPress={() => {
-            handleAddChannel();
-            setStep(4);
-          }}
-        >
-          <Ionicons name="add" size={24} style={styles.defaultColor} />
-          <Text
-            style={[
-              styles.defaultColor,
-              {
-                fontSize: 12,
-                fontWeight: 'normal',
-              },
-            ]}
-          >
-            채널 추가
-          </Text>
-        </Pressable>
-      </View>
-      {/* 채널 추가 정보 */}
-      <View
-        style={{
-          display: step >= 4 && step <= 7 ? 'flex' : 'none',
-          position: 'absolute',
-          flexDirection: 'column-reverse',
-          width: '100%',
-          bottom: 20,
-        }}
-      >
-        {form.channelInfo && (
-          <View style={styles.addedChannelContainer}>
-            {form.channelInfo.map((channel, index) => (
-              <View
-                key={channel.channelId || String(index)}
-                style={styles.addedChannelButton}
-              >
-                <Text style={styles.addedChannelText}>{channel.channelId}</Text>
-                <Pressable
-                  style={styles.removeChannelButton}
-                  onPress={() => removeChannel(channel.channelId)}
-                >
-                  <RemoveChannelIcon color={isDark ? '#FAFAFA' : '#141414'} />
-                  <Text style={styles.removeChannelButtonText}>삭제</Text>
-                </Pressable>
-              </View>
-            ))}
-          </View>
-        )}
-      </View>
-      {/* 플랫폼 선택 모달 */}
       <Modal
         visible={isPlatformModalVisible}
         transparent={true}
@@ -251,17 +286,25 @@ export default function ChannelInfo() {
               <Pressable
                 style={[
                   styles.platformModalOption,
-                  tempChannel.platform === '인스타그램' && {
+                  formik.values.platform === '인스타그램' && {
                     borderWidth: 0.5,
                     borderColor: isDark ? '#E3FFAB' : '#CCFF66',
                   },
                   !(
-                    tempChannel.platform === '' ||
-                    tempChannel.platform === '인스타그램'
+                    formik.values.platform === '' ||
+                    formik.values.platform === '인스타그램'
                   ) && styles.dimmedOption,
                 ]}
-                onPress={() => {
-                  updateTemp({ platform: '인스타그램' });
+                onPress={async () => {
+                  const selected = '인스타그램';
+                  await formik.setFieldValue('platform', selected, true);
+                  if (props.onFormStatusChange) {
+                    const isComplete = checkAllRequiredFieldsFilled(
+                      step,
+                      selected,
+                    );
+                    props.onFormStatusChange(isComplete);
+                  }
                 }}
               >
                 <Image
@@ -273,17 +316,25 @@ export default function ChannelInfo() {
               <Pressable
                 style={[
                   styles.platformModalOption,
-                  tempChannel.platform === '유튜브' && {
+                  formik.values.platform === '유튜브' && {
                     borderWidth: 0.5,
                     borderColor: isDark ? '#E3FFAB' : '#CCFF66',
                   },
                   !(
-                    tempChannel.platform === '' ||
-                    tempChannel.platform === '유튜브'
+                    formik.values.platform === '' ||
+                    formik.values.platform === '유튜브'
                   ) && styles.dimmedOption,
                 ]}
-                onPress={() => {
-                  updateTemp({ platform: '유튜브' });
+                onPress={async () => {
+                  const selected = '유튜브';
+                  await formik.setFieldValue('platform', selected, true);
+                  if (props.onFormStatusChange) {
+                    const isComplete = checkAllRequiredFieldsFilled(
+                      step,
+                      selected,
+                    );
+                    props.onFormStatusChange(isComplete);
+                  }
                 }}
               >
                 <Image source={youtubeLogo} style={{ width: 40, height: 40 }} />
@@ -292,17 +343,25 @@ export default function ChannelInfo() {
               <Pressable
                 style={[
                   styles.platformModalOption,
-                  tempChannel.platform === '틱톡' && {
+                  formik.values.platform === '틱톡' && {
                     borderWidth: 0.5,
                     borderColor: isDark ? '#E3FFAB' : '#CCFF66',
                   },
                   !(
-                    tempChannel.platform === '' ||
-                    tempChannel.platform === '틱톡'
+                    formik.values.platform === '' ||
+                    formik.values.platform === '틱톡'
                   ) && styles.dimmedOption,
                 ]}
-                onPress={() => {
-                  updateTemp({ platform: '틱톡' });
+                onPress={async () => {
+                  const selected = '틱톡';
+                  await formik.setFieldValue('platform', selected, true);
+                  if (props.onFormStatusChange) {
+                    const isComplete = checkAllRequiredFieldsFilled(
+                      step,
+                      selected,
+                    );
+                    props.onFormStatusChange(isComplete);
+                  }
                 }}
               >
                 <Image source={tiktokLogo} style={{ width: 40, height: 40 }} />
@@ -312,9 +371,87 @@ export default function ChannelInfo() {
           </View>
         </Pressable>
       </Modal>
+      {/* 채널 추가 버튼 */}
+      <View>
+        <Pressable
+          style={[
+            styles.addChannelButton,
+            { display: step === 7 || step === 10 ? 'flex' : 'none' },
+          ]}
+          onPress={async () => {
+            await addChannel(formik.values);
+            formik.setValues({ platform: '', channelId: '' });
+            formik.setTouched({ platform: false, channelId: false }, false);
+            setStep(5);
+          }}
+        >
+          <AddChannelIcon size={10} color={styles.defaultColor.color} />
+          <Text style={[styles.defaultColor, { fontSize: 12 }]}>채널 추가</Text>
+        </Pressable>
+      </View>
+      {/* 채널 추가 정보 */}
+      <View
+        style={{
+          display: step >= 5 && step <= 8 ? 'flex' : 'none',
+          width: '100%',
+          flex: 1,
+        }}
+      >
+        {form.channelInfo?.length > 0 && (
+          <View
+            style={[
+              styles.addedChannelContainer,
+              {
+                ...(step >= 5 &&
+                  step <= 7 &&
+                  styles.addedChannelBottomContainer),
+              },
+            ]}
+          >
+            {form.channelInfo
+              .filter(ch => ch.platform && ch.channelId)
+              .map((channel, index) => (
+                <View
+                  key={`${channel.platform}-${channel.channelId}-${index}`}
+                  style={styles.addedChannelButton}
+                >
+                  <View style={styles.addedChannelInfo}>
+                    <Image
+                      source={
+                        channel.platform === '인스타그램'
+                          ? instagramLogo
+                          : channel.platform === '유튜브'
+                            ? youtubeLogo
+                            : tiktokLogo
+                      }
+                      style={{ width: 15, height: 15 }}
+                    />
+                    <Text style={styles.addedChannelText}>
+                      {channel.channelId}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() =>
+                      updateForm(
+                        'channelInfo',
+                        form.channelInfo.filter((_, i) => i !== index),
+                      )
+                    }
+                  >
+                    <Ionicons
+                      name="close-outline"
+                      size={12}
+                      style={styles.defaultColor}
+                    />
+                  </Pressable>
+                </View>
+              ))}
+          </View>
+        )}
+      </View>
     </View>
   );
-}
+});
 
 const getStyles = isDark => {
   const defaultColor = isDark ? '#FAFAFA' : '#141414';
@@ -324,16 +461,15 @@ const getStyles = isDark => {
     },
     formContainer: {
       flex: 1,
-      gap: 40,
     },
     inputContainer: {
       gap: 5,
       marginHorizontal: 16,
+      marginBottom: 40,
     },
     inputTitle: {
       color: defaultColor,
       fontSize: 12,
-      fontWeight: '100',
     },
     inputForm: {
       height: 42,
@@ -341,15 +477,6 @@ const getStyles = isDark => {
       borderBottomColor: defaultColor,
       fontSize: 18,
       color: defaultColor,
-    },
-    interestFieldOptionContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 12,
-      paddingTop: 20,
-      paddingBottom: 10,
-      borderBottomWidth: 0.5,
-      borderBottomColor: defaultColor,
     },
     platformInputFormContainer: {
       flexDirection: 'row',
@@ -360,38 +487,6 @@ const getStyles = isDark => {
     platformInputText: {
       fontSize: 18,
       color: defaultColor,
-    },
-    baseChip: {
-      height: 30,
-      paddingHorizontal: 10,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: isDark ? '#323232' : '#E6E6E6',
-      borderRadius: 20,
-      borderWidth: 1,
-      borderColor: defaultColor,
-      boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.1)',
-    },
-    baseChipText: {
-      color: defaultColor,
-      fontSize: 14,
-      fontWeight: 'normal',
-    },
-    selectedChip: {
-      height: 30,
-      paddingHorizontal: 10,
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderColor: isDark ? '#CCFF66' : '#141414',
-      borderWidth: 1,
-      borderRadius: 16,
-      boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.1)',
-      backgroundColor: isDark ? null : '#CCFF66',
-    },
-    selectedChipText: {
-      fontSize: 14,
-      fontWeight: 'normal',
-      color: isDark ? '#CCFF66' : '#141414',
     },
     modalBackground: {
       flex: 1,
@@ -442,6 +537,7 @@ const getStyles = isDark => {
     addChannelButton: {
       width: 120,
       height: 50,
+      gap: 10,
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
@@ -457,6 +553,11 @@ const getStyles = isDark => {
       justifyContent: 'center',
       alignSelf: 'center',
     },
+    addedChannelBottomContainer: {
+      flexDirection: 'column-reverse',
+      position: 'absolute',
+      bottom: 20,
+    },
     addedChannelButton: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -467,26 +568,20 @@ const getStyles = isDark => {
       borderWidth: 0.5,
       borderColor: isDark ? '#FAFAFA' : '#141414',
     },
+    addedChannelInfo: {
+      flexDirection: 'row',
+      gap: 4,
+      alignItems: 'center',
+    },
     addedChannelText: {
       fontSize: 12,
       fontWeight: 'normal',
       color: isDark ? '#FAFAFA' : '#141414',
     },
-    removeChannelButton: {
-      width: 70,
-      height: 35,
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: 8,
-      borderWidth: 0.5,
-      borderRadius: 4,
-      borderColor: isDark ? '#FAFAFA' : '#141414',
-      paddingHorizontal: 10,
-    },
-    removeChannelButtonText: {
+    errorMessage: {
+      color: '#FF0606',
       fontSize: 12,
-      color: isDark ? '#FAFAFA' : '#141414',
+      fontWeight: '200',
     },
   });
 };

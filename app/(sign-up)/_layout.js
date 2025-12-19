@@ -1,16 +1,22 @@
 import { Slot, usePathname } from 'expo-router';
-import { useContext } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyle from '../hooks/use-themed-style';
+import ChannelInfo from './screens/channelInfo';
+import InterestsInfo from './screens/interestsInfo';
+import UserInfo from './screens/userInfo';
 import StepProvider, { StepContext } from './step-context';
+import TermProvider from './term-context';
 
 export default function SignUpLayout() {
   const pathname = usePathname();
 
   return (
     <StepProvider>
-      {pathname === '/welcome' ? <Slot /> : <SignUpContent />}
+      <TermProvider>
+        {pathname === '/welcome' ? <Slot /> : <SignUpContent />}
+      </TermProvider>
     </StepProvider>
   );
 }
@@ -18,8 +24,32 @@ export default function SignUpLayout() {
 function SignUpContent() {
   const insets = useSafeAreaInsets();
   const { styles } = useThemedStyle(getStyles);
-  const { step, handleBackStep, handleNextStep, title } =
+  const { step, handleNextStep, handleBackStep, title } =
     useContext(StepContext);
+
+  const userInfoRef = useRef(null);
+  const interestsInfoRef = useRef(null);
+  const channelInfoRef = useRef(null);
+
+  // 다음 버튼 활성화 상태
+  const [isNextButtonActive, setIsNextButtonActive] = useState(false);
+  const handleFormChange = isComplete => {
+    setIsNextButtonActive(isComplete);
+  };
+
+  const handleNextButtonClick = async () => {
+    let isValid = false;
+    if (step <= 3 && userInfoRef.current) {
+      isValid = await userInfoRef.current.validateAndGoNext();
+    } else if (step === 4 && interestsInfoRef.current) {
+      isValid = await interestsInfoRef.current.validateAndGoNext();
+    } else if (step >= 5 && channelInfoRef.current) {
+      isValid = await channelInfoRef.current.validateAndGoNext();
+    }
+    if (isValid) {
+      handleNextStep();
+    }
+  };
 
   return (
     <View
@@ -36,16 +66,47 @@ function SignUpContent() {
       </View>
       {/* 바디 */}
       <View style={styles.bodyContainer}>
-        <Slot />
+        {step <= 3 && (
+          <UserInfo ref={userInfoRef} onFormStatusChange={handleFormChange} />
+        )}
+        {step === 4 && (
+          <InterestsInfo
+            ref={interestsInfoRef}
+            onFormStatusChange={handleFormChange}
+          />
+        )}
+        {step >= 5 && (
+          <ChannelInfo
+            ref={channelInfoRef}
+            onFormStatusChange={handleFormChange}
+          />
+        )}
       </View>
       {/* 푸터 */}
       <View style={styles.footerContainer}>
-        <Pressable style={styles.backButton} onPress={handleBackStep}>
-          <Text style={styles.backButtonText}>뒤로가기</Text>
-        </Pressable>
-        <Pressable style={styles.nextButton} onPress={handleNextStep}>
-          <Text style={styles.nextButtonText}>
-            {step === 3 ? '완료' : '다음'}
+        {step > 3 && (
+          <Pressable style={styles.backButton} onPress={handleBackStep}>
+            <Text style={styles.backButtonText}>뒤로가기</Text>
+          </Pressable>
+        )}
+        <Pressable
+          style={[
+            styles.nextButton,
+            step < 4 && { width: '90%' },
+            !isNextButtonActive && styles.nextButtonDimmed,
+          ]}
+          onPress={async () => {
+            await handleNextButtonClick();
+          }}
+          disabled={!isNextButtonActive}
+        >
+          <Text
+            style={[
+              styles.nextButtonText,
+              !isNextButtonActive && styles.nextButtonTextDimmed,
+            ]}
+          >
+            다음
           </Text>
         </Pressable>
       </View>
@@ -101,9 +162,15 @@ const getStyles = isDark => ({
     alignItems: 'center',
     borderRadius: 100,
   },
+  nextButtonDimmed: {
+    backgroundColor: isDark ? '#7A993D' : 'rgba(204, 255, 102, 0.3)',
+  },
   nextButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#000000',
+  },
+  nextButtonTextDimmed: {
+    color: isDark ? '#D3D3D3' : '#B7B7B7',
   },
 });

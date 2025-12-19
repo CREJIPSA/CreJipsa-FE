@@ -1,7 +1,15 @@
 import GenderFemaleIcon from '@/assets/svgs/signup/gender-female-icon';
 import GenderMaleIcon from '@/assets/svgs/signup/gender-male-icon';
 import { Ionicons } from '@expo/vector-icons';
-import { memo, useContext, useEffect, useState } from 'react';
+import { useFormik } from 'formik';
+import {
+  forwardRef,
+  memo,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 import {
   Modal,
   Pressable,
@@ -11,30 +19,122 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as Yup from 'yup';
 import useThemedStyle from '../../hooks/use-themed-style';
 import { StepContext } from '../step-context';
+import { TermContext } from '../term-context';
 
-export default function UserInfo() {
+export default forwardRef(function UserInfo(props, ref) {
   const insets = useSafeAreaInsets();
   const { isDark, styles } = useThemedStyle(getStyles);
-  const { step, form, updateForm, handleNextStep } = useContext(StepContext);
+  const { step, handleNextStep, updateForm } = useContext(StepContext);
   const [isGenderModalVisible, setIsGenderModalVisible] = useState(false);
-  const [isTermModalVisible, setIsTermModalVisible] = useState(true); // 약관 모달 표시 여부
-  const [isAllTermsChecked, setIsAllTermsChecked] = useState(false); // 전체 약관 동의 여부
-  const [isTerm1Checked, setIsTerm1Checked] = useState(false); // 14세 이상 동의 여부
-  const [isTerm2Checked, setIsTerm2Checked] = useState(false); // 서비스 이용 약관 동의 여부
-  const [isTerm3Checked, setIsTerm3Checked] = useState(false); // 개인정보 보호 방침 동의 여부
-  const [isTerm4Checked, setIsTerm4Checked] = useState(false); // 마케팅 수신 동의 여부
-  const [isTermConfirmed, setIsTermConfirmed] = useState(true); // 약관 동의 확인 여부
+  const { onFormStatusChange } = props;
 
-  // 전체 약관 동의 상태 동기화
-  useEffect(() => {
-    if (isTerm1Checked && isTerm2Checked && isTerm3Checked && isTerm4Checked) {
-      setIsAllTermsChecked(true);
-    } else {
-      setIsAllTermsChecked(false);
+  // 회원가입 단계 전환 조건
+  const signupSchema = Yup.object().shape({
+    username: Yup.string()
+      .max(10, '최대 10글자까지 입력 가능합니다.')
+      .required('이름을 입력해주세요.'),
+    birth: Yup.string()
+      .matches(
+        /^(19|20)\d{2}\.(0[1-9]|1[0-2])\.(0[1-9]|[12][0-9]|3[01])$/,
+        '입력 형식이 잘못되었어요.',
+      )
+      .required('생년월일을 입력해주세요.'),
+    gender: Yup.string().required('성별을 선택해주세요.'),
+  });
+
+  // formik 초기 설정
+  const formik = useFormik({
+    initialValues: {
+      username: '',
+      birth: '',
+      gender: '',
+    },
+    validationSchema: signupSchema,
+  });
+
+  // 유효성 검사
+  const handleStepValidation = async () => {
+    const fieldsToValidate = [];
+    switch (step) {
+      case 1:
+        fieldsToValidate.push('username');
+        break;
+      case 2:
+        fieldsToValidate.push('birth');
+        break;
+      case 3:
+        fieldsToValidate.push('gender');
+        break;
+      default:
+        return false;
     }
-  }, [isTerm1Checked, isTerm2Checked, isTerm3Checked, isTerm4Checked]);
+    const newTouched = fieldsToValidate.reduce((acc, field) => {
+      acc[field] = true;
+      return acc;
+    }, {});
+    formik.setTouched({ ...formik.touched, ...newTouched }, false);
+    const errors = await formik.validateForm();
+    const hasErrors = fieldsToValidate.some(field => errors[field]);
+    if (!hasErrors) {
+      return true;
+    }
+    return false;
+  };
+
+  //  버튼 활성화 상태 관리
+  const checkAllRequiredFieldsFilled = (
+    currentStep,
+    baseValues,
+    changedField,
+    changedValue,
+  ) => {
+    let currentValues = baseValues || {};
+    if (changedField) {
+      currentValues = { ...baseValues, [changedField]: changedValue };
+    }
+
+    const fieldsToCheck = [];
+    if (currentStep >= 1) fieldsToCheck.push('username');
+    if (currentStep >= 2) fieldsToCheck.push('birth');
+    if (currentStep >= 3) fieldsToCheck.push('gender');
+
+    return fieldsToCheck.every(
+      field => currentValues[field] && currentValues[field].length > 0,
+    );
+  };
+
+  // 필수 항목 모두 입력해야 다음 단계 이동 가능
+  useEffect(() => {
+    if (!formik.values) return;
+    const currentFormikValues = formik.values || {};
+    const isComplete = checkAllRequiredFieldsFilled(
+      step,
+      currentFormikValues,
+      '',
+      '',
+    );
+    if (onFormStatusChange) {
+      onFormStatusChange(isComplete);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, onFormStatusChange]);
+
+  useImperativeHandle(ref, () => ({
+    validateAndGoNext: handleStepValidation,
+  }));
+
+  // 약관
+  const {
+    terms,
+    setTerms,
+    termsOptions,
+    setTermsOptions,
+    handleAllTermsCheck,
+    handleFinalConfirmation,
+  } = useContext(TermContext);
 
   // 약관 컴포넌트
   const TermOption = memo(function TermOption({ label, isChecked, onPress }) {
@@ -82,11 +182,9 @@ export default function UserInfo() {
       >
         <Text style={styles.inputTitle} />
         <View style={[styles.inputForm, styles.genderInputFormContainer]}>
-          {form.userInfo.gender === '' ? (
-            <Text style={styles.genderInputText}>성별</Text>
-          ) : (
-            <Text style={styles.genderInputText}>{form.userInfo.gender}</Text>
-          )}
+          <Text style={styles.genderInputText}>
+            {formik.values.gender === '' ? '성별' : formik.values.gender}
+          </Text>
           <Pressable onPress={() => setIsGenderModalVisible(true)}>
             <Ionicons
               name="chevron-down"
@@ -105,13 +203,41 @@ export default function UserInfo() {
       >
         <Text style={styles.inputTitle}>생년월일 (8자리)</Text>
         <TextInput
-          style={styles.inputForm}
-          value={form.userInfo.birth}
-          onChangeText={text =>
-            updateForm({ userInfo: { ...form.userInfo, birth: text } })
-          }
-          onSubmitEditing={handleNextStep}
+          style={[
+            styles.inputForm,
+            step === 2 && formik.touched.birth && formik.errors.birth
+              ? { borderBottomColor: '#FF0606' }
+              : {},
+          ]}
+          value={formik.values.birth}
+          placeholder="0000.00.00"
+          placeholderTextColor={isDark ? '#8A8A8A' : '#D3D3D3'}
+          onChangeText={text => {
+            formik.handleChange('birth')(text);
+            updateForm('userInfo', { birth: text });
+            if (props.onFormStatusChange) {
+              const isComplete = checkAllRequiredFieldsFilled(
+                step,
+                formik.values,
+                'birth',
+                text,
+              );
+              props.onFormStatusChange(isComplete);
+            }
+          }}
+          onBlur={formik.handleBlur('birth')}
+          onSubmitEditing={async () => {
+            const isValid = await handleStepValidation();
+            if (isValid) {
+              handleNextStep();
+            }
+          }}
+          returnKeyType="next"
+          keyboardType="number-pad"
         />
+        {step === 2 && formik.touched.birth && formik.errors.birth && (
+          <Text style={styles.errorMessage}>{formik.errors.birth}</Text>
+        )}
       </View>
       {/* 이름 입력 폼 */}
       <View
@@ -122,21 +248,51 @@ export default function UserInfo() {
       >
         <Text style={styles.inputTitle}>이름 (최대 10글자)</Text>
         <TextInput
-          style={styles.inputForm}
-          value={form.userInfo.username}
-          onChangeText={text =>
-            updateForm({ userInfo: { ...form.userInfo, username: text } })
-          }
-          onSubmitEditing={handleNextStep}
+          style={[
+            styles.inputForm,
+            step === 1 && formik.touched.username && formik.errors.username
+              ? { borderBottomColor: '#FF0606' }
+              : {},
+          ]}
+          placeholder="이름을 입력해주세요."
+          placeholderTextColor={isDark ? '#8A8A8A' : '#D3D3D3'}
+          value={formik.values.username}
+          onChangeText={text => {
+            formik.handleChange('username')(text);
+            updateForm('userInfo', { username: text });
+            if (props.onFormStatusChange) {
+              const isComplete = checkAllRequiredFieldsFilled(
+                step,
+                formik.values,
+                'username',
+                text,
+              );
+              props.onFormStatusChange(isComplete);
+            }
+          }}
+          onBlur={formik.handleBlur('username')}
+          onSubmitEditing={async () => {
+            const isValid = await handleStepValidation();
+            if (isValid) {
+              handleNextStep();
+            }
+          }}
+          returnKeyType="next"
+          autoCapitalize="none"
         />
+        {step === 1 && formik.touched.username && formik.errors.username && (
+          <Text style={styles.errorMessage}>{formik.errors.username}</Text>
+        )}
       </View>
       {/* 약관 모달 */}
       <Modal
-        visible={isTermModalVisible}
+        visible={termsOptions.isTermModalVisible}
         transparent={true}
         animationType="slide"
         statusBarTranslucent={true}
-        onRequestClose={() => setIsTermModalVisible(false)}
+        onRequestClose={() =>
+          setTermsOptions(prev => ({ ...prev, isTermModalVisible: false }))
+        }
       >
         <View style={styles.modalBackground}>
           <View
@@ -149,67 +305,48 @@ export default function UserInfo() {
             <View style={styles.termModalOptionContainer}>
               <TermOption
                 label="모두 동의"
-                isChecked={isAllTermsChecked}
+                isChecked={termsOptions.isAllTermsChecked}
                 onPress={() => {
-                  setIsAllTermsChecked(!isAllTermsChecked);
-                  setIsTerm1Checked(!isAllTermsChecked);
-                  setIsTerm2Checked(!isAllTermsChecked);
-                  setIsTerm3Checked(!isAllTermsChecked);
-                  setIsTerm4Checked(!isAllTermsChecked);
+                  handleAllTermsCheck();
                 }}
               />
-              <View
-                style={{
-                  height: 0.5,
-                  marginVertical: 10,
-                  backgroundColor: isDark ? '#F4F2F2' : '#1B1B1B',
-                  alignSelf: 'stretch',
-                  marginRight: 16,
-                }}
-              />
+              <View style={styles.divider} />
               <TermOption
                 label="(필수) 만 14세 이상이에요"
-                isChecked={isTerm1Checked}
-                onPress={() => setIsTerm1Checked(!isTerm1Checked)}
+                isChecked={terms.term1}
+                onPress={() => setTerms({ ...terms, term1: !terms.term1 })}
               />
               <TermOption
                 label="(필수) 서비스 이용 약관 동의"
-                isChecked={isTerm2Checked}
-                onPress={() => setIsTerm2Checked(!isTerm2Checked)}
+                isChecked={terms.term2}
+                onPress={() => setTerms({ ...terms, term2: !terms.term2 })}
               />
               <TermOption
                 label="(필수) 개인정보 보호 방침 동의"
-                isChecked={isTerm3Checked}
-                onPress={() => setIsTerm3Checked(!isTerm3Checked)}
+                isChecked={terms.term3}
+                onPress={() => setTerms({ ...terms, term3: !terms.term3 })}
               />
               <TermOption
                 label="(선택) 마케팅 수신 동의"
-                isChecked={isTerm4Checked}
-                onPress={() => setIsTerm4Checked(!isTerm4Checked)}
+                isChecked={terms.term4}
+                onPress={() => setTerms({ ...terms, term4: !terms.term4 })}
               />
-              {!isTermConfirmed && (
-                // 필수 약관 미동의 시 경고 문구 표시(추후 수정)
-                <Text
-                  style={{
-                    color: 'red',
-                    fontStyle: 'italic',
-                    justifyContent: 'center',
-                    marginTop: 10,
-                  }}
-                >
-                  필수 약관에 모두 동의해 주세요.
-                </Text>
-              )}
             </View>
             <Pressable
-              style={styles.termConfirmButton}
+              style={[
+                styles.termConfirmButton,
+                termsOptions.isTermConfirmed && {
+                  backgroundColor: isDark ? '#CCFF66' : '#C6E945',
+                },
+              ]}
               onPress={() => {
-                if (isTerm1Checked && isTerm2Checked && isTerm3Checked) {
-                  setIsTermModalVisible(false);
-                  setIsTermConfirmed(true);
-                } else {
-                  setIsTermConfirmed(false);
+                if (termsOptions.isTermConfirmed) {
+                  setTermsOptions(prev => ({
+                    ...prev,
+                    isTermModalVisible: false,
+                  }));
                 }
+                handleFinalConfirmation();
               }}
             >
               <Text style={styles.termConfirmButtonText}>동의합니다.</Text>
@@ -227,7 +364,9 @@ export default function UserInfo() {
       >
         <Pressable
           style={styles.modalBackground}
-          onPress={() => setIsGenderModalVisible(false)}
+          onPress={() => {
+            setIsGenderModalVisible(false);
+          }}
         >
           <View
             style={[
@@ -240,22 +379,33 @@ export default function UserInfo() {
               <Pressable
                 style={[
                   styles.genderModalOption,
-                  form.userInfo.gender === '남성' && {
+                  formik.values.gender === '남성' && {
                     borderWidth: 0.5,
                     borderColor: styles.genderModalOptionBorderColor.color,
                   },
-                  form.userInfo.gender === '여성' && styles.dimmedOption,
+                  formik.values.gender === '여성' && styles.dimmedOption,
                 ]}
-                onPress={e => {
-                  updateForm({
-                    userInfo: { ...form.userInfo, gender: '남성' },
-                  });
+                onPress={async () => {
+                  const newGenderValue = '남성';
+                  await formik.setFieldValue('gender', newGenderValue);
+                  await formik.setFieldTouched('gender', true);
+                  updateForm('userInfo', { gender: newGenderValue });
+                  await handleStepValidation();
+                  if (props.onFormStatusChange) {
+                    const isComplete = checkAllRequiredFieldsFilled(
+                      step,
+                      formik.values,
+                      'gender',
+                      newGenderValue,
+                    );
+                    props.onFormStatusChange(isComplete);
+                  }
                 }}
               >
                 <GenderMaleIcon
                   size={80}
                   color={
-                    form.userInfo.gender === '여성'
+                    formik.values.gender === '여성'
                       ? styles.dimmedGenderOptionIconColor.color
                       : styles.selectedGenderOptionIconColor.color
                   }
@@ -265,22 +415,33 @@ export default function UserInfo() {
               <Pressable
                 style={[
                   styles.genderModalOption,
-                  form.userInfo.gender === '여성' && {
+                  formik.values.gender === '여성' && {
                     borderWidth: 0.5,
                     borderColor: styles.genderModalOptionBorderColor.color,
                   },
-                  form.userInfo.gender === '남성' && styles.dimmedOption,
+                  formik.values.gender === '남성' && styles.dimmedOption,
                 ]}
-                onPress={e => {
-                  updateForm({
-                    userInfo: { ...form.userInfo, gender: '여성' },
-                  });
+                onPress={async () => {
+                  const newGenderValue = '여성';
+                  await formik.setFieldValue('gender', newGenderValue);
+                  await formik.setFieldTouched('gender', true);
+                  updateForm('userInfo', { gender: newGenderValue });
+                  await handleStepValidation();
+                  if (props.onFormStatusChange) {
+                    const isComplete = checkAllRequiredFieldsFilled(
+                      step,
+                      formik.values,
+                      'gender',
+                      newGenderValue,
+                    );
+                    props.onFormStatusChange(isComplete);
+                  }
                 }}
               >
                 <GenderFemaleIcon
                   size={80}
                   color={
-                    form.userInfo.gender === '남성'
+                    formik.values.gender === '남성'
                       ? styles.dimmedGenderOptionIconColor.color
                       : styles.selectedGenderOptionIconColor.color
                   }
@@ -293,7 +454,7 @@ export default function UserInfo() {
       </Modal>
     </View>
   );
-}
+});
 
 const getStyles = isDark => {
   const textColor = isDark ? '#FAFAFA' : '#141414';
@@ -310,7 +471,6 @@ const getStyles = isDark => {
     inputTitle: {
       color: textColor,
       fontSize: 12,
-      fontWeight: '100',
     },
     inputForm: {
       height: 42,
@@ -363,6 +523,13 @@ const getStyles = isDark => {
       marginTop: 25,
       gap: 10,
     },
+    divider: {
+      height: 0.5,
+      marginVertical: 10,
+      backgroundColor: isDark ? '#F4F2F2' : '#1B1B1B',
+      alignSelf: 'stretch',
+      marginRight: 16,
+    },
     termOption: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -379,7 +546,7 @@ const getStyles = isDark => {
       justifyContent: 'center',
       alignSelf: 'center',
       alignItems: 'center',
-      backgroundColor: isDark ? '#CCFF66' : '#C6E945',
+      backgroundColor: '#E6E6E6',
       borderRadius: 100,
       marginTop: 30,
       marginRight: 16,
@@ -414,6 +581,11 @@ const getStyles = isDark => {
     },
     selectedGenderOptionIconColor: {
       color: isDark ? '#CCFF66' : '#C6E945',
+    },
+    errorMessage: {
+      color: '#FF0606',
+      fontSize: 12,
+      fontWeight: '200',
     },
   });
 };

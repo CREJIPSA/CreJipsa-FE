@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useState } from 'react';
 
 // 회원가입 단계 컨텍스트
 export const StepContext = createContext();
@@ -14,13 +14,16 @@ function getStepTitle(step, form) {
     case 3:
       return `성별은 어떻게 되시나요?`;
     case 4:
-      return `${form.userInfo.username}님이 운영하시는\n채널의 플랫폼 형태를 알려주세요.`;
+      return `${form.userInfo.username}님의 관심 분야를 선택해주세요.\n(최대 3개)`;
     case 5:
-      return `${form.userInfo.username}님이 운영하시는\n채널의 관심 분야를 알려주세요!`;
+      return `${form.userInfo.username}님이 운영하시는\n채널의 플랫폼 형태를 알려주세요.`;
     case 6:
       return `${form.userInfo.username}님이 운영하시는\n채널의 아이디를 알려주세요.`;
     case 7:
+    case 8:
       return `정보가 모두 맞나요?`;
+    case 10:
+      return `등록된 채널이 없습니다.\n채널을 추가해주세요.`; // 등록된 채널이 없는 경우
     default:
       return '';
   }
@@ -30,89 +33,71 @@ export default function StepProvider({ children }) {
   const router = useRouter();
 
   const [step, setStep] = useState(1); // 회원가입 단계
-  const [title, setTitle] = useState(getStepTitle(1, form)); // 단계별 제목
+  const [signupCompleted, setSignupCompleted] = useState(false); // 회원가입 완료 여부
 
+  // 회원가입 폼 데이터
   const [form, setForm] = useState({
-    // 회원가입 폼 데이터
-    userInfo: {
-      username: '',
-      birth: '',
-      gender: '',
-    },
+    userInfo: { username: '', birth: '', gender: '' },
+    interests: [],
     channelInfo: [],
-    tempChannel: {
-      platform: '',
-      channelId: '',
-      interests: [],
-    },
   });
 
-  const updateForm = patch => {
-    setForm(prev => ({
-      ...prev,
-      ...patch,
-    }));
-  };
+  const title = getStepTitle(step, form);
 
-  const addChannel = channel => {
-    setForm(prev => ({
-      ...prev,
-      channelInfo: [...prev.channelInfo, channel],
-    }));
-  };
-
-  const handleNextStep = () => {
-    if (step === 7) {
-      addChannel(form.tempChannel);
-      const nextChannelInfo = [...form.channelInfo, form.tempChannel];
-      updateForm({
-        channelInfo: [...form.channelInfo, form.tempChannel],
-        tempChannel: {
-          platform: '',
-          channelId: '',
-          interests: [],
-        },
-      });
-      console.log('⚪ Final sign-up data:', {
-        ...form,
-        channelInfo: nextChannelInfo,
-      });
-      router.push('/(sign-up)/welcome');
-      return;
-    }
-    setStep(prev => {
-      const next = Math.min(prev + 1, 7);
-      if (next <= 4) {
-        console.log('🟢 Current userInfo:', form.userInfo);
+  const updateForm = (section, data) => {
+    setForm(prev => {
+      if (Array.isArray(prev[section])) {
+        return {
+          ...prev,
+          [section]: data,
+        };
       }
-      return next;
+      return {
+        ...prev,
+        [section]: {
+          ...prev[section],
+          ...data,
+        },
+      };
     });
   };
 
-  const handleBackStep = () => {
-    if (step > 1) {
-      setStep(prev => Math.max(prev - 1, 1));
+  const handleNextStep = () => {
+    if (step === 8) {
+      setSignupCompleted(true);
+      router.push({
+        pathname: '/(sign-up)/welcome',
+        params: { username: form.userInfo.username },
+      });
+      return;
     } else {
-      router.back();
+      setStep(prev => Math.min(prev + 1, 8));
     }
   };
 
-  useEffect(() => {
-    setTitle(getStepTitle(step, form));
-  }, [step, form]);
+  const handleBackStep = () => {
+    if (step === 1) {
+      router.back();
+    } else if (step === 8 || step === 10) {
+      setStep(5);
+    } else {
+      setStep(prev => Math.max(prev - 1, 1));
+    }
+  };
 
   return (
     <StepContext.Provider
       value={{
+        form,
+        setForm,
+        updateForm,
         step,
         setStep,
         title,
-        setTitle,
         handleNextStep,
         handleBackStep,
-        form,
-        updateForm,
-        addChannel,
+        signupCompleted,
+        setSignupCompleted,
       }}
     >
       {children}
