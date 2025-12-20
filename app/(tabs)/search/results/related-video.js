@@ -2,15 +2,16 @@ import Video from '@/app/components/search/video';
 import RELATED_VIDEOS from '@/app/constants/search/RELATED_VIDEOS';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { Dimensions, FlatList, Text, View } from 'react-native';
+import { FlatList, Text, useWindowDimensions, View } from 'react-native';
 import useThemedStyle from '../../../hooks/use-themed-style';
 
 export default function RelatedVideo() {
   const { styles } = useThemedStyle(getStyles);
   const { query } = useLocalSearchParams();
 
-  // 화면 가로 크기에 맞춰 영상 카드 너비 계산
-  const videoWidth = (Dimensions.get('window').width - 32 - 16) / 3;
+  // 비디오 가로 크기 계산
+  const { width: windowWidth } = useWindowDimensions();
+  const videoWidth = (windowWidth - 32 - 16) / 3;
 
   // 무한 스크롤
   const [currentPage, setCurrentPage] = useState(1);
@@ -51,7 +52,7 @@ export default function RelatedVideo() {
             </View>
           }
           data={displayedVideos}
-          keyExtractor={(item, index) => `${item.title}-${index}`}
+          keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
           numColumns={3}
           columnWrapperStyle={{

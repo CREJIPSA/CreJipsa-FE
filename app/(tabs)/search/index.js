@@ -47,7 +47,10 @@ export default function SearchTrend() {
   ];
 
   // 최근 검색어 칩 컴포넌트
-  const RecentSearchChip = memo(function Chip({ keyword, onPressDelete }) {
+  const RecentSearchChip = memo(function RecentSearchChip({
+    keyword,
+    onPressDelete,
+  }) {
     return (
       <View style={styles.recentSearchChip}>
         <Text style={styles.recentSearchChipText}>{keyword}</Text>
