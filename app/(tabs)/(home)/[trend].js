@@ -6,9 +6,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { ImageBackground } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 import useThemedStyle from '../../hooks/use-themed-style';
 
 export default function Trend() {
@@ -16,7 +16,6 @@ export default function Trend() {
   const { isDark, styles } = useThemedStyle(getStyles);
   const insets = useSafeAreaInsets();
   const { trend } = useLocalSearchParams();
-  const [toastVisible, setToastVisible] = useState(false);
 
   // (임시) 현재 시간을 마지막 업데이트로 설정
   const lastUpdateTime = format(new Date(), 'yyyy년 MM월 dd일 HH:mm');
@@ -50,24 +49,6 @@ export default function Trend() {
     },
   ];
 
-  // 타이머 정리
-  const toastTimeoutRef = useRef(null);
-  useEffect(() => {
-    return () => {
-      if (toastTimeoutRef.current) {
-        clearTimeout(toastTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // 토스트
-  const showToast = () => {
-    setToastVisible(true);
-    toastTimeoutRef.current = setTimeout(() => {
-      setToastVisible(false);
-    }, 1500);
-  };
-
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
       {/* 헤더 */}
@@ -93,7 +74,13 @@ export default function Trend() {
             <View style={styles.buttonContainer}>
               <Pressable
                 onPress={() => {
-                  showToast();
+                  Toast.show({
+                    type: 'addTrendToast',
+                    text1: '저장이 완료되었습니다!',
+                    position: 'top',
+                    visibilityTime: 2000,
+                    topOffset: 50,
+                  });
                 }}
               >
                 <AddBtn size={24} />
@@ -168,13 +155,6 @@ export default function Trend() {
           </ScrollView>
         </View>
       </View>
-      {toastVisible && (
-        <View style={styles.toastBg}>
-          <View style={styles.toast}>
-            <Text style={styles.toastText}>저장이 완료되었습니다!</Text>
-          </View>
-        </View>
-      )}
     </View>
   );
 }
@@ -313,26 +293,5 @@ const getStyles = (isDark, primaryColors) => ({
     fontSize: 12,
     color: '#F4F2F2',
     fontWeight: '200',
-  },
-  toastBg: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-  },
-  toast: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    backgroundColor: '#202020',
-    borderRadius: 20,
-  },
-  toastText: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    textAlign: 'center',
   },
 });

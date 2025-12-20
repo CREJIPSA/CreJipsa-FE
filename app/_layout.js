@@ -3,15 +3,16 @@ import { Stack, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { StatusBar } from 'expo-status-bar';
 import { createContext, useState } from 'react';
-import { useColorScheme } from 'react-native';
+import { Text, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+import useThemedStyle from './hooks/use-themed-style';
 
 export const AuthContext = createContext({});
 export default function RootLayout() {
   const router = useRouter();
   const [user, setUser] = useState(null);
 
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { styles, isDark } = useThemedStyle(getStyles);
 
   // 로그인
   const login = (userId, userPw) => {
@@ -46,10 +47,40 @@ export default function RootLayout() {
       });
   };
 
+  // 토스트
+  const toastConfig = {
+    addTrendToast: ({ text1 }) => (
+      <View style={styles.toastBg}>
+        <View style={styles.toast}>
+          <Text style={styles.toastText}>{text1}</Text>
+        </View>
+      </View>
+    ),
+  };
+
   return (
     <AuthContext value={{ user, login }}>
       <Stack screenOptions={{ headerShown: false }} />
       <StatusBar style={isDark ? 'light' : 'dark'} />
+      <Toast config={toastConfig} />
     </AuthContext>
   );
 }
+
+const getStyles = isDark => ({
+  toastBg: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  toast: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: '#454545',
+    borderRadius: 20,
+  },
+  toastText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    textAlign: 'center',
+  },
+});
