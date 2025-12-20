@@ -8,11 +8,7 @@ export default function MyTrends() {
   const { styles } = useThemedStyle(getStyles);
 
   return (
-    <SafeAreaView
-      style={styles.safeArea}
-      stickyHeader={[1]}
-      showsVerticalScrollIndicator={false}
-    >
+    <SafeAreaView style={styles.safeArea}>
       <ScrollView
         stickyHeaderIndices={[0]}
         showsVerticalScrollIndicator={false}
