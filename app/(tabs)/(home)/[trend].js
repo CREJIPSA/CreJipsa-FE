@@ -141,7 +141,15 @@ export default function Trend() {
         <View style={styles.relatedVideosContainer}>
           <View style={styles.titleContainer}>
             <Text style={styles.titleText}>관련 영상</Text>
-            <Pressable style={styles.seeMoreContainer}>
+            <Pressable
+              style={styles.seeMoreContainer}
+              onPress={() => {
+                router.push({
+                  pathname: '/search/results/related-video',
+                  params: { query: trend },
+                });
+              }}
+            >
               <Text style={styles.seeMore}>더보기</Text>
               <Ionicons
                 name="chevron-forward"
