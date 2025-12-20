@@ -6,6 +6,7 @@ import SearchIcon from '@/assets/svgs/home/search-icon.js';
 import { Ionicons } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,6 +24,7 @@ const MaterialTopTabs = createMaterialTopTabNavigator();
 
 export default function NavigationLayout() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const { isDark, styles } = useThemedStyle(getStyles);
 
@@ -111,11 +113,11 @@ export default function NavigationLayout() {
         </Modal>
         {/* 검색 알림 아이콘 */}
         <View style={styles.iconContainer}>
-          <Pressable>
-            <SearchIcon size={24} color={isDark ? '#FAFAFA' : '#141414'} />
+          <Pressable onPress={() => router.push('/search')}>
+            <SearchIcon size={16} color={isDark ? '#FAFAFA' : '#141414'} />
           </Pressable>
           <Pressable>
-            <AlarmIcon size={24} color={isDark ? '#FAFAFA' : '#141414'} />
+            <AlarmIcon size={16} color={isDark ? '#FAFAFA' : '#141414'} />
           </Pressable>
         </View>
       </View>
@@ -240,7 +242,8 @@ const getStyles = isDark => {
       flexDirection: 'row',
       position: 'absolute',
       right: 20,
-      gap: 10,
+      gap: 13,
+      alignItems: 'center',
     },
     modalOverlay: {
       flex: 1,
