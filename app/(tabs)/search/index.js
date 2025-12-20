@@ -117,6 +117,7 @@ export default function SearchTrend() {
           horizontal
           style={styles.recentSearchList}
           showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 16 }}
         >
           {recentSearchKeywords.map((keyword, index) => (
             <RecentSearchChip
@@ -207,10 +208,10 @@ const getStyles = (isDark, primaryColors) => ({
     textAlign: 'center',
   },
   recentSearchContainer: {
-    paddingHorizontal: 16,
     marginTop: 30,
   },
   recentSearchHeader: {
+    paddingHorizontal: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

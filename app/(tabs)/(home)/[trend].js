@@ -53,7 +53,7 @@ export default function Trend() {
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
       {/* 헤더 */}
       <View style={styles.header}>
-        <Pressable>
+        <Pressable style={{ paddingVertical: 10 }}>
           <AlarmIcon size={20} color={isDark ? '#FAFAFA' : '#141414'} />
         </Pressable>
       </View>
@@ -79,7 +79,7 @@ export default function Trend() {
                     text1: '저장이 완료되었습니다!',
                     position: 'top',
                     visibilityTime: 2000,
-                    topOffset: 50,
+                    topOffset: 40,
                   });
                 }}
               >
@@ -91,24 +91,17 @@ export default function Trend() {
             </View>
             <View style={styles.analysisContainer}>
               <View style={styles.analysisBox}>
-                <View style={styles.expectedViewsLabel}>
-                  <View style={styles.label}>
-                    <Text style={styles.labelText}>예상 조회수</Text>
-                  </View>
-                </View>
-                <Text
-                  style={[
-                    styles.valueText,
-                    { fontSize: 24, textAlign: 'right' },
-                  ]}
-                >
-                  3,049회
-                </Text>
-              </View>
-              <View style={[styles.analysisBox, { paddingVertical: 16 }]}>
                 <View style={styles.labelContainer}>
                   <View style={styles.label}>
-                    <Text style={styles.labelText}>실시간 키워드</Text>
+                    <Text style={styles.labelText}>흥행 가능성</Text>
+                  </View>
+                  <Text style={[styles.valueText, { fontSize: 24 }]}>94%</Text>
+                </View>
+              </View>
+              <View style={styles.analysisBox}>
+                <View style={styles.labelContainer}>
+                  <View style={styles.label}>
+                    <Text style={styles.labelText}>실시간 트렌드</Text>
                   </View>
                   <Text style={styles.valueText}>1위</Text>
                 </View>
@@ -165,7 +158,6 @@ const getStyles = (isDark, primaryColors) => ({
     backgroundColor: isDark ? '#141414' : '#FAFAFA',
   },
   header: {
-    height: 45,
     justifyContent: 'center',
     alignItems: 'flex-end',
     paddingVertical: 10,
@@ -182,15 +174,15 @@ const getStyles = (isDark, primaryColors) => ({
   },
   trendReportContainer: {
     paddingTop: 20,
-    paddingBottom: 25,
+    paddingBottom: 35,
     paddingHorizontal: 18,
     borderBottomRightRadius: 100,
-    gap: 20,
   },
   trendContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 20,
   },
   trendText: {
     fontSize: 24,
@@ -207,6 +199,7 @@ const getStyles = (isDark, primaryColors) => ({
     justifyContent: 'flex-end',
     alignItems: 'center',
     gap: 10,
+    marginBottom: 45,
   },
   analysisContainer: {
     gap: 8,
@@ -216,7 +209,7 @@ const getStyles = (isDark, primaryColors) => ({
     backgroundColor: '#FAFAFA',
     borderRadius: 10,
     paddingHorizontal: 8,
-    paddingVertical: 12,
+    paddingVertical: 16,
     gap: 7,
   },
   labelContainer: {
