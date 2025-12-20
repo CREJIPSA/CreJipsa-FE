@@ -1,7 +1,7 @@
-import RelatedVideo from '@/app/components/search/related-video';
+import RelatedVideo from '@/app/components/search/video';
 import TrendKeywordCard from '@/app/components/trend-keyword-card';
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import useThemedStyle from '../../../hooks/use-themed-style';
 
@@ -102,7 +102,15 @@ export default function SearchKeyword() {
             {query}
             {`'`}와 관련한 영상 링크
           </Text>
-          <Pressable style={styles.seeMoreContainer}>
+          <Pressable
+            style={styles.seeMoreContainer}
+            onPress={() => {
+              router.push({
+                pathname: '/search/results/related-video',
+                params: { query },
+              });
+            }}
+          >
             <Text style={styles.seeMore}>더보기</Text>
             <Ionicons
               name="chevron-forward"

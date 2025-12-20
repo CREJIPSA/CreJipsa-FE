@@ -1,4 +1,4 @@
-import RelatedVideo from '@/app/components/search/related-video';
+import RelatedVideo from '@/app/components/search/video';
 import AddBtn from '@/assets/svgs/trend/add.js';
 import ShareBtn from '@/assets/svgs/trend/share.js';
 import { Ionicons } from '@expo/vector-icons';

@@ -2,11 +2,14 @@ import useThemedStyle from '@/app/hooks/use-themed-style';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ImageBackground, Text, View } from 'react-native';
 
-export default function RelatedVideo({ title, views, thumbnailUrl }) {
+export default function RelatedVideo({ title, views, thumbnailUrl, width }) {
   const { styles } = useThemedStyle(getStyles);
 
   return (
-    <ImageBackground source={thumbnailUrl} style={styles.thumbnail}>
+    <ImageBackground
+      source={thumbnailUrl}
+      style={[styles.thumbnail, { width: width || 140 }]}
+    >
       <LinearGradient
         colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.5)']}
         style={styles.thumbnailGradient}
@@ -23,7 +26,6 @@ export default function RelatedVideo({ title, views, thumbnailUrl }) {
 
 const getStyles = (isDark, primaryColor) => ({
   thumbnail: {
-    width: 140,
     height: 245,
     borderRadius: 15,
     marginRight: 8,
