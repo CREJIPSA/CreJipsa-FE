@@ -1,4 +1,5 @@
 import RelatedVideo from '@/app/components/search/video';
+import AlarmIcon from '@/assets/svgs/home/alarm-icon.js';
 import AddBtn from '@/assets/svgs/trend/add.js';
 import ShareBtn from '@/assets/svgs/trend/share.js';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,7 +13,7 @@ import useThemedStyle from '../../hooks/use-themed-style';
 
 export default function Trend() {
   const router = useRouter();
-  const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
+  const { isDark, styles } = useThemedStyle(getStyles);
   const insets = useSafeAreaInsets();
   const { trend } = useLocalSearchParams();
   const [toastVisible, setToastVisible] = useState(false);
@@ -71,12 +72,9 @@ export default function Trend() {
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
       {/* 헤더 */}
       <View style={styles.header}>
-        <Ionicons
-          name="chevron-back"
-          size={20}
-          color={primaryColors.color}
-          onPress={() => router.back()}
-        />
+        <Pressable>
+          <AlarmIcon size={20} color={isDark ? '#FAFAFA' : '#141414'} />
+        </Pressable>
       </View>
       <View style={styles.body}>
         {/* 트렌드 분석 */}
@@ -187,8 +185,11 @@ const getStyles = (isDark, primaryColors) => ({
     backgroundColor: isDark ? '#141414' : '#FAFAFA',
   },
   header: {
+    height: 45,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
     paddingVertical: 10,
-    paddingLeft: 15,
+    paddingRight: 20,
   },
   body: {
     flex: 1,
