@@ -1,16 +1,24 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import CommentIcon from '@/assets/svgs/my/comment-icon';
 import LikedIcon from '@/assets/svgs/my/like-icon';
+import ThreeDotsIcon from '@/assets/svgs/my/three-dots-icon';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function PostItem({ post }) {
-  const { styles, primaryColors } = useThemedStyle(getStyles);
+  const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
 
   const hasImage = !!post.imageUrl;
 
   const textContent = (
     <>
-      <Text style={styles.titleText}>{post.title}</Text>
+      {!hasImage && (
+        <View style={styles.titleTextRow}>
+          <Text style={styles.titleText} numberOfLines={1}>
+            {post.title}
+          </Text>
+          <ThreeDotsIcon isDark={isDark} />
+        </View>
+      )}
       <Text style={styles.contentText} numberOfLines={2}>
         {post.contentPreview}
       </Text>
@@ -30,13 +38,21 @@ export default function PostItem({ post }) {
   return (
     <Pressable style={styles.container}>
       {hasImage ? (
-        <View style={styles.contentWrapperRow}>
-          <View style={styles.contentWrapperCol}>{textContent}</View>
-          <Image
-            source={{ uri: post.imageUrl }}
-            style={styles.thumbnail}
-            resizeMode="cover"
-          />
+        <View style={styles.contentWrapperCol}>
+          <View style={styles.titleTextRow}>
+            <Text style={styles.titleText} numberOfLines={1}>
+              {post.title}
+            </Text>
+            <ThreeDotsIcon isDark={isDark} />
+          </View>
+          <View style={styles.contentWrapperRow}>
+            <View style={styles.contentWrapperCol}>{textContent}</View>
+            <Image
+              source={{ uri: post.imageUrl }}
+              style={styles.thumbnail}
+              resizeMode="cover"
+            />
+          </View>
         </View>
       ) : (
         <View style={styles.contentWrapper}>{textContent}</View>
@@ -71,9 +87,16 @@ const getStyles = (isDark, primaryColors) => {
       gap: 10,
     },
 
+    titleTextRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+
     titleText: {
       fontSize: 18,
       fontWeight: '700',
+      maxWidth: 244,
       color: primaryColors.color,
     },
 
