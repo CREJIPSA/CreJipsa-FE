@@ -158,9 +158,9 @@ const getStyles = (isDark, primaryColors) => ({
     backgroundColor: isDark ? '#141414' : '#FAFAFA',
   },
   header: {
+    height: 45,
     justifyContent: 'center',
     alignItems: 'flex-end',
-    paddingVertical: 10,
     paddingRight: 20,
   },
   body: {
