@@ -118,13 +118,13 @@ export default function SearchTrend() {
           style={styles.recentSearchList}
           showsHorizontalScrollIndicator={false}
         >
-          {recentSearchKeywords.map(keyword => (
+          {recentSearchKeywords.map((keyword, index) => (
             <RecentSearchChip
-              key={keyword}
+              key={index}
               keyword={keyword}
               onPressDelete={() => {
                 setRecentSearchKeywords(prev =>
-                  prev.filter(item => item !== keyword),
+                  prev.filter((item, i) => i !== index),
                 );
               }}
             />
@@ -160,7 +160,7 @@ export default function SearchTrend() {
             ))}
           </View>
           <View style={styles.keywordRankingList}>
-            {keywordRanking.slice(4, 9).map(({ rank, label, state }) => (
+            {keywordRanking.slice(4, 8).map(({ rank, label, state }) => (
               <KeywordRankingItem
                 key={rank}
                 rank={rank}
