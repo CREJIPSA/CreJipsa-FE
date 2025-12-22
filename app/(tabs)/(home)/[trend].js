@@ -1,9 +1,9 @@
+import RelatedVideo from '@/app/components/search/video';
 import AddBtn from '@/assets/svgs/trend/add.js';
 import ShareBtn from '@/assets/svgs/trend/share.js';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { ImageBackground } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
@@ -19,22 +19,6 @@ export default function Trend() {
 
   // (임시) 현재 시간을 마지막 업데이트로 설정
   const lastUpdateTime = format(new Date(), 'yyyy년 MM월 dd일 HH:mm');
-
-  // 관련 영상 컴포넌트
-  const RelatedVideo = ({ title, views, thumbnailUrl }) => (
-    <ImageBackground source={thumbnailUrl} style={styles.thumbnail}>
-      <LinearGradient
-        colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.5)']}
-        style={styles.thumbnailGradient}
-      />
-      <View style={styles.videoInfoContainer}>
-        <Text style={styles.videoTitle} ellipsizeMode="tail" numberOfLines={1}>
-          {title}
-        </Text>
-        <Text style={styles.videoViews}>조회수 {views}회</Text>
-      </View>
-    </ImageBackground>
-  );
 
   // 관련 영상 더미 데이터
   const relatedVideos = [
@@ -157,7 +141,15 @@ export default function Trend() {
         <View style={styles.relatedVideosContainer}>
           <View style={styles.titleContainer}>
             <Text style={styles.titleText}>관련 영상</Text>
-            <Pressable style={styles.seeMoreContainer}>
+            <Pressable
+              style={styles.seeMoreContainer}
+              onPress={() => {
+                router.push({
+                  pathname: '/search/results/related-video',
+                  params: { query: trend },
+                });
+              }}
+            >
               <Text style={styles.seeMore}>더보기</Text>
               <Ionicons
                 name="chevron-forward"
@@ -166,11 +158,7 @@ export default function Trend() {
               />
             </Pressable>
           </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.videoContainer}
-          >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {relatedVideos.map((video, index) => (
               <RelatedVideo
                 key={index}
