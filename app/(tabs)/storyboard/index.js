@@ -1,18 +1,21 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import MenuIcon from '@/assets/svgs/storyboard/menu.js';
 import SendIcon from '@/assets/svgs/storyboard/send.js';
+import { useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import StoryboardDrawer from './drawer';
 
 export default function Storyboard() {
   const insets = useSafeAreaInsets();
   const { styles, primaryColors } = useThemedStyle(getStyles);
+  const [drawerVisible, setDrawerVisible] = useState(false);
 
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <Text style={styles.titleText}>AI 스토리보드 생성</Text>
-        <Pressable>
+        <Pressable onPress={() => setDrawerVisible(true)}>
           <MenuIcon color={primaryColors.color} size={24} />
         </Pressable>
       </View>
@@ -28,11 +31,16 @@ export default function Storyboard() {
           style={styles.chatInput}
           placeholder="스토리보드 생성을 부탁하세요."
           placeholderTextColor={'#959595'}
+          multiline
         />
         <Pressable style={styles.sendButton}>
           <SendIcon color={'#141414'} size={12} />
         </Pressable>
       </View>
+      <StoryboardDrawer
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
+      />
     </View>
   );
 }
@@ -65,7 +73,7 @@ const getStyles = (isDark, primaryColors) => ({
     gap: 20,
   },
   chatInput: {
-    flex: 1,
+    width: '85%',
     backgroundColor: isDark ? '#323232' : '#E6E6E6',
     borderRadius: 100,
     paddingHorizontal: 20,
