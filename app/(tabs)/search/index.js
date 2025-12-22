@@ -47,10 +47,7 @@ export default function SearchTrend() {
   ];
 
   // 최근 검색어 칩 컴포넌트
-  const RecentSearchChip = memo(function RecentSearchChip({
-    keyword,
-    onPressDelete,
-  }) {
+  const RecentSearchChip = memo(function Chip({ keyword, onPressDelete }) {
     return (
       <View style={styles.recentSearchChip}>
         <Text style={styles.recentSearchChipText}>{keyword}</Text>
@@ -119,17 +116,21 @@ export default function SearchTrend() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 16 }}
         >
-          {recentSearchKeywords.map((keyword, index) => (
-            <RecentSearchChip
-              key={index}
-              keyword={keyword}
-              onPressDelete={() => {
-                setRecentSearchKeywords(prev =>
-                  prev.filter((item, i) => i !== index),
-                );
-              }}
-            />
-          ))}
+          {recentSearchKeywords.length === 0 ? (
+            <View style={{ height: 40 }} />
+          ) : (
+            recentSearchKeywords.map(keyword => (
+              <RecentSearchChip
+                key={keyword}
+                keyword={keyword}
+                onPressDelete={() => {
+                  setRecentSearchKeywords(prev =>
+                    prev.filter(item => item !== keyword),
+                  );
+                }}
+              />
+            ))
+          )}
         </ScrollView>
       </View>
       {/* 채널 기반 키워드 추천 */}
@@ -161,7 +162,7 @@ export default function SearchTrend() {
             ))}
           </View>
           <View style={styles.keywordRankingList}>
-            {keywordRanking.slice(4, 8).map(({ rank, label, state }) => (
+            {keywordRanking.slice(4, 9).map(({ rank, label, state }) => (
               <KeywordRankingItem
                 key={rank}
                 rank={rank}

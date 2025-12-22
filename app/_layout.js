@@ -59,11 +59,11 @@ export default function RootLayout() {
   };
 
   return (
-    <AuthContext value={{ user, login }}>
+    <AuthContext.Provider value={{ user, login }}>
       <Stack screenOptions={{ headerShown: false }} />
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <Toast config={toastConfig} />
-    </AuthContext>
+    </AuthContext.Provider>
   );
 }
 

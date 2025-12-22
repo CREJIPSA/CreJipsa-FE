@@ -12,6 +12,8 @@ export default function SearchBox({ searchKeyword, setSearchKeyword }) {
         style={styles.searchBox}
         value={searchKeyword}
         onChangeText={setSearchKeyword}
+        placeholder="검색"
+        placeholderTextColor={'#949494'}
         autoCapitalize="none"
         autoCorrect={false}
         spellCheck={false}

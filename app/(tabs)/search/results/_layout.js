@@ -24,7 +24,7 @@ export default function SearchResultLayout() {
       <View style={styles.searchHeader}>
         <Pressable
           onPress={() => {
-            router.back();
+            router.navigate('/search');
           }}
         >
           <Ionicons
