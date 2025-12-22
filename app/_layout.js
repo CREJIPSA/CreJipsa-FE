@@ -67,7 +67,7 @@ export default function RootLayout() {
   );
 }
 
-const getStyles = isDark => ({
+const getStyles = (isDark, primaryColors) => ({
   toastBg: {
     justifyContent: 'center',
     alignItems: 'center',
