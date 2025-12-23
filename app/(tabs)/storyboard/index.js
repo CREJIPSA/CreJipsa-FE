@@ -2,7 +2,14 @@ import useThemedStyle from '@/app/hooks/use-themed-style';
 import MenuIcon from '@/assets/svgs/storyboard/menu.js';
 import SendIcon from '@/assets/svgs/storyboard/send.js';
 import { useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import Platform, {
+  KeyboardAvoidingView,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import StoryboardDrawer from './drawer';
 
@@ -12,7 +19,11 @@ export default function Storyboard() {
   const [drawerVisible, setDrawerVisible] = useState(false);
 
   return (
-    <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
+    <KeyboardAvoidingView
+      style={[styles.mainContainer, { paddingTop: insets.top }]}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={0}
+    >
       <View style={styles.header}>
         <Text style={styles.titleText}>AI 스토리보드 생성</Text>
         <Pressable onPress={() => setDrawerVisible(true)}>
@@ -43,7 +54,7 @@ export default function Storyboard() {
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
