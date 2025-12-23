@@ -32,6 +32,8 @@ export default function Storyboard() {
           placeholder="스토리보드 생성을 부탁하세요."
           placeholderTextColor={'#959595'}
           multiline
+          autoCapitalize="none"
+          autoCorrect={false}
         />
         <Pressable style={styles.sendButton}>
           <SendIcon color={'#141414'} size={12} />
@@ -75,7 +77,7 @@ const getStyles = (isDark, primaryColors) => ({
   chatInput: {
     width: '85%',
     backgroundColor: isDark ? '#323232' : '#E6E6E6',
-    borderRadius: 100,
+    borderRadius: 30,
     paddingHorizontal: 20,
     paddingVertical: 12,
     color: primaryColors.color,
