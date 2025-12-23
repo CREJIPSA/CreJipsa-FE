@@ -4,6 +4,7 @@ import SearchIcon from '@/assets/svgs/home/search-icon.js';
 import ChatStorageIcon from '@/assets/svgs/storyboard/archive.js';
 import NewChatIcon from '@/assets/svgs/storyboard/chat.js';
 import StoryboardIcon from '@/assets/svgs/storyboard/storyboard.js';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Dimensions, Pressable, Text, TextInput, View } from 'react-native';
 import Modal from 'react-native-modal';
@@ -60,14 +61,16 @@ export default function StoryboardDrawer({ visible, onClose }) {
   };
 
   // 드롭다운 내부 옵션 컴포넌트
-  const dropdownInnerOption = (label, text) => {
+  const dropdownInnerOption = (label, text, route) => {
     return (
       <View style={styles.drawerInnerOption}>
         <Text style={styles.drawerInnerOptionText}>{text}</Text>
         <Pressable
           style={styles.drawerInnerOptionButton}
           onPress={() => {
-            // 라우팅 추가 필요
+            // 라벨에 따라 다른 화면으로 이동하도록 수정
+            router.push('/storyboard/edit');
+            onClose();
           }}
         >
           <Text style={styles.drawerInnerOptionButtonText}>
@@ -204,6 +207,10 @@ const getStyles = (isDark, primaryColors) => {
       gap: 10,
       backgroundColor: isDark ? '#454545' : '#E6E6E6',
       borderRadius: 16,
+      shadowColor: '#000',
+      shadowOffset: { width: 10, height: 10 },
+      shadowOpacity: 0.1,
+      elevation: 1,
     },
     drawerOptionText: {
       fontSize: 16,
