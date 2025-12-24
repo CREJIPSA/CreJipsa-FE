@@ -1,21 +1,21 @@
 import RelatedVideo from '@/app/components/search/video';
+import AlarmIcon from '@/assets/svgs/home/alarm-icon.js';
 import AddBtn from '@/assets/svgs/trend/add.js';
 import ShareBtn from '@/assets/svgs/trend/share.js';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { ImageBackground } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 import useThemedStyle from '../../hooks/use-themed-style';
 
 export default function Trend() {
   const router = useRouter();
-  const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
+  const { isDark, styles } = useThemedStyle(getStyles);
   const insets = useSafeAreaInsets();
   const { trend } = useLocalSearchParams();
-  const [toastVisible, setToastVisible] = useState(false);
 
   // (임시) 현재 시간을 마지막 업데이트로 설정
   const lastUpdateTime = format(new Date(), 'yyyy년 MM월 dd일 HH:mm');
@@ -49,34 +49,13 @@ export default function Trend() {
     },
   ];
 
-  // 타이머 정리
-  const toastTimeoutRef = useRef(null);
-  useEffect(() => {
-    return () => {
-      if (toastTimeoutRef.current) {
-        clearTimeout(toastTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // 토스트
-  const showToast = () => {
-    setToastVisible(true);
-    toastTimeoutRef.current = setTimeout(() => {
-      setToastVisible(false);
-    }, 1500);
-  };
-
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
       {/* 헤더 */}
       <View style={styles.header}>
-        <Ionicons
-          name="chevron-back"
-          size={20}
-          color={primaryColors.color}
-          onPress={() => router.back()}
-        />
+        <Pressable style={{ paddingVertical: 10 }}>
+          <AlarmIcon size={20} color={isDark ? '#FAFAFA' : '#141414'} />
+        </Pressable>
       </View>
       <View style={styles.body}>
         {/* 트렌드 분석 */}
@@ -95,7 +74,13 @@ export default function Trend() {
             <View style={styles.buttonContainer}>
               <Pressable
                 onPress={() => {
-                  showToast();
+                  Toast.show({
+                    type: 'addTrendToast',
+                    text1: '저장이 완료되었습니다!',
+                    position: 'top',
+                    visibilityTime: 2000,
+                    topOffset: 40,
+                  });
                 }}
               >
                 <AddBtn size={24} />
@@ -106,24 +91,17 @@ export default function Trend() {
             </View>
             <View style={styles.analysisContainer}>
               <View style={styles.analysisBox}>
-                <View style={styles.expectedViewsLabel}>
-                  <View style={styles.label}>
-                    <Text style={styles.labelText}>예상 조회수</Text>
-                  </View>
-                </View>
-                <Text
-                  style={[
-                    styles.valueText,
-                    { fontSize: 24, textAlign: 'right' },
-                  ]}
-                >
-                  3,049회
-                </Text>
-              </View>
-              <View style={[styles.analysisBox, { paddingVertical: 16 }]}>
                 <View style={styles.labelContainer}>
                   <View style={styles.label}>
-                    <Text style={styles.labelText}>실시간 키워드</Text>
+                    <Text style={styles.labelText}>흥행 가능성</Text>
+                  </View>
+                  <Text style={[styles.valueText, { fontSize: 24 }]}>94%</Text>
+                </View>
+              </View>
+              <View style={styles.analysisBox}>
+                <View style={styles.labelContainer}>
+                  <View style={styles.label}>
+                    <Text style={styles.labelText}>실시간 트렌드</Text>
                   </View>
                   <Text style={styles.valueText}>1위</Text>
                 </View>
@@ -170,13 +148,6 @@ export default function Trend() {
           </ScrollView>
         </View>
       </View>
-      {toastVisible && (
-        <View style={styles.toastBg}>
-          <View style={styles.toast}>
-            <Text style={styles.toastText}>저장이 완료되었습니다!</Text>
-          </View>
-        </View>
-      )}
     </View>
   );
 }
@@ -187,8 +158,10 @@ const getStyles = (isDark, primaryColors) => ({
     backgroundColor: isDark ? '#141414' : '#FAFAFA',
   },
   header: {
-    paddingVertical: 10,
-    paddingLeft: 15,
+    height: 45,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    paddingRight: 20,
   },
   body: {
     flex: 1,
@@ -201,15 +174,15 @@ const getStyles = (isDark, primaryColors) => ({
   },
   trendReportContainer: {
     paddingTop: 20,
-    paddingBottom: 25,
+    paddingBottom: 35,
     paddingHorizontal: 18,
     borderBottomRightRadius: 100,
-    gap: 20,
   },
   trendContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 20,
   },
   trendText: {
     fontSize: 24,
@@ -226,6 +199,7 @@ const getStyles = (isDark, primaryColors) => ({
     justifyContent: 'flex-end',
     alignItems: 'center',
     gap: 10,
+    marginBottom: 45,
   },
   analysisContainer: {
     gap: 8,
@@ -235,7 +209,7 @@ const getStyles = (isDark, primaryColors) => ({
     backgroundColor: '#FAFAFA',
     borderRadius: 10,
     paddingHorizontal: 8,
-    paddingVertical: 12,
+    paddingVertical: 16,
     gap: 7,
   },
   labelContainer: {
@@ -312,26 +286,5 @@ const getStyles = (isDark, primaryColors) => ({
     fontSize: 12,
     color: '#F4F2F2',
     fontWeight: '200',
-  },
-  toastBg: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-  },
-  toast: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    backgroundColor: '#202020',
-    borderRadius: 20,
-  },
-  toastText: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    textAlign: 'center',
   },
 });
