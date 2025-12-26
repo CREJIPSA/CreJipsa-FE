@@ -5,6 +5,7 @@ import AlarmIcon from '@/assets/svgs/home/alarm-icon.js';
 import { Ionicons } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,6 +23,7 @@ const MaterialTopTabs = createMaterialTopTabNavigator();
 
 export default function NavigationLayout() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const { isDark, styles } = useThemedStyle(getStyles);
 
@@ -110,7 +112,11 @@ export default function NavigationLayout() {
         </Modal>
         {/* 알림 아이콘 */}
         <View style={styles.iconContainer}>
-          <Pressable>
+          <Pressable
+            onPress={() => {
+              router.push('/(tabs)/(home)/(notifications)');
+            }}
+          >
             <AlarmIcon size={20} color={isDark ? '#FAFAFA' : '#141414'} />
           </Pressable>
         </View>
