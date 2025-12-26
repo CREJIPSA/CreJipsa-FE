@@ -1,8 +1,8 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import CommentIcon from '@/assets/svgs/my/comment-icon';
 import LikedIcon from '@/assets/svgs/my/like-icon';
-import ThreeDotsIcon from '@/assets/svgs/my/three-dots-icon';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import DeleteComponent from './DeleteComponent';
 
 export default function PostItem({ post }) {
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
@@ -16,7 +16,10 @@ export default function PostItem({ post }) {
           <Text style={styles.titleText} numberOfLines={1}>
             {post.title}
           </Text>
-          <ThreeDotsIcon isDark={isDark} />
+          <DeleteComponent
+            isDark={isDark}
+            onDelete={() => console.log(`${post.id}번 삭제`)}
+          />
         </View>
       )}
       <Text style={styles.contentText} numberOfLines={2}>
@@ -43,7 +46,10 @@ export default function PostItem({ post }) {
             <Text style={styles.titleText} numberOfLines={1}>
               {post.title}
             </Text>
-            <ThreeDotsIcon isDark={isDark} />
+            <DeleteComponent
+              isDark={isDark}
+              onDelete={() => console.log(`${post.id}번 삭제`)}
+            />
           </View>
           <View style={styles.contentWrapperRow}>
             <View style={styles.contentWrapperCol}>{textContent}</View>
