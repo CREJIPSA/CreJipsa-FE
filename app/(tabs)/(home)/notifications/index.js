@@ -8,6 +8,7 @@ export default function GeneralNotifications() {
   // 일반 알람 컴포넌트
   const GeneralNotification = ({ content, daysAgo }) => {
     return (
+      // 라우팅 기능 추가 예정
       <View style={styles.notificationContainer}>
         <Text style={styles.notificationContent}>{content}</Text>
         <Text style={styles.notificationDaysAgo}>{daysAgo}일 전</Text>
@@ -17,7 +18,7 @@ export default function GeneralNotifications() {
 
   return (
     <View style={styles.mainContainer}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         {GeneralNotificationData.map((notification, index) => (
           <GeneralNotification
             key={index}
