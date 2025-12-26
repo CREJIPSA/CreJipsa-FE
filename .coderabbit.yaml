@@ -6,7 +6,7 @@ reviews:
   high_level_summary: true
   changed_files_summary: false
   sequence_diagrams: false
-  assess_linked_issues: true
+  assess_linked_issues: false
   related_issues: false
   related_prs: false
   suggested_labels: false
