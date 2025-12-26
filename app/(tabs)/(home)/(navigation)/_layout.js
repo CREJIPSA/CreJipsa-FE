@@ -2,7 +2,6 @@ import instagramLogo from '@/assets/images/platform_logo/instagram_logo.png';
 import tiktokLogo from '@/assets/images/platform_logo/tiktok_logo.png';
 import youtubeLogo from '@/assets/images/platform_logo/youtube_logo.png';
 import AlarmIcon from '@/assets/svgs/home/alarm-icon.js';
-import SearchIcon from '@/assets/svgs/home/search-icon.js';
 import { Ionicons } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Image } from 'expo-image';
@@ -109,13 +108,10 @@ export default function NavigationLayout() {
             </View>
           </Pressable>
         </Modal>
-        {/* 검색 알림 아이콘 */}
+        {/* 알림 아이콘 */}
         <View style={styles.iconContainer}>
           <Pressable>
-            <SearchIcon size={24} color={isDark ? '#FAFAFA' : '#141414'} />
-          </Pressable>
-          <Pressable>
-            <AlarmIcon size={24} color={isDark ? '#FAFAFA' : '#141414'} />
+            <AlarmIcon size={20} color={isDark ? '#FAFAFA' : '#141414'} />
           </Pressable>
         </View>
       </View>
@@ -207,6 +203,7 @@ const getStyles = isDark => {
       height: 40,
       flexDirection: 'row',
       alignItems: 'center',
+      marginTop: 3,
     },
     platformSelectionContainer: {
       flexDirection: 'row',
@@ -240,7 +237,8 @@ const getStyles = isDark => {
       flexDirection: 'row',
       position: 'absolute',
       right: 20,
-      gap: 10,
+      gap: 13,
+      alignItems: 'center',
     },
     modalOverlay: {
       flex: 1,
