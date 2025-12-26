@@ -114,7 +114,7 @@ export default function NavigationLayout() {
         <View style={styles.iconContainer}>
           <Pressable
             onPress={() => {
-              router.push('/(tabs)/(home)/(notifications)');
+              router.push('/(tabs)/(home)/notifications');
             }}
           >
             <AlarmIcon size={20} color={isDark ? '#FAFAFA' : '#141414'} />
