@@ -5,11 +5,14 @@ import { memo, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import StoryboardDrawer from './drawer';
 
 export default function StoryboardEdit() {
   const { styles, primaryColors, isDark } = useThemedStyle(getStyles);
   const router = useRouter();
   const insets = useSafeAreaInsets();
+
+  const [drawerVisible, setDrawerVisible] = useState(false);
 
   // 편집 옵션 상태 관리
   const [selectedPlatform, setSelectedPlatform] = useState(null);
@@ -63,7 +66,9 @@ export default function StoryboardEdit() {
           onPress={() => router.back()}
         />
         <Text style={styles.titleText}>AI 스토리보드 편집</Text>
-        <MenuIcon color={primaryColors.color} size={24} />
+        <Pressable onPress={() => setDrawerVisible(true)}>
+          <MenuIcon color={primaryColors.color} size={24} />
+        </Pressable>
       </View>
       <ScrollView style={styles.contentContainer}>
         {/* STEP 1 */}
@@ -160,6 +165,10 @@ export default function StoryboardEdit() {
           />
         </View>
       </ScrollView>
+      <StoryboardDrawer
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
+      />
     </View>
   );
 }

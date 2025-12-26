@@ -2,8 +2,9 @@ import useThemedStyle from '@/app/hooks/use-themed-style';
 import MenuIcon from '@/assets/svgs/storyboard/menu.js';
 import SendIcon from '@/assets/svgs/storyboard/send.js';
 import { useState } from 'react';
-import Platform, {
+import {
   KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -17,6 +18,7 @@ export default function Storyboard() {
   const insets = useSafeAreaInsets();
   const { styles, primaryColors } = useThemedStyle(getStyles);
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [chatInput, setChatInput] = useState('');
 
   return (
     <KeyboardAvoidingView
@@ -40,6 +42,8 @@ export default function Storyboard() {
       <View style={styles.chatBar}>
         <TextInput
           style={styles.chatInput}
+          value={chatInput}
+          onChangeText={setChatInput}
           placeholder="스토리보드 생성을 부탁하세요."
           placeholderTextColor={'#959595'}
           multiline
