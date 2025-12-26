@@ -1,7 +1,7 @@
 import FeedNotificationData from '@/app/constants/notifications/FEED_NOTIFICATIONS.js';
 import useThemedStyle from '@/app/hooks/use-themed-style.js';
 import DefaultProfileImage from '@/assets/images/profile-default.png';
-import { Image, ScrollView, Text, View } from 'react-native';
+import { FlatList, Image, Text, View } from 'react-native';
 
 export default function FeedNotifications() {
   const { styles } = useThemedStyle(getStyles);
@@ -35,18 +35,19 @@ export default function FeedNotifications() {
 
   return (
     <View style={styles.mainContainer}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {FeedNotificationData.map((notification, index) => (
+      <FlatList
+        data={FeedNotificationData}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
           <FeedNotification
-            key={index}
-            profileImage={notification.profileImage || DefaultProfileImage}
-            type={notification.type}
-            username={notification.username}
-            content={notification.content}
-            daysAgo={notification.daysAgo}
+            profileImage={item.profileImage || DefaultProfileImage}
+            type={item.type}
+            username={item.username}
+            content={item.content}
+            daysAgo={item.daysAgo}
           />
-        ))}
-      </ScrollView>
+        )}
+      />
     </View>
   );
 }

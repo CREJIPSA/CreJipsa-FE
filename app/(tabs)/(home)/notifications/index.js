@@ -1,6 +1,6 @@
 import GeneralNotificationData from '@/app/constants/notifications/GENERAL_NOTIFICATIONS.js';
 import useThemedStyle from '@/app/hooks/use-themed-style.js';
-import { ScrollView, Text, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 
 export default function GeneralNotifications() {
   const { styles } = useThemedStyle(getStyles);
@@ -18,15 +18,14 @@ export default function GeneralNotifications() {
 
   return (
     <View style={styles.mainContainer}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {GeneralNotificationData.map((notification, index) => (
-          <GeneralNotification
-            key={index}
-            content={notification.content}
-            daysAgo={notification.daysAgo}
-          />
-        ))}
-      </ScrollView>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        data={GeneralNotificationData}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <GeneralNotification content={item.content} daysAgo={item.daysAgo} />
+        )}
+      />
     </View>
   );
 }
