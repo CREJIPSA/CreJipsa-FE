@@ -4,14 +4,14 @@ import LikedIcon from '@/assets/svgs/my/like-icon';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import DeleteComponent from './DeleteComponent';
 
-export default function PostItem({ post }) {
+export default function PostItem({ post, isMyReplys = false }) {
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
 
   const hasImage = !!post.imageUrl;
 
   const textContent = (
     <>
-      {!hasImage && (
+      {(isMyReplys || !hasImage) && (
         <View style={styles.titleTextRow}>
           <Text style={styles.titleText} numberOfLines={1}>
             {post.title}
@@ -29,18 +29,20 @@ export default function PostItem({ post }) {
         <Text style={styles.detailText}># {post.category}</Text>
         <Text style={styles.detailText}>{post.timeAgo}</Text>
       </View>
-      <View style={styles.reactionRow}>
-        <LikedIcon color={primaryColors.color} />
-        <Text style={styles.reactionText}>{post.likeCount}</Text>
-        <CommentIcon color={primaryColors.color} />
-        <Text style={styles.reactionText}>{post.commentCount}</Text>
-      </View>
+      {!isMyReplys && (
+        <View style={styles.reactionRow}>
+          <LikedIcon color={primaryColors.color} />
+          <Text style={styles.reactionText}>{post.likeCount}</Text>
+          <CommentIcon color={primaryColors.color} />
+          <Text style={styles.reactionText}>{post.commentCount}</Text>
+        </View>
+      )}
     </>
   );
 
   return (
     <Pressable style={styles.container}>
-      {hasImage ? (
+      {hasImage && !isMyReplys ? (
         <View style={styles.contentWrapperCol}>
           <View style={styles.titleTextRow}>
             <Text style={styles.titleText} numberOfLines={1}>
