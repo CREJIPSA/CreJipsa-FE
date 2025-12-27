@@ -542,7 +542,6 @@ const getStyles = isDark => {
       justifyContent: 'center',
       alignItems: 'center',
       marginLeft: 16,
-      paddingVertical: 15,
       borderWidth: 0.5,
       borderRadius: 4,
       borderColor: defaultColor,
