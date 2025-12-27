@@ -33,6 +33,7 @@ const getStyles = (isDark, primaryColors) => {
       position: 'relative',
       zIndex: 10,
     },
+
     container: {
       flexDirection: 'row',
       borderColor: color,
@@ -57,7 +58,7 @@ const getStyles = (isDark, primaryColors) => {
       left: 0,
       minWidth: 106,
       minHeight: 76,
-      backgroundColor: isDark ? '#323232' : '#D9D9D9',
+      backgroundColor: isDark ? '#454545' : '#D9D9D9',
       borderRadius: 10,
       elevation: 5,
     },

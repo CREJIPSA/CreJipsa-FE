@@ -31,12 +31,6 @@ export default function MyReplys() {
           onPress={() => toggleFilter('category')}
           options={['전체', '일반', '팁', '같이 촬영해요']}
         />
-        <FilterComponent
-          text={'최신순'}
-          isOpen={openedFilter === 'sort'}
-          onPress={() => toggleFilter('sort')}
-          options={['최신순', '인기순', '과거순']}
-        />
       </View>
       <FlatList
         style={styles.contentsListContainer}
