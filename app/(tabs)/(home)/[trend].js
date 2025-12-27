@@ -53,7 +53,12 @@ export default function Trend() {
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
       {/* 헤더 */}
       <View style={styles.header}>
-        <Pressable style={{ paddingVertical: 10 }}>
+        <Pressable
+          style={{ paddingVertical: 10 }}
+          onPress={() => {
+            router.push('/(tabs)/(home)/notifications');
+          }}
+        >
           <AlarmIcon size={20} color={isDark ? '#FAFAFA' : '#141414'} />
         </Pressable>
       </View>
