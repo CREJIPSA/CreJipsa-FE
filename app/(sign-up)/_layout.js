@@ -24,8 +24,7 @@ export default function SignUpLayout() {
 function SignUpContent() {
   const insets = useSafeAreaInsets();
   const { styles } = useThemedStyle(getStyles);
-  const { step, handleNextStep, handleBackStep, title } =
-    useContext(StepContext);
+  const { step, handleNextStep, title } = useContext(StepContext);
 
   const userInfoRef = useRef(null);
   const interestsInfoRef = useRef(null);
@@ -84,15 +83,9 @@ function SignUpContent() {
       </View>
       {/* 푸터 */}
       <View style={styles.footerContainer}>
-        {step > 3 && (
-          <Pressable style={styles.backButton} onPress={handleBackStep}>
-            <Text style={styles.backButtonText}>뒤로가기</Text>
-          </Pressable>
-        )}
         <Pressable
           style={[
             styles.nextButton,
-            step < 4 && { width: '90%' },
             !isNextButtonActive && styles.nextButtonDimmed,
           ]}
           onPress={async () => {
@@ -142,20 +135,8 @@ const getStyles = isDark => ({
     alignItems: 'center',
     gap: 8,
   },
-  backButton: {
-    width: '30%',
-    height: 40,
-    backgroundColor: '#E6E6E6',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 100,
-  },
-  backButtonText: {
-    fontSize: 14,
-    color: '#000000',
-  },
   nextButton: {
-    width: '65%',
+    width: '90%',
     height: 40,
     backgroundColor: '#CCFF66',
     justifyContent: 'center',

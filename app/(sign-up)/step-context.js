@@ -75,16 +75,6 @@ export default function StepProvider({ children }) {
     }
   };
 
-  const handleBackStep = () => {
-    if (step === 1) {
-      router.back();
-    } else if (step === 8 || step === 10) {
-      setStep(5);
-    } else {
-      setStep(prev => Math.max(prev - 1, 1));
-    }
-  };
-
   return (
     <StepContext.Provider
       value={{
@@ -95,7 +85,6 @@ export default function StepProvider({ children }) {
         setStep,
         title,
         handleNextStep,
-        handleBackStep,
         signupCompleted,
         setSignupCompleted,
       }}
