@@ -170,7 +170,10 @@ export default function My() {
             </View>
             <Text style={styles.menuText}>내가 쓴 글</Text>
           </Pressable>
-          <View style={styles.menuItem}>
+          <Pressable
+            style={styles.menuItem}
+            onPress={() => router.push('/my-replys')}
+          >
             <View style={styles.squareBox}>
               <Svg
                 width="40"
@@ -186,7 +189,7 @@ export default function My() {
               </Svg>
             </View>
             <Text style={styles.menuText}>내 댓글함</Text>
-          </View>
+          </Pressable>
         </View>
 
         <View style={styles.editSection}>
