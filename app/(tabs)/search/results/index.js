@@ -9,8 +9,8 @@ export default function SearchKeyword() {
   const { query } = useLocalSearchParams();
   const { styles, isDark } = useThemedStyle(getStyles);
 
-  // 트렌드 추천 키워드 데이터
-  const trendRecommendData = [
+  // 트렌드 검색 결과 데이터
+  const trendSearchData = [
     { tag: '일상/밈', title: '듀 가나디 팝업' },
     { tag: '게임', title: '듀 가나디 게임' },
     { tag: '패션', title: '듀 가나디 티셔츠' },
@@ -58,7 +58,7 @@ export default function SearchKeyword() {
     const secondRow = items.slice(5, 10);
     return { firstRow, secondRow };
   };
-  const { firstRow, secondRow } = splitIntoTwoRows(trendRecommendData);
+  const { firstRow, secondRow } = splitIntoTwoRows(trendSearchData);
 
   return (
     <>
@@ -69,30 +69,38 @@ export default function SearchKeyword() {
           <Text style={styles.highlightedText}>{query}</Text>
           {`'`}에 대한 검색 결과
         </Text>
-        <View style={styles.trendRecommendContainer}>
-          {/* 첫 번째 스크롤뷰 */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {firstRow.map((item, index) => (
-              <TrendKeywordCard
-                key={index}
-                tag={item.tag}
-                title={item.title}
-                showTag={true} // 태그 표시 여부
-              />
-            ))}
-          </ScrollView>
-          {/* 두 번째 스크롤뷰 */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {secondRow.map((item, index) => (
-              <TrendKeywordCard
-                key={index}
-                tag={item.tag}
-                title={item.title}
-                showTag={true} // 태그 표시 여부
-              />
-            ))}
-          </ScrollView>
-        </View>
+        {trendSearchData.length === 0 ? (
+          <View style={styles.dimmedTextContainer}>
+            <Text style={styles.dimmedText}>
+              검색 결과가 존재하지 않습니다.
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.trendRecommendContainer}>
+            {/* 첫 번째 스크롤뷰 */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {firstRow.map((item, index) => (
+                <TrendKeywordCard
+                  key={index}
+                  tag={item.tag}
+                  title={item.title}
+                  showTag={true} // 태그 표시 여부
+                />
+              ))}
+            </ScrollView>
+            {/* 두 번째 스크롤뷰 */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {secondRow.map((item, index) => (
+                <TrendKeywordCard
+                  key={index}
+                  tag={item.tag}
+                  title={item.title}
+                  showTag={true} // 태그 표시 여부
+                />
+              ))}
+            </ScrollView>
+          </View>
+        )}
       </View>
       {/* 관련 영상 링크 */}
       <View style={styles.relatedVideosContainer}>
@@ -119,20 +127,28 @@ export default function SearchKeyword() {
             />
           </Pressable>
         </View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 16 }}
-        >
-          {relatedVideos.map((video, index) => (
-            <RelatedVideo
-              key={index}
-              title={video.title}
-              views={video.views}
-              thumbnailUrl={video.thumbnailUrl}
-            />
-          ))}
-        </ScrollView>
+        {relatedVideos.length === 0 ? (
+          <View style={[styles.dimmedTextContainer, { paddingHorizontal: 16 }]}>
+            <Text style={styles.dimmedText}>
+              검색 결과가 존재하지 않습니다.
+            </Text>
+          </View>
+        ) : (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 16, marginTop: 20 }}
+          >
+            {relatedVideos.map((video, index) => (
+              <RelatedVideo
+                key={index}
+                title={video.title}
+                views={video.views}
+                thumbnailUrl={video.thumbnailUrl}
+              />
+            ))}
+          </ScrollView>
+        )}
       </View>
     </>
   );
@@ -151,6 +167,13 @@ const getStyles = (isDark, primaryColor) => ({
   highlightedText: {
     color: isDark ? '#CCFF66' : '#A3CC52',
   },
+  dimmedTextContainer: {
+    height: 200,
+    marginTop: 20,
+  },
+  dimmedText: {
+    color: primaryColor.color,
+  },
   trendRecommendContainer: {
     marginTop: 20,
     gap: 16,
@@ -160,7 +183,6 @@ const getStyles = (isDark, primaryColor) => ({
   },
   relatedVideosHeader: {
     paddingHorizontal: 16,
-    marginBottom: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
