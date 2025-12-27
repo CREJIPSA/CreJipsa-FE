@@ -66,7 +66,7 @@ export default function SearchKeyword() {
       <View style={styles.searchResultsContainer}>
         <Text style={styles.titleText}>
           {`'`}
-          {query}
+          <Text style={styles.highlightedText}>{query}</Text>
           {`'`}에 대한 검색 결과
         </Text>
         <View style={styles.trendRecommendContainer}>
@@ -99,7 +99,7 @@ export default function SearchKeyword() {
         <View style={styles.relatedVideosHeader}>
           <Text style={styles.titleText}>
             {`'`}
-            {query}
+            <Text style={styles.highlightedText}>{query}</Text>
             {`'`}와 관련한 영상 링크
           </Text>
           <Pressable
@@ -147,6 +147,9 @@ const getStyles = (isDark, primaryColor) => ({
     fontSize: 18,
     fontWeight: 'bold',
     color: primaryColor.color,
+  },
+  highlightedText: {
+    color: isDark ? '#CCFF66' : '#A3CC52',
   },
   trendRecommendContainer: {
     marginTop: 20,
