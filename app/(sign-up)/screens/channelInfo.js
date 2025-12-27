@@ -440,7 +440,7 @@ export default forwardRef(function ChannelInfo(props, ref) {
                   >
                     <Ionicons
                       name="close-outline"
-                      size={12}
+                      size={24}
                       style={styles.defaultColor}
                     />
                   </Pressable>
@@ -536,7 +536,7 @@ const getStyles = isDark => {
     },
     addChannelButton: {
       width: 120,
-      height: 50,
+      height: 45,
       gap: 10,
       flexDirection: 'row',
       justifyContent: 'center',
