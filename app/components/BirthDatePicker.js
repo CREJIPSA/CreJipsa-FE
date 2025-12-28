@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 export default function BirthDatePicker({
@@ -17,17 +16,15 @@ export default function BirthDatePicker({
   }, [initialDate]);
 
   return (
-    <View>
-      <DateTimePickerModal
-        isVisible={isVisible}
-        mode="date"
-        onConfirm={selectedDate => {
-          setDate(selectedDate);
-          onConfirm(selectedDate);
-        }}
-        onCancel={onCancel}
-        date={date}
-      />
-    </View>
+    <DateTimePickerModal
+      isVisible={isVisible}
+      mode="date"
+      onConfirm={selectedDate => {
+        setDate(selectedDate);
+        onConfirm(selectedDate);
+      }}
+      onCancel={onCancel}
+      date={date}
+    />
   );
 }
