@@ -10,9 +10,10 @@ export default function BirthDatePicker({
   const [date, setDate] = useState(new Date()); // 선택한 날짜
 
   useEffect(() => {
-    if (initialDate) {
-      setDate(initialDate);
-    }
+    if (!initialDate) return;
+
+    const parsed = new Date(initialDate.replaceAll('.', '-'));
+    if (!isNaN(parsed)) setDate(parsed);
   }, [initialDate]);
 
   return (

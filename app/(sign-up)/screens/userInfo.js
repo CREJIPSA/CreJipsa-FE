@@ -9,7 +9,6 @@ import {
   useContext,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useState,
 } from 'react';
 import {
@@ -224,13 +223,7 @@ export default forwardRef(function UserInfo(props, ref) {
         </Pressable>
         <BirthDatePicker
           isVisible={datePickerVisible}
-          initialDate={useMemo(
-            () =>
-              formik.values.birth
-                ? new Date(formik.values.birth.replaceAll('.', '-'))
-                : new Date(),
-            [formik.values.birth],
-          )}
+          initialDate={formik.values.birth}
           onConfirm={async date => {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
