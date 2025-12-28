@@ -1,4 +1,3 @@
-import BirthDatePicker from '@/app/components/BirthDatePicker.js';
 import GenderFemaleIcon from '@/assets/svgs/signup/gender-female-icon';
 import GenderMaleIcon from '@/assets/svgs/signup/gender-male-icon';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,10 +26,9 @@ import { TermContext } from '../term-context';
 
 export default forwardRef(function UserInfo(props, ref) {
   const insets = useSafeAreaInsets();
-  const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
+  const { isDark, styles } = useThemedStyle(getStyles);
   const { step, handleNextStep, updateForm } = useContext(StepContext);
   const [isGenderModalVisible, setIsGenderModalVisible] = useState(false);
-  const [datePickerVisible, setDatePickerVisible] = useState(false);
   const { onFormStatusChange } = props;
 
   // 회원가입 단계 전환 조건
@@ -38,7 +36,12 @@ export default forwardRef(function UserInfo(props, ref) {
     username: Yup.string()
       .max(10, '최대 10글자까지 입력 가능합니다.')
       .required('이름을 입력해주세요.'),
-    birth: Yup.string().required('생년월일을 입력해주세요.'),
+    birth: Yup.string()
+      .matches(
+        /^(19|20)\d{2}\.(0[1-9]|1[0-2])\.(0[1-9]|[12][0-9]|3[01])$/,
+        '입력 형식이 잘못되었어요.',
+      )
+      .required('생년월일을 입력해주세요.'),
     gender: Yup.string().required('성별을 선택해주세요.'),
   });
 
@@ -199,50 +202,38 @@ export default forwardRef(function UserInfo(props, ref) {
         ]}
       >
         <Text style={styles.inputTitle}>생년월일 (8자리)</Text>
-        <Pressable
+        <TextInput
           style={[
             styles.inputForm,
-            { justifyContent: 'center', paddingLeft: 3 },
+            step === 2 && formik.touched.birth && formik.errors.birth
+              ? { borderBottomColor: '#FF0606' }
+              : {},
           ]}
-          onPress={() => {
-            setDatePickerVisible(true);
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 18,
-              color: formik.values.birth
-                ? primaryColors.color
-                : isDark
-                  ? '#8A8A8A'
-                  : '#D3D3D3',
-            }}
-          >
-            {formik.values.birth ? formik.values.birth : '0000.00.00'}
-          </Text>
-        </Pressable>
-        <BirthDatePicker
-          isVisible={datePickerVisible}
-          initialDate={formik.values.birth}
-          onConfirm={async date => {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            const formattedDate = `${year}.${month}.${day}`;
-            formik.handleChange('birth')(formattedDate);
-            updateForm('userInfo', { birth: formattedDate });
+          value={formik.values.birth}
+          placeholder="0000.00.00"
+          placeholderTextColor={isDark ? '#8A8A8A' : '#D3D3D3'}
+          onChangeText={text => {
+            formik.handleChange('birth')(text);
+            updateForm('userInfo', { birth: text });
             if (props.onFormStatusChange) {
               const isComplete = checkAllRequiredFieldsFilled(
                 step,
                 formik.values,
                 'birth',
-                formattedDate,
+                text,
               );
               props.onFormStatusChange(isComplete);
             }
-            setDatePickerVisible(false);
           }}
-          onCancel={() => setDatePickerVisible(false)}
+          onBlur={formik.handleBlur('birth')}
+          onSubmitEditing={async () => {
+            const isValid = await handleStepValidation();
+            if (isValid) {
+              handleNextStep();
+            }
+          }}
+          returnKeyType="next"
+          keyboardType="number-pad"
         />
         {step === 2 && formik.touched.birth && formik.errors.birth && (
           <Text style={styles.errorMessage}>{formik.errors.birth}</Text>
