@@ -218,11 +218,6 @@ export default function My() {
             </TouchableOpacity>
           </View>
         </View>
-        <DeleteModal
-          visible={deleteModalVisible}
-          onClose={() => setDeleteModalVisible(false)}
-          isDark={isDark}
-        />
       </ScrollView>
       <DeleteModal
         visible={deleteModalVisible}

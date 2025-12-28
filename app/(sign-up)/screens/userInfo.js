@@ -1,3 +1,4 @@
+import BirthDatePicker from '@/app/components/BirthDatePicker.js';
 import GenderFemaleIcon from '@/assets/svgs/signup/gender-female-icon';
 import GenderMaleIcon from '@/assets/svgs/signup/gender-male-icon';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,7 +19,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
 import useThemedStyle from '../../hooks/use-themed-style';
@@ -167,32 +167,6 @@ export default forwardRef(function UserInfo(props, ref) {
       </View>
     );
   });
-
-  // 생년월일 달력 모듈
-  const BirthDatePicker = ({ isVisible, onConfirm, onCancel, initialDate }) => {
-    const [date, setDate] = useState(new Date()); // 선택한 날짜
-
-    useEffect(() => {
-      if (initialDate) {
-        setDate(initialDate);
-      }
-    }, [initialDate]);
-
-    return (
-      <View>
-        <DateTimePickerModal
-          isVisible={datePickerVisible}
-          mode="date"
-          onConfirm={selectedDate => {
-            setDate(selectedDate);
-            onConfirm(selectedDate);
-          }}
-          onCancel={onCancel}
-          date={date}
-        />
-      </View>
-    );
-  };
 
   return (
     <View style={styles.formContainer}>
