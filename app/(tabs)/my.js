@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
-import DeleteModal from '../components/profile-edit/DeleteModal.js';
+import DeleteModal from '../components/DeleteModal.js';
 
 export default function My() {
   const [pushEnabled, setPushEnabled] = useState(true);
@@ -218,12 +218,14 @@ export default function My() {
             </TouchableOpacity>
           </View>
         </View>
-        <DeleteModal
-          visible={deleteModalVisible}
-          onClose={() => setDeleteModalVisible(false)}
-          isDark={isDark}
-        />
       </ScrollView>
+      <DeleteModal
+        visible={deleteModalVisible}
+        mainText={`회원 탈퇴 시,\n계정 정보는 복구가 불가능합니다.\n정말로 탈퇴하시겠어요?`}
+        closeText="계속 사용하기"
+        confirmText="탈퇴하기"
+        onClose={() => setDeleteModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }

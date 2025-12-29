@@ -1,3 +1,4 @@
+import DeleteModal from '@/app/components/DeleteModal.js';
 import instagramLogo from '@/assets/images/platform_logo/instagram_logo.png';
 import tiktokLogo from '@/assets/images/platform_logo/tiktok_logo.png';
 import youtubeLogo from '@/assets/images/platform_logo/youtube_logo.png';
@@ -34,6 +35,8 @@ export default forwardRef(function ChannelInfo(props, ref) {
   const { onFormStatusChange } = props;
 
   const [isPlatformModalVisible, setPlatformModalVisible] = useState(false);
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deleteTargetIndex, setDeleteTargetIndex] = useState(null);
 
   // 회원가입 단계 전환 조건
   const channelSchema = Yup.object().shape({
@@ -431,12 +434,10 @@ export default forwardRef(function ChannelInfo(props, ref) {
                     </Text>
                   </View>
                   <Pressable
-                    onPress={() =>
-                      updateForm(
-                        'channelInfo',
-                        form.channelInfo.filter((_, i) => i !== index),
-                      )
-                    }
+                    onPress={() => {
+                      setDeleteModalVisible(true);
+                      setDeleteTargetIndex(index);
+                    }}
                   >
                     <Ionicons
                       name="close-outline"
@@ -449,6 +450,21 @@ export default forwardRef(function ChannelInfo(props, ref) {
           </View>
         )}
       </View>
+      <DeleteModal
+        visible={isDeleteModalVisible}
+        mainText="삭제하시겠어요?"
+        subText="추가하신 채널 삭제 시, 복구가 불가능합니다."
+        closeText="취소"
+        confirmText="삭제하기"
+        onClose={() => setDeleteModalVisible(false)}
+        onConfirm={() => {
+          updateForm(
+            'channelInfo',
+            form.channelInfo.filter((_, i) => i !== deleteTargetIndex),
+          );
+          setDeleteModalVisible(false);
+        }}
+      />
     </View>
   );
 });
