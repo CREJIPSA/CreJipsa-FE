@@ -26,3 +26,12 @@ reviews:
   auto_review:
     enabled: true
     drafts: false
+
+issue_enrichment:
+  auto_enrich:
+    enabled: false
+
+  planning:
+    enabled: false
+    auto_planning:
+      enabled: false
