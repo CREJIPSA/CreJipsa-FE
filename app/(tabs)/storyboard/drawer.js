@@ -1,3 +1,5 @@
+import ChatStorageData from '@/app/constants/storyboard/CHATTING_STORAGE.js';
+import StoryboardStorageData from '@/app/constants/storyboard/STORYBOARD_STORAGE.js';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import CloseIcon from '@/assets/svgs/close.js';
 import SearchIcon from '@/assets/svgs/home/search-icon.js';
@@ -81,6 +83,22 @@ export default function StoryboardDrawer({ visible, onClose }) {
     );
   };
 
+  // 더보기 컴포넌트
+  const moreOption = route => {
+    return (
+      <View style={{ alignItems: 'center', marginTop: 10 }}>
+        <Pressable
+          style={styles.moreOption}
+          onPress={() => {
+            router.push(route);
+          }}
+        >
+          <Text style={styles.moreOptionText}>더보기</Text>
+        </Pressable>
+      </View>
+    );
+  };
+
   return (
     <Modal
       isVisible={visible}
@@ -128,11 +146,10 @@ export default function StoryboardDrawer({ visible, onClose }) {
           {/* 스토리보드 드롭다운 */}
           {isStoryboardDropdownVisible && (
             <View style={styles.dropdownContainer}>
-              {dropdownInnerOption('storyboard', '브이로그')}
-              {dropdownInnerOption('storyboard', '여행 계획')}
-              {dropdownInnerOption('storyboard', '프로젝트 아이디어')}
-              {dropdownInnerOption('storyboard', '독서 노트')}
-              {dropdownInnerOption('storyboard', '요리 레시피')}
+              {StoryboardStorageData.slice(0, 5).map((item, index) =>
+                dropdownInnerOption('storyboard', item.text, item.route),
+              )}
+              {moreOption()}
             </View>
           )}
           {dropdownOption(
@@ -143,11 +160,10 @@ export default function StoryboardDrawer({ visible, onClose }) {
           {/* 채팅 드롭다운 */}
           {isChatDropdownVisible && (
             <View style={styles.dropdownContainer}>
-              {dropdownInnerOption('chat', '업무 관련')}
-              {dropdownInnerOption('chat', '친구와의 대화')}
-              {dropdownInnerOption('chat', '가족 모임')}
-              {dropdownInnerOption('chat', '학습 자료')}
-              {dropdownInnerOption('chat', '취미 활동')}
+              {ChatStorageData.slice(0, 5).map((item, index) =>
+                dropdownInnerOption('chat', item.text, item.route),
+              )}
+              {moreOption()}
             </View>
           )}
         </View>
@@ -222,9 +238,20 @@ const getStyles = (isDark, primaryColors) => {
       justifyContent: 'space-between',
       flex: 1,
     },
+    moreOption: {
+      backgroundColor: isDark ? '#E6E6E6' : '#323232',
+      borderRadius: 100,
+      paddingHorizontal: 20,
+      paddingVertical: 2,
+    },
+    moreOptionText: {
+      fontSize: 14,
+      color: isDark ? '#323232' : '#E6E6E6',
+      textAlign: 'center',
+    },
     dropdownContainer: {
       gap: 10,
-      marginBottom: 50,
+      marginBottom: 30,
     },
     drawerInnerOption: {
       flexDirection: 'row',
