@@ -159,7 +159,9 @@ export default function My() {
 
         <View style={styles.editSection}>
           <Text style={styles.sectionTitle}>내 프로필</Text>
-          <Text style={styles.sectionItem}>프로필 수정</Text>
+          <Pressable onPress={() => router.push('/profile-edit')}>
+            <Text style={styles.sectionItem}>프로필 수정</Text>
+          </Pressable>
         </View>
 
         <View style={styles.section}>
