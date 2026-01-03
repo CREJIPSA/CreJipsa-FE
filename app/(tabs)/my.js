@@ -12,7 +12,7 @@ import {
   useColorScheme,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Svg, { Circle, ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
+import Svg, { Path, Rect } from 'react-native-svg';
 import DeleteModal from '../components/DeleteModal.js';
 
 export default function My() {
@@ -36,41 +36,6 @@ export default function My() {
               source={require('../../assets/images/profile.png')}
               style={styles.avatar}
             />
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={() => router.push('/profile-edit')}
-            >
-              <Svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <G clipPath="url(#clip0_1046_3548)">
-                  <Circle cx="12" cy="12" r="12" fill="#959595" />
-                  <Path
-                    d="M5.21729 17.7971C5.21729 18.5335 5.81424 19.1304 6.55062 19.1304H7.64626C7.99989 19.1304 8.33903 18.99 8.58907 18.7399L18.1875 9.14154C18.7082 8.62081 18.7081 7.77655 18.1874 7.25586L17.0915 6.16012C16.5708 5.63947 15.7266 5.6395 15.2059 6.16019L5.60779 15.7587C5.35776 16.0087 5.21729 16.3478 5.21729 16.7014V17.7971Z"
-                    fill="#454545"
-                  />
-                  <Path
-                    d="M13.1677 8.19861L16.149 11.1799L13.1677 8.19861Z"
-                    fill="#454545"
-                  />
-                  <Path
-                    d="M13.1677 8.19861L16.149 11.1799"
-                    stroke="black"
-                    strokeWidth="0.666667"
-                    strokeLinejoin="round"
-                  />
-                </G>
-                <Defs>
-                  <ClipPath id="clip0_1046_3548">
-                    <Rect width="24" height="24" fill="white" />
-                  </ClipPath>
-                </Defs>
-              </Svg>
-            </TouchableOpacity>
           </View>
           <Text style={styles.name}>혜안</Text>
         </View>
@@ -265,13 +230,6 @@ const getStyles = isDark => {
       height: 120,
       borderRadius: 60,
       backgroundColor: '#fff',
-    },
-    editButton: {
-      position: 'absolute',
-      top: 0,
-      left: 120,
-      width: 28,
-      height: 28,
     },
     name: {
       fontSize: 18,
