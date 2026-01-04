@@ -1,63 +1,56 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import MenuIcon from '@/assets/svgs/storyboard/menu';
 import { useRouter } from 'expo-router';
-import { memo, useState } from 'react';
+import { useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import StoryboardDrawer from './drawer';
 
 export default function StoryboardEdit() {
-  const { styles, primaryColors, isDark } = useThemedStyle(getStyles);
-  const router = useRouter();
+  const { styles, primaryColors } = useThemedStyle(getStyles);
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [cuts, setCuts] = useState([1]);
 
-  // 편집 옵션 상태 관리
-  const [selectedPlatform, setSelectedPlatform] = useState(null);
-  const [selectedContentLength, setSelectedContentLength] = useState(null);
-  const [selectedCutCount, setSelectedCutCount] = useState(null);
-  // const [customCutCount, setCustomCutCount] = useState('');
-  const [customMessage, setCustomMessage] = useState('');
-  const [requiredContent, setRequiredContent] = useState('');
-  const [avoidedContent, setAvoidedContent] = useState('');
-
-  // 칩 컴포넌트
-  const Chip = memo(function Chip({ label, selected, onPress }) {
+  // 컷 컴포넌트
+  const CutComponent = ({ cutNum }) => {
     return (
-      <Pressable
-        style={[styles.chip, selected && styles.chipSelected]}
-        onPress={onPress}
-      >
-        <Text style={[styles.chipLabel, selected && styles.chipSelectedLabel]}>
-          {label}
-        </Text>
-      </Pressable>
+      <View style={styles.cutContainer}>
+        <View style={styles.numberBox}>
+          <Text style={styles.numberText}>{cutNum}</Text>
+        </View>
+        <View style={styles.contentsContainer}>
+          <View style={styles.contentBox}>
+            <Text style={styles.contentText}>컷 구성</Text>
+            <TextInput style={styles.contentInput} />
+          </View>
+          <View style={styles.contentBox}>
+            <Text style={styles.contentText}>대본</Text>
+            <TextInput style={styles.contentInput} />
+          </View>
+          <View style={styles.contentBox}>
+            <Text style={styles.contentText}>자막</Text>
+            <TextInput style={styles.contentInput} />
+          </View>
+          <View style={styles.contentBox}>
+            <Text style={styles.contentText}>기타</Text>
+            <TextInput style={styles.contentInput} />
+          </View>
+        </View>
+      </View>
     );
-  });
+  };
 
-  // 칩 옵션
-  const PlatformChips = ['유튜브', '인스타', '틱톡'];
-  const ContentLengthChips = [
-    '15초 내외',
-    '30초 내외',
-    '1분 이상',
-    '15분 이상',
-  ];
-  const CutCountChips = ['5컷', '7컷', '10컷', '직접 입력'];
-
-  // 칩 토글
-  const toggle = (value, setter, current) => {
-    if (value === current) {
-      setter(null);
-    } else {
-      setter(value);
-    }
+  const addCut = () => {
+    setCuts(prevCuts => [...prevCuts, prevCuts.length + 1]);
   };
 
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
+      {/* 헤더 */}
       <View style={styles.header}>
         <Ionicons
           name="chevron-back"
@@ -65,106 +58,41 @@ export default function StoryboardEdit() {
           color={primaryColors.color}
           onPress={() => router.back()}
         />
-        <Text style={styles.titleText}>AI 스토리보드 편집</Text>
+        <Text style={styles.headerText}>AI 스토리보드 편집</Text>
         <Pressable onPress={() => setDrawerVisible(true)}>
           <MenuIcon color={primaryColors.color} size={24} />
         </Pressable>
       </View>
-      <ScrollView style={styles.contentContainer}>
-        {/* STEP 1 */}
-        <Text style={styles.stepLabel}>STEP 01.</Text>
-        <View style={styles.editOptionContainer}>
-          <Text style={styles.stepTitle}>플랫폼</Text>
-          <View style={styles.chipContainer}>
-            {PlatformChips.map(option => (
-              <Chip
-                key={option}
-                label={option}
-                selected={selectedPlatform === option}
-                onPress={() =>
-                  toggle(option, setSelectedPlatform, selectedPlatform)
-                }
-              />
-            ))}
-          </View>
-        </View>
-        <View style={styles.editOptionContainer}>
-          <Text style={styles.stepTitle}>콘텐츠 길이</Text>
-          <View style={styles.chipContainer}>
-            {ContentLengthChips.map(option => (
-              <Chip
-                key={option}
-                label={option}
-                selected={selectedContentLength === option}
-                onPress={() =>
-                  toggle(
-                    option,
-                    setSelectedContentLength,
-                    selectedContentLength,
-                  )
-                }
-              />
-            ))}
-          </View>
-        </View>
-        {/* 영상 목적 */}
-        {/* STEP 2 */}
-        <Text style={[styles.stepLabel, { marginTop: 30 }]}>STEP 02.</Text>
-        <View style={styles.editOptionContainer}>
-          <Text style={styles.stepTitle}>컷 개수</Text>
-          <View style={styles.chipContainer}>
-            {CutCountChips.map(option => (
-              <Chip
-                key={option}
-                label={option}
-                selected={selectedCutCount === option}
-                onPress={() =>
-                  toggle(option, setSelectedCutCount, selectedCutCount)
-                }
-              />
-            ))}
-          </View>
-        </View>
-        <View style={styles.editOptionContainer}>
-          <Text style={styles.stepTitle}>한 줄 메세지</Text>
-          <TextInput
-            style={styles.textInput}
-            value={customMessage}
-            onChangeText={setCustomMessage}
-            placeholder="예시 : 크집사 앱 소개 영상"
-            placeholderTextColor={isDark ? '#D3D3D3' : '#959595'}
-            multiline
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-        </View>
-        <View style={styles.editOptionContainer}>
-          <Text style={styles.stepTitle}>필수로 들어가야 할 내용</Text>
-          <TextInput
-            style={styles.textInput}
-            value={requiredContent}
-            onChangeText={setRequiredContent}
-            placeholder="예시 : 크집사 앱 기능 소개"
-            placeholderTextColor={isDark ? '#D3D3D3' : '#959595'}
-            multiline
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-        </View>
-        <View style={styles.editOptionContainer}>
-          <Text style={styles.stepTitle}>기피해야 할 내용 (선택)</Text>
-          <TextInput
-            style={styles.textInput}
-            value={avoidedContent}
-            onChangeText={setAvoidedContent}
-            placeholder="예시 : 크집사 앱 내 문제점"
-            placeholderTextColor={isDark ? '#D3D3D3' : '#959595'}
-            multiline
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
+      {/* 스토리보드 */}
+      {/* 제목 */}
+      <View style={styles.titleContainer}>
+        <TextInput
+          style={styles.titleInput}
+          placeholder="스토리보드 제목"
+          placeholderTextColor={primaryColors.color}
+        />
+        <Pressable style={styles.saveBtn}>
+          <Text style={styles.saveBtnText}>저장</Text>
+        </Pressable>
+      </View>
+      {/* 스크립트 */}
+      <ScrollView contentContainerStyle={{ paddingVertical: 50 }}>
+        {cuts.map((cut, index) => (
+          <CutComponent key={index} cutNum={index + 1} />
+        ))}
+        {/* 컷 추가 버튼 */}
+        <View>
+          <Pressable
+            style={styles.addBtn}
+            onPress={() => {
+              addCut();
+            }}
+          >
+            <Text style={styles.addBtnText}>+</Text>
+          </Pressable>
         </View>
       </ScrollView>
+      {/* 사이드바 */}
       <StoryboardDrawer
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}
@@ -177,62 +105,89 @@ const getStyles = (isDark, primaryColors) => ({
   mainContainer: {
     flex: 1,
     backgroundColor: primaryColors.background,
+    paddingHorizontal: 16,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
     paddingVertical: 15,
   },
-  titleText: {
+  headerText: {
     fontSize: 18,
     fontWeight: 'bold',
     color: primaryColors.color,
   },
-  contentContainer: {
-    paddingHorizontal: 16,
-  },
-  stepLabel: {
-    marginTop: 16,
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: isDark ? '#CCFF66' : '#A3CC52',
-  },
-  editOptionContainer: {
-    marginTop: 24,
-    gap: 8,
-  },
-  stepTitle: {
-    fontSize: 18,
-    color: primaryColors.color,
-  },
-  textInput: {
-    backgroundColor: isDark ? '#454545' : '#E6E6E6',
-    borderRadius: 100,
-    paddingHorizontal: 15,
-    color: primaryColors.color,
-    fontSize: 14,
-  },
-  chipContainer: {
+  titleContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: isDark ? '#454545' : '#D3D3D3',
   },
-  chip: {
-    backgroundColor: isDark ? '#454545' : '#E6E6E6',
-    borderRadius: 100,
-    paddingHorizontal: 15,
+  titleInput: {
+    flex: 1,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: primaryColors.color,
     paddingVertical: 8,
   },
-  chipLabel: {
-    color: primaryColors.color,
+  saveBtn: {
+    backgroundColor: primaryColors.pointColor,
+    paddingVertical: 2,
+    paddingHorizontal: 14,
+    borderRadius: 100,
+  },
+  saveBtnText: {
+    color: '#1B1B1B',
     fontSize: 14,
+    fontWeight: 'bold',
   },
-  chipSelected: {
-    backgroundColor: isDark ? '#CCFF66' : '#C6E945',
+  cutContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
   },
-  chipSelectedLabel: {
-    color: '#141414',
+  numberBox: {
+    width: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: isDark ? '#E3FFAB' : '#C6E945',
+    borderRadius: 4,
+  },
+  numberText: {
+    fontSize: 16,
+    color: '#000000',
+  },
+  contentsContainer: {
+    flex: 1,
+    gap: 16,
+  },
+  contentBox: {
+    gap: 8,
+  },
+  contentText: {
+    color: primaryColors.color,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  contentInput: {
+    borderRadius: 8,
+    backgroundColor: isDark ? '#454545' : '#F5F5F5',
+    color: primaryColors.color,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+  },
+  addBtn: {
+    width: 30,
+    height: 70,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: isDark ? '#D3D3D3' : '#E6E6E6',
+    borderRadius: 4,
+  },
+  addBtnText: {
+    fontSize: 24,
+    color: isDark ? '#454545' : '#8A8A8A',
   },
 });
