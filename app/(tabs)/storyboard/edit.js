@@ -189,7 +189,7 @@ const getStyles = (isDark, primaryColors) => ({
     paddingVertical: 8,
   },
   saveBtn: {
-    backgroundColor: primaryColors.pointColor,
+    backgroundColor: isDark ? '#CCFF66' : '#C6E945',
     paddingVertical: 2,
     paddingHorizontal: 14,
     borderRadius: 100,
@@ -229,7 +229,7 @@ const getStyles = (isDark, primaryColors) => ({
   },
   contentInput: {
     borderRadius: 8,
-    backgroundColor: isDark ? '#454545' : '#F5F5F5',
+    backgroundColor: isDark ? '#454545' : '#E6E6E6',
     color: primaryColors.color,
     paddingVertical: 12,
     paddingHorizontal: 15,

@@ -109,7 +109,7 @@ export default function Storyboard() {
           placeholderTextColor={'#959595'}
           autoCapitalize="none"
           autoCorrect={false}
-          onSubmitEditing={handleSend}
+          multiline
         />
         <Pressable style={styles.sendButton} onPress={handleSend}>
           <SendIcon color={'#141414'} size={12} />
