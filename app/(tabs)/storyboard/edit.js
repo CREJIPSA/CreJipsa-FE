@@ -1,7 +1,7 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import MenuIcon from '@/assets/svgs/storyboard/menu';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -13,10 +13,12 @@ export default function StoryboardEdit() {
   const router = useRouter();
 
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [cuts, setCuts] = useState([1]);
+  const [cuts, setCuts] = useState([
+    { id: Date.now(), description: '', script: '', subtitle: '', etc: '' },
+  ]);
 
   // 컷 컴포넌트
-  const CutComponent = ({ cutNum }) => {
+  const CutComponent = ({ cutNum, cut, onChangeField }) => {
     return (
       <View style={styles.cutContainer}>
         <View style={styles.numberBox}>
@@ -25,19 +27,35 @@ export default function StoryboardEdit() {
         <View style={styles.contentsContainer}>
           <View style={styles.contentBox}>
             <Text style={styles.contentText}>컷 구성</Text>
-            <TextInput style={styles.contentInput} />
+            <TextInput
+              style={styles.contentInput}
+              value={cut.description}
+              onChangeText={text => onChangeField('description', text)}
+            />
           </View>
           <View style={styles.contentBox}>
             <Text style={styles.contentText}>대본</Text>
-            <TextInput style={styles.contentInput} />
+            <TextInput
+              style={styles.contentInput}
+              value={cut.script}
+              onChangeText={text => onChangeField('script', text)}
+            />
           </View>
           <View style={styles.contentBox}>
             <Text style={styles.contentText}>자막</Text>
-            <TextInput style={styles.contentInput} />
+            <TextInput
+              style={styles.contentInput}
+              value={cut.subtitle}
+              onChangeText={text => onChangeField('subtitle', text)}
+            />
           </View>
           <View style={styles.contentBox}>
             <Text style={styles.contentText}>기타</Text>
-            <TextInput style={styles.contentInput} />
+            <TextInput
+              style={styles.contentInput}
+              value={cut.etc}
+              onChangeText={text => onChangeField('etc', text)}
+            />
           </View>
         </View>
       </View>
@@ -45,7 +63,33 @@ export default function StoryboardEdit() {
   };
 
   const addCut = () => {
-    setCuts(prevCuts => [...prevCuts, prevCuts.length + 1]);
+    setCuts(prevCuts => [
+      ...prevCuts,
+      { id: Date.now(), description: '', script: '', subtitle: '', etc: '' },
+    ]);
+  };
+
+  const updateCutField = (id, field, value) => {
+    setCuts(prevCuts =>
+      prevCuts.map(cut => (cut.id === id ? { ...cut, [field]: value } : cut)),
+    );
+  };
+
+  // 자동 스크롤
+  const scrollViewRef = useRef(null);
+  const [isNearBottom, setIsNearBottom] = useState(true);
+  useEffect(() => {
+    if (isNearBottom) {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }
+  }, [cuts, isNearBottom]);
+  const handleScroll = event => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    const paddingToBottom = 100;
+    const nearBottom =
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom;
+    setIsNearBottom(nearBottom);
   };
 
   return (
@@ -76,9 +120,21 @@ export default function StoryboardEdit() {
         </Pressable>
       </View>
       {/* 스크립트 */}
-      <ScrollView contentContainerStyle={{ paddingVertical: 50 }}>
+      <ScrollView
+        ref={scrollViewRef}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        contentContainerStyle={{ paddingVertical: 50 }}
+      >
         {cuts.map((cut, index) => (
-          <CutComponent key={index} cutNum={index + 1} />
+          <CutComponent
+            key={cut.id}
+            cutNum={index + 1}
+            cut={cut}
+            onChangeField={(field, value) =>
+              updateCutField(cut.id, field, value)
+            }
+          />
         ))}
         {/* 컷 추가 버튼 */}
         <View>
