@@ -1,3 +1,4 @@
+import DropdownInnerOption from '@/app/components/storyboard/dropdown-inner-option';
 import ChatStorageData from '@/app/constants/storyboard/CHATTING_STORAGE.js';
 import StoryboardStorageData from '@/app/constants/storyboard/STORYBOARD_STORAGE.js';
 import useThemedStyle from '@/app/hooks/use-themed-style';
@@ -6,7 +7,7 @@ import SearchIcon from '@/assets/svgs/home/search-icon.js';
 import ChatStorageIcon from '@/assets/svgs/storyboard/archive.js';
 import NewChatIcon from '@/assets/svgs/storyboard/chat.js';
 import StoryboardIcon from '@/assets/svgs/storyboard/storyboard.js';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Dimensions, Pressable, Text, TextInput, View } from 'react-native';
 import Modal from 'react-native-modal';
@@ -17,6 +18,7 @@ const width = Math.min(360, 0.9 * Dimensions.get('window').width);
 export default function StoryboardDrawer({ visible, onClose }) {
   const { styles, primaryColors, isDark } = useThemedStyle(getStyles);
 
+  const router = useRouter();
   const [isStoryboardDropdownVisible, setIsStoryboardDropdownVisible] =
     useState(false);
   const [isChatDropdownVisible, setIsChatDropdownVisible] = useState(false);
@@ -62,36 +64,17 @@ export default function StoryboardDrawer({ visible, onClose }) {
     );
   };
 
-  // 드롭다운 내부 옵션 컴포넌트
-  const dropdownInnerOption = (label, text, route) => {
-    return (
-      <View style={styles.drawerInnerOption}>
-        <Text style={styles.drawerInnerOptionText}>{text}</Text>
-        <Pressable
-          style={styles.drawerInnerOptionButton}
-          onPress={() => {
-            // 라벨에 따라 다른 화면으로 이동하도록 수정
-            router.push('/storyboard/edit');
-            onClose();
-          }}
-        >
-          <Text style={styles.drawerInnerOptionButtonText}>
-            {label === 'storyboard' ? '편집' : '이동'}
-          </Text>
-        </Pressable>
-      </View>
-    );
-  };
-
   // 더보기 컴포넌트
-  const moreOption = route => {
+  const moreOption = label => {
     return (
       <View style={{ alignItems: 'center', marginTop: 10 }}>
         <Pressable
           style={styles.moreOption}
-          onPress={() => {
-            router.push(route);
-          }}
+          onPress={() =>
+            label === 'storyboard'
+              ? router.push('/storyboard/storage')
+              : router.push('/storyboard/storage/chatting')
+          }
         >
           <Text style={styles.moreOptionText}>더보기</Text>
         </Pressable>
@@ -146,10 +129,16 @@ export default function StoryboardDrawer({ visible, onClose }) {
           {/* 스토리보드 드롭다운 */}
           {isStoryboardDropdownVisible && (
             <View style={styles.dropdownContainer}>
-              {StoryboardStorageData.slice(0, 5).map((item, index) =>
-                dropdownInnerOption('storyboard', item.text, item.route),
-              )}
-              {moreOption()}
+              {StoryboardStorageData.slice(0, 5).map((item, index) => (
+                <DropdownInnerOption
+                  key={index}
+                  label="storyboard"
+                  text={item.text}
+                  route={item.route}
+                  onClose={onClose}
+                />
+              ))}
+              {moreOption('storyboard')}
             </View>
           )}
           {dropdownOption(
@@ -160,10 +149,16 @@ export default function StoryboardDrawer({ visible, onClose }) {
           {/* 채팅 드롭다운 */}
           {isChatDropdownVisible && (
             <View style={styles.dropdownContainer}>
-              {ChatStorageData.slice(0, 5).map((item, index) =>
-                dropdownInnerOption('chat', item.text, item.route),
-              )}
-              {moreOption()}
+              {ChatStorageData.slice(0, 5).map((item, index) => (
+                <DropdownInnerOption
+                  key={index}
+                  label="chatting"
+                  text={item.text}
+                  route={item.route}
+                  onClose={onClose}
+                />
+              ))}
+              {moreOption('chatting')}
             </View>
           )}
         </View>
@@ -252,26 +247,6 @@ const getStyles = (isDark, primaryColors) => {
     dropdownContainer: {
       gap: 10,
       marginBottom: 30,
-    },
-    drawerInnerOption: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingHorizontal: 12,
-    },
-    drawerInnerOptionText: {
-      fontSize: 16,
-      color: primaryColors.color,
-    },
-    drawerInnerOptionButton: {
-      backgroundColor: primaryColors.color,
-      paddingHorizontal: 10,
-      paddingVertical: 3,
-      borderRadius: 100,
-    },
-    drawerInnerOptionButtonText: {
-      fontSize: 14,
-      color: isDark ? '#323232' : '#E6E6E6',
     },
   };
 };
