@@ -1,6 +1,6 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import { Ionicons } from '@expo/vector-icons';
-import { usePathname, useRouter } from 'expo-router';
+import { Slot, usePathname, useRouter } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -25,6 +25,9 @@ export default function StoryboardStorageLayout() {
           <Ionicons name="chevron-back" size={24} color={primaryColors.color} />
         </Pressable>
         <Text style={styles.headerText}>{title}</Text>
+      </View>
+      <View style={{ flex: 1 }}>
+        <Slot />
       </View>
     </View>
   );

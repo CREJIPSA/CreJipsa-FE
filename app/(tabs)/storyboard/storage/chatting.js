@@ -1,13 +1,34 @@
-import { Text, View } from 'react-native';
+import DropdownInnerOption from '@/app/components/storyboard/dropdown-inner-option';
+import ChattingStorageData from '@/app/constants/storyboard/CHATTING_STORAGE';
+import useThemedStyle from '@/app/hooks/use-themed-style';
+import { ScrollView, View } from 'react-native';
 
-const chattingStorage = () => {
-  console.log(location.pathname);
+export default function ChattingStorage() {
+  const { styles } = useThemedStyle(getStyles);
 
   return (
-    <View>
-      <Text>chatting-storage</Text>
+    <View style={styles.mainContainer}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingVertical: 23, gap: 20 }}
+      >
+        {ChattingStorageData.map((item, index) => (
+          <DropdownInnerOption
+            key={index}
+            label="chatting"
+            text={item.text}
+            route={item.route}
+          />
+        ))}
+      </ScrollView>
     </View>
   );
-};
+}
 
-export default chattingStorage;
+const getStyles = (isDark, primaryColors) => ({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: primaryColors.background,
+    paddingHorizontal: 16,
+  },
+});

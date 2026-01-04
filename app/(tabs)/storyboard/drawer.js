@@ -72,8 +72,8 @@ export default function StoryboardDrawer({ visible, onClose }) {
           style={styles.moreOption}
           onPress={() =>
             label === 'storyboard'
-              ? router.push('/storyboard/storage')
-              : router.push('/storyboard/storage/chatting')
+              ? router.navigate('/storyboard/storage')
+              : router.navigate('/storyboard/storage/chatting')
           }
         >
           <Text style={styles.moreOptionText}>더보기</Text>
@@ -135,7 +135,6 @@ export default function StoryboardDrawer({ visible, onClose }) {
                   label="storyboard"
                   text={item.text}
                   route={item.route}
-                  onClose={onClose}
                 />
               ))}
               {moreOption('storyboard')}

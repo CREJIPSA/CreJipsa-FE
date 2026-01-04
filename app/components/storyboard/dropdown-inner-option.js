@@ -2,7 +2,7 @@ import useThemedStyle from '@/app/hooks/use-themed-style';
 import { useRouter } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 // 드롭다운 내부 옵션 컴포넌트
-export default function DropdownInnerOption({ label, text, route, onClose }) {
+export default function DropdownInnerOption({ label, text, route }) {
   const { styles } = useThemedStyle(getStyles);
   const router = useRouter();
 
@@ -14,7 +14,6 @@ export default function DropdownInnerOption({ label, text, route, onClose }) {
         onPress={() => {
           // 라벨에 따라 다른 화면으로 이동하도록 수정
           router.push('/storyboard/edit');
-          onClose();
         }}
       >
         <Text style={styles.drawerInnerOptionButtonText}>
@@ -37,13 +36,13 @@ const getStyles = (isDark, primaryColors) => ({
     color: primaryColors.color,
   },
   drawerInnerOptionButton: {
-    backgroundColor: primaryColors.color,
     paddingHorizontal: 10,
     paddingVertical: 3,
     borderRadius: 100,
   },
   drawerInnerOptionButtonText: {
-    fontSize: 14,
-    color: isDark ? '#323232' : '#E6E6E6',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: isDark ? '#B7B7B7' : '#8A8A8A',
   },
 });
