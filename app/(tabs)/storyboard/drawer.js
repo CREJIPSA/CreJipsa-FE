@@ -131,7 +131,7 @@ export default function StoryboardDrawer({ visible, onClose }) {
             <View style={styles.dropdownContainer}>
               {StoryboardStorageData.slice(0, 5).map((item, index) => (
                 <DropdownInnerOption
-                  key={index}
+                  key={item.id}
                   label="storyboard"
                   text={item.text}
                   route={item.route}
