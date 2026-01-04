@@ -1,8 +1,11 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
-import { Text, View } from 'react-native';
+import CopyIcon from '@/assets/svgs/storyboard/copy.js';
+import EditIcon from '@/assets/svgs/storyboard/edit.js';
+import ShareIcon from '@/assets/svgs/storyboard/share.js';
+import { Pressable, Text, View } from 'react-native';
 
 const MessageItem = ({ text, isUser }) => {
-  const { styles } = useThemedStyle(getStyles);
+  const { styles, primaryColors } = useThemedStyle(getStyles);
 
   // 메시지가 비어있으면 렌더링하지 않음
   if (!text) {
@@ -10,23 +13,49 @@ const MessageItem = ({ text, isUser }) => {
   }
 
   return (
-    <View
-      style={[
-        styles.mainContainer,
-        isUser
-          ? { justifyContent: 'flex-end' }
-          : { justifyContent: 'flex-start' },
-      ]}
-    >
+    <View style={{ marginBottom: 30 }}>
       <View
         style={[
-          styles.messageBubble,
-          isUser ? styles.userMessage : styles.aiMessage,
+          styles.mainContainer,
+          isUser
+            ? { justifyContent: 'flex-end' }
+            : { justifyContent: 'flex-start' },
         ]}
       >
-        <Text style={[styles.input, isUser ? styles.userText : styles.aiText]}>
-          {text}
-        </Text>
+        <View
+          style={[
+            styles.wrapper,
+            isUser ? { alignItems: 'flex-start' } : { alignItems: 'flex-end' },
+          ]}
+        >
+          <View
+            style={[
+              styles.messageBubble,
+              isUser ? styles.userMessage : styles.aiMessage,
+            ]}
+          >
+            <Text
+              style={[styles.input, isUser ? styles.userText : styles.aiText]}
+            >
+              {text}
+            </Text>
+          </View>
+          {/* 편집 버튼 */}
+          {!isUser && (
+            <View style={styles.btnContainer}>
+              <Pressable>
+                <ShareIcon size={20} color={primaryColors.color} />
+              </Pressable>
+              <Pressable>
+                <CopyIcon size={24} color={primaryColors.color} />
+              </Pressable>
+              <Pressable style={styles.editBtn}>
+                <EditIcon size={16} color="#1B1B1B" />
+                <Text style={styles.editBtnText}>편집</Text>
+              </Pressable>
+            </View>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -38,12 +67,13 @@ const getStyles = (isDark, primaryColors) => ({
   mainContainer: {
     flexDirection: 'row',
   },
+  wrapper: {
+    maxWidth: '80%',
+  },
   messageBubble: {
-    maxWidth: '60%',
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 20,
-    marginBottom: 30,
   },
   userMessage: {
     borderBottomRightRadius: 0,
@@ -61,5 +91,25 @@ const getStyles = (isDark, primaryColors) => ({
   },
   aiText: {
     color: primaryColors.color,
+  },
+  btnContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+    gap: 8,
+  },
+  editBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: primaryColors.pointColor,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    borderRadius: 100,
+  },
+  editBtnText: {
+    marginLeft: 4,
+    fontSize: 12,
+    color: '#1B1B1B',
   },
 });
