@@ -12,9 +12,9 @@ export default function StoryboardStorage() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingVertical: 23, gap: 20 }}
       >
-        {StoryboardStorageData.map((item, index) => (
+        {StoryboardStorageData.map(item => (
           <DropdownInnerOption
-            key={index}
+            key={item.id}
             label="storyboard"
             text={item.text}
             route={item.route}

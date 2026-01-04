@@ -27,7 +27,7 @@ export default function Storyboard() {
     if (!messageInput.trim()) return;
     setMessages(prevMessages => [
       ...prevMessages,
-      { text: messageInput, isUser: true },
+      { id: Date.now(), text: messageInput, isUser: true },
     ]);
     setMessageInput('');
 
@@ -42,7 +42,7 @@ export default function Storyboard() {
       const randomReply = replies[Math.floor(Math.random() * replies.length)];
       setMessages(prevMessages => [
         ...prevMessages,
-        { text: randomReply, isUser: false },
+        { id: Date.now(), text: randomReply, isUser: false },
       ]);
     }, 2000);
   };
@@ -80,7 +80,7 @@ export default function Storyboard() {
         <FlatList
           ref={listRef}
           data={messages}
-          keyExtractor={(_, index) => index.toString()}
+          keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => (
             <MessageItem text={item.text} isUser={item.isUser} />
           )}

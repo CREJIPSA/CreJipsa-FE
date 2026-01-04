@@ -12,9 +12,9 @@ export default function ChattingStorage() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingVertical: 23, gap: 20 }}
       >
-        {ChattingStorageData.map((item, index) => (
+        {ChattingStorageData.map(item => (
           <DropdownInnerOption
-            key={index}
+            key={item.id}
             label="chatting"
             text={item.text}
             route={item.route}
