@@ -136,10 +136,6 @@ const getStyles = (isDark, primaryColors) => {
       right: 15,
     },
 
-    tabBarRow: {
-      flexDirection: 'row',
-    },
-
     tabItem: {
       flex: 1,
       flexDirection: 'row',
