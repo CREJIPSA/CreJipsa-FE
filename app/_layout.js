@@ -75,11 +75,13 @@ const getStyles = (isDark, primaryColors) => ({
   toast: {
     paddingVertical: 10,
     paddingHorizontal: 16,
-    backgroundColor: '#454545',
+    backgroundColor: isDark
+      ? 'rgba(69, 69, 69, 0.8)'
+      : 'rgba(211, 211, 211, 0.8)',
     borderRadius: 20,
   },
   toastText: {
-    color: '#FFFFFF',
+    color: isDark ? '#FFFFFF' : '#000000',
     fontSize: 18,
     textAlign: 'center',
   },

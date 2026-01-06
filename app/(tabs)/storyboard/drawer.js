@@ -6,10 +6,18 @@ import CloseIcon from '@/assets/svgs/close.js';
 import SearchIcon from '@/assets/svgs/home/search-icon.js';
 import ChatStorageIcon from '@/assets/svgs/storyboard/archive.js';
 import NewChatIcon from '@/assets/svgs/storyboard/chat.js';
+import NewStoryboardIcon from '@/assets/svgs/storyboard/new-storyboard';
 import StoryboardIcon from '@/assets/svgs/storyboard/storyboard.js';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Dimensions, Pressable, Text, TextInput, View } from 'react-native';
+import {
+  Dimensions,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import Modal from 'react-native-modal';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -110,7 +118,10 @@ export default function StoryboardDrawer({ visible, onClose }) {
             />
           </View>
         </View>
-        <View style={styles.drawerContent}>
+        <ScrollView
+          style={styles.drawerContent}
+          contentContainerStyle={{ gap: 16, paddingBottom: 30 }}
+        >
           <Pressable
             style={styles.drawerOption}
             onPress={() => {
@@ -120,6 +131,16 @@ export default function StoryboardDrawer({ visible, onClose }) {
           >
             <NewChatIcon color={primaryColors.color} size={20} />
             <Text style={styles.drawerOptionText}>새 채팅</Text>
+          </Pressable>
+          <Pressable
+            style={styles.drawerOption}
+            onPress={() => {
+              onClose();
+              // 스토리보드 생성
+            }}
+          >
+            <NewStoryboardIcon color={primaryColors.color} size={20} />
+            <Text style={styles.drawerOptionText}>새 스토리보드</Text>
           </Pressable>
           {dropdownOption(
             StoryboardIcon,
@@ -160,7 +181,7 @@ export default function StoryboardDrawer({ visible, onClose }) {
               {moreOption('chatting')}
             </View>
           )}
-        </View>
+        </ScrollView>
       </View>
     </Modal>
   );
@@ -207,7 +228,6 @@ const getStyles = (isDark, primaryColors) => {
     drawerContent: {
       paddingTop: 30,
       paddingHorizontal: 16,
-      gap: 16,
     },
     drawerOption: {
       flexDirection: 'row',
