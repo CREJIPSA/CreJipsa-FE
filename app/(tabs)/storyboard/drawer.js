@@ -104,7 +104,7 @@ export default function StoryboardDrawer({ visible, onClose }) {
       backdropOpacity={0.3}
       style={{ margin: 0 }}
     >
-      <ScrollView style={styles.drawerContainer}>
+      <View style={styles.drawerContainer}>
         <View style={styles.drawerHeader}>
           <Pressable onPress={onClose}>
             <CloseIcon color={primaryColors.color} size={13} />
@@ -118,7 +118,10 @@ export default function StoryboardDrawer({ visible, onClose }) {
             />
           </View>
         </View>
-        <View style={styles.drawerContent}>
+        <ScrollView
+          style={styles.drawerContent}
+          contentContainerStyle={{ gap: 16, paddingBottom: 30 }}
+        >
           <Pressable
             style={styles.drawerOption}
             onPress={() => {
@@ -178,8 +181,8 @@ export default function StoryboardDrawer({ visible, onClose }) {
               {moreOption('chatting')}
             </View>
           )}
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     </Modal>
   );
 }
@@ -225,7 +228,6 @@ const getStyles = (isDark, primaryColors) => {
     drawerContent: {
       paddingTop: 30,
       paddingHorizontal: 16,
-      gap: 16,
     },
     drawerOption: {
       flexDirection: 'row',
