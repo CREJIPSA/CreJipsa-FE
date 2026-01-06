@@ -4,7 +4,7 @@ import LikedIcon from '@/assets/svgs/my/like-icon';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function FeedItem({ post }) {
-  const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
+  const { styles, primaryColors } = useThemedStyle(getStyles);
 
   const hasImage = !!post.imageUrl;
 

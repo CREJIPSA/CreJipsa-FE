@@ -2,27 +2,11 @@ import NotificationIcon from '@/assets/svgs/feed/notification-icon';
 import SearchIcon from '@/assets/svgs/feed/search-icon';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import FeedItem from '../components/feed/FeedItem';
+import DUMMY_POSTS from '../constants/my/DUMMY_POSTS';
 import useThemedStyle from '../hooks/use-themed-style';
-
-const RecommendScreen = () => (
-  <View style={{ flex: 1 }}>
-    <Text>추천 화면</Text>
-  </View>
-);
-const TipScreen = () => (
-  <View style={{ flex: 1 }}>
-    <Text>팁 화면</Text>
-  </View>
-);
-const CollabScreen = () => (
-  <View style={{ flex: 1 }}>
-    <Text>같이 촬영해요 화면</Text>
-  </View>
-);
-
-const MaterialTopTabs = createMaterialTopTabNavigator();
 
 export default function Feed() {
   const insets = useSafeAreaInsets();
@@ -33,6 +17,35 @@ export default function Feed() {
   const searchIconColor = isDark ? '#141414' : '#202020';
   const notificationIconColor = isDark ? '#FAFAFA' : '#141414';
   const tabBarBg = isDark ? '#141414' : '#FAFAFA';
+
+  const MaterialTopTabs = createMaterialTopTabNavigator();
+
+  const renderFeedItem = ({ item }) => {
+    return <FeedItem post={item} />;
+  };
+
+  const RecommendScreen = () => (
+    <FlatList
+      style={styles.feedContentBox}
+      data={DUMMY_POSTS}
+      renderItem={renderFeedItem}
+      keyExtractor={item => item.id.toString()}
+      ItemSeparatorComponent={() => <View style={styles.postItemSeparator} />}
+      contentContainerStyle={{ paddingBottom: 60 }}
+    />
+  );
+
+  const TipScreen = () => (
+    <View style={{ flex: 1 }}>
+      <Text>팁 화면</Text>
+    </View>
+  );
+
+  const CollabScreen = () => (
+    <View style={{ flex: 1 }}>
+      <Text>같이 촬영해요 화면</Text>
+    </View>
+  );
 
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
@@ -70,11 +83,8 @@ export default function Feed() {
           tabBarActiveTintColor: isDark ? '#CCFF66' : '#293314',
           tabBarInactiveTintColor: isDark ? '#FAFAFA' : '#293314',
           tabBarLabelStyle: styles.tabText,
-
           tabBarItemStyle: styles.tabItem,
-
           tabBarScrollEnabled: false,
-
           tabBarPressColor: 'transparent',
         }}
       >
@@ -149,6 +159,20 @@ const getStyles = (isDark, primaryColors) => {
     tabText: {
       fontSize: 16,
       fontWeight: '700',
+    },
+
+    feedContentBox: {
+      backgroundColor: isDark ? '#202020' : '#FCFCFC',
+      paddingHorizontal: 17,
+      paddingTop: 30,
+    },
+
+    postItemSeparator: {
+      height: 1,
+      borderRadius: 1,
+      backgroundColor: isDark ? '#454545' : '#D3D3D3',
+      marginHorizontal: 10,
+      marginVertical: 14,
     },
   });
 };
