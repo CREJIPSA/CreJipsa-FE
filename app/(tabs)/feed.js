@@ -2,7 +2,7 @@ import NotificationIcon from '@/assets/svgs/feed/notification-icon';
 import SearchIcon from '@/assets/svgs/feed/search-icon';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useState } from 'react';
-import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FeedItem from '../components/feed/FeedItem';
 import DUMMY_POSTS from '../constants/my/DUMMY_POSTS';
@@ -18,34 +18,30 @@ export default function Feed() {
   const notificationIconColor = isDark ? '#FAFAFA' : '#141414';
   const tabBarBg = isDark ? '#141414' : '#FAFAFA';
 
+  const TABS = [
+    { name: 'recommend', title: '추천' },
+    { name: 'tip', title: '팁' },
+    { name: 'collab', title: '같이 촬영해요' },
+  ];
+
   const MaterialTopTabs = createMaterialTopTabNavigator();
 
-  const renderFeedItem = ({ item }) => {
-    return <FeedItem post={item} />;
+  const renderScreen = () => {
+    return (
+      <>
+        <FlatList
+          style={styles.feedContentBox}
+          data={DUMMY_POSTS}
+          renderItem={({ item }) => <FeedItem post={item} />}
+          keyExtractor={item => item.id.toString()}
+          ItemSeparatorComponent={() => (
+            <View style={styles.postItemSeparator} />
+          )}
+          contentContainerStyle={{ paddingBottom: 60 }}
+        />
+      </>
+    );
   };
-
-  const RecommendScreen = () => (
-    <FlatList
-      style={styles.feedContentBox}
-      data={DUMMY_POSTS}
-      renderItem={renderFeedItem}
-      keyExtractor={item => item.id.toString()}
-      ItemSeparatorComponent={() => <View style={styles.postItemSeparator} />}
-      contentContainerStyle={{ paddingBottom: 60 }}
-    />
-  );
-
-  const TipScreen = () => (
-    <View style={{ flex: 1 }}>
-      <Text>팁 화면</Text>
-    </View>
-  );
-
-  const CollabScreen = () => (
-    <View style={{ flex: 1 }}>
-      <Text>같이 촬영해요 화면</Text>
-    </View>
-  );
 
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
@@ -88,21 +84,14 @@ export default function Feed() {
           tabBarPressColor: 'transparent',
         }}
       >
-        <MaterialTopTabs.Screen
-          name="recommend"
-          component={RecommendScreen}
-          options={{ title: '추천' }}
-        />
-        <MaterialTopTabs.Screen
-          name="tip"
-          component={TipScreen}
-          options={{ title: '팁' }}
-        />
-        <MaterialTopTabs.Screen
-          name="collab"
-          component={CollabScreen}
-          options={{ title: '같이 촬영해요' }}
-        />
+        {TABS.map(tab => (
+          <MaterialTopTabs.Screen
+            key={tab.name}
+            name={tab.name}
+            component={renderScreen}
+            options={{ title: tab.title }}
+          />
+        ))}
       </MaterialTopTabs.Navigator>
     </View>
   );
