@@ -1,12 +1,10 @@
 import NotificationIcon from '@/assets/svgs/feed/notification-icon';
 import SearchIcon from '@/assets/svgs/feed/search-icon';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useState } from 'react';
-import { FlatList, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import FeedItem from '../components/feed/FeedItem';
-import DUMMY_POSTS from '../constants/my/DUMMY_POSTS';
-import useThemedStyle from '../hooks/use-themed-style';
+import useThemedStyle from '../../hooks/use-themed-style';
+import NavigationLayout from './(navigation)/_layout';
 
 export default function Feed() {
   const insets = useSafeAreaInsets();
@@ -17,31 +15,6 @@ export default function Feed() {
   const searchIconColor = isDark ? '#141414' : '#202020';
   const notificationIconColor = isDark ? '#FAFAFA' : '#141414';
   const tabBarBg = isDark ? '#141414' : '#FAFAFA';
-
-  const TABS = [
-    { name: 'recommend', title: '추천' },
-    { name: 'tip', title: '팁' },
-    { name: 'collab', title: '같이 촬영해요' },
-  ];
-
-  const MaterialTopTabs = createMaterialTopTabNavigator();
-
-  const renderScreen = () => {
-    return (
-      <>
-        <FlatList
-          style={styles.feedContentBox}
-          data={DUMMY_POSTS}
-          renderItem={({ item }) => <FeedItem post={item} />}
-          keyExtractor={item => item.id.toString()}
-          ItemSeparatorComponent={() => (
-            <View style={styles.postItemSeparator} />
-          )}
-          contentContainerStyle={{ paddingBottom: 60 }}
-        />
-      </>
-    );
-  };
 
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
@@ -62,37 +35,7 @@ export default function Feed() {
         </View>
         <NotificationIcon color={notificationIconColor} />
       </View>
-
-      <MaterialTopTabs.Navigator
-        screenOptions={{
-          tabBarStyle: {
-            backgroundColor: tabBarBg,
-            borderBottomWidth: 1,
-            borderBottomColor: isDark ? '#293314' : '#FAFAFA',
-          },
-
-          tabBarIndicatorStyle: {
-            backgroundColor: isDark ? '#CCFF66' : '#293314',
-            height: 2,
-          },
-
-          tabBarActiveTintColor: isDark ? '#CCFF66' : '#293314',
-          tabBarInactiveTintColor: isDark ? '#FAFAFA' : '#293314',
-          tabBarLabelStyle: styles.tabText,
-          tabBarItemStyle: styles.tabItem,
-          tabBarScrollEnabled: false,
-          tabBarPressColor: 'transparent',
-        }}
-      >
-        {TABS.map(tab => (
-          <MaterialTopTabs.Screen
-            key={tab.name}
-            name={tab.name}
-            component={renderScreen}
-            options={{ title: tab.title }}
-          />
-        ))}
-      </MaterialTopTabs.Navigator>
+      <NavigationLayout isDark={isDark} styles={styles} tabBarBg={tabBarBg} />
     </View>
   );
 }
@@ -125,7 +68,7 @@ const getStyles = (isDark, primaryColors) => {
     searchInput: {
       flexDirection: 'row',
       gap: 90,
-      backgroundColor: '#E6E6E6',
+      backgroundColor: isDark ? '#E6E6E6' : '#EFF1F4',
       borderRadius: 100,
       paddingHorizontal: 15,
     },
