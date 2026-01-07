@@ -1,0 +1,15 @@
+import FeedItem from '@/app/components/feed/FeedItem';
+import { FlatList, View } from 'react-native';
+
+const FeedScreen = ({ styles, data }) => (
+  <FlatList
+    style={styles.feedContentBox}
+    data={data}
+    renderItem={({ item }) => <FeedItem post={item} isFeed={true} />}
+    keyExtractor={item => item.id.toString()}
+    ItemSeparatorComponent={() => <View style={styles.postItemSeparator} />}
+    contentContainerStyle={{ paddingBottom: 60 }}
+  />
+);
+
+export default FeedScreen;
