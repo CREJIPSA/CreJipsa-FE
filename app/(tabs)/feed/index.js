@@ -1,7 +1,8 @@
 import NotificationIcon from '@/assets/svgs/feed/notification-icon';
 import SearchIcon from '@/assets/svgs/feed/search-icon';
+import WriteButtonIcon from '@/assets/svgs/feed/write-button-icon';
 import { useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyle from '../../hooks/use-themed-style';
 import NavigationLayout from './(navigation)/_layout';
@@ -15,6 +16,8 @@ export default function Feed() {
   const searchIconColor = isDark ? '#141414' : '#202020';
   const notificationIconColor = isDark ? '#FAFAFA' : '#141414';
   const tabBarBg = isDark ? '#141414' : '#FAFAFA';
+  const writeBtnIconBg = isDark ? '#CCFF66' : '#B8E65C';
+  const writeBtnIconcolor = isDark ? '#141414' : '#323232';
 
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
@@ -36,6 +39,15 @@ export default function Feed() {
         <NotificationIcon color={notificationIconColor} />
       </View>
       <NavigationLayout isDark={isDark} styles={styles} tabBarBg={tabBarBg} />
+      <Pressable
+        style={styles.floatingButton}
+        onPress={() => console.log('글쓰기 화면 이동')}
+      >
+        <WriteButtonIcon
+          backgroundColor={writeBtnIconBg}
+          color={writeBtnIconcolor}
+        />
+      </Pressable>
     </View>
   );
 }
@@ -105,6 +117,17 @@ const getStyles = (isDark, primaryColors) => {
       backgroundColor: isDark ? '#454545' : '#D3D3D3',
       marginHorizontal: 10,
       marginVertical: 14,
+    },
+
+    floatingButton: {
+      position: 'absolute',
+      bottom: 20,
+      right: 17,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 10,
+      elevation: 8,
     },
   });
 };
