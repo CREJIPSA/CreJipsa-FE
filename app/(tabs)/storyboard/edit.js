@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import StoryboardDrawer from './drawer';
+import StoryboardDrawer from './drawer/index.js';
 
 export default function StoryboardEdit() {
   const { styles, primaryColors } = useThemedStyle(getStyles);
