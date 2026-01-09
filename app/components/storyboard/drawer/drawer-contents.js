@@ -114,6 +114,7 @@ export default function StoryboardDrawerDefault({ onClose }) {
               label="storyboard"
               text={item.text}
               route={item.route}
+              onClose={onClose}
             />
           ))}
           {moreOption('storyboard')}
@@ -125,7 +126,7 @@ export default function StoryboardDrawerDefault({ onClose }) {
         <View style={styles.dropdownContainer}>
           {ChatStorageData.slice(0, 5).map((item, index) => (
             <DropdownInnerOption
-              key={index}
+              key={item.id}
               label="chatting"
               text={item.text}
               route={item.route}

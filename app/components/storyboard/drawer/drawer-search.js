@@ -7,18 +7,18 @@ export default function DrawerSearch({ query, isSubmitted }) {
   // 더미 데이터
   const searchResultsDummy = [
     {
-      // // 스토리보드와 채팅 모두 존재
-      // storyboards: ['스토리보드1', '스토리보드2'],
-      // chats: ['채팅1', '채팅2'],
+      // 스토리보드와 채팅 모두 존재
+      storyboards: ['스토리보드1', '스토리보드2'],
+      chats: ['채팅1', '채팅2'],
       // // 스토리보드만 존재
       // storyboards: ['스토리보드1', '스토리보드2'],
       // chats: [],
       // // 채팅만 존재
       // storyboards: [],
       // chats: ['채팅1', '채팅2'],
-      // 검색 결과 없음
-      storyboards: [],
-      chats: [],
+      // // 검색 결과 없음
+      // storyboards: [],
+      // chats: [],
     },
   ];
 
