@@ -1,4 +1,5 @@
 import CutComponent from '@/app/components/storyboard/cut';
+import StoryboardDrawer from '@/app/components/storyboard/drawer/index.js';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import MenuIcon from '@/assets/svgs/storyboard/menu';
 import { useRouter } from 'expo-router';
@@ -6,7 +7,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import StoryboardDrawer from './drawer/index.js';
 
 export default function StoryboardEdit() {
   const { styles, primaryColors } = useThemedStyle(getStyles);

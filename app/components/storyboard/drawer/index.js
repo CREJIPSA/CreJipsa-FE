@@ -1,7 +1,7 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import { useState } from 'react';
 import { Dimensions, ScrollView, View } from 'react-native';
-import DrawerDefault from './drawer-contents.js';
+import DrawerContents from './drawer-contents.js';
 import DrawerHeader from './drawer-header.js';
 import DrawerSearch from './drawer-search.js';
 import DrawerShell from './drawer-shell.js';
@@ -13,23 +13,52 @@ export default function StoryboardDrawer({ visible, onClose }) {
 
   // 검색 화면 전환
   const [isSearching, setIsSearching] = useState(false);
+  const [query, setQuery] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // 사이드바 닫을 때 검색 모드 초기화
+  const handleClose = () => {
+    setIsSearching(false);
+    setQuery('');
+    setIsSubmitted(false);
+    onClose();
+  };
+
+  // 테스트용 검색 키워드 제출 확인
+  const handleSubmit = () => {
+    if (!query.trim()) return;
+    setIsSubmitted(true);
+    setIsSearching(true);
+  };
+
+  const handleChangeQuery = text => {
+    setQuery(text);
+    setIsSubmitted(false);
+  };
 
   return (
-    <DrawerShell visible={visible} onClose={onClose}>
+    <DrawerShell visible={visible} onClose={handleClose}>
       <View style={styles.drawerContainer}>
         <DrawerHeader
-          onClose={onClose}
+          onClose={handleClose}
           onFocusSearch={() => setIsSearching(true)}
           onBlurSearch={() => setIsSearching(false)}
+          query={query}
+          onChangeQuery={handleChangeQuery}
+          onSubmitEditing={handleSubmit}
         />
         <ScrollView
           style={styles.drawerContent}
           contentContainerStyle={{ gap: 16, paddingBottom: 30 }}
         >
           {isSearching ? (
-            <DrawerSearch onCloseSearch={() => setIsSearching(false)} />
+            <DrawerSearch
+              query={query}
+              isSubmitted={isSubmitted}
+              onClose={handleClose}
+            />
           ) : (
-            <DrawerDefault onOpenSearch={() => setIsSearching(true)} />
+            <DrawerContents onClose={handleClose} />
           )}
         </ScrollView>
       </View>
