@@ -20,6 +20,7 @@ export default function StoryboardDrawer({ visible, onClose }) {
         <DrawerHeader
           onClose={onClose}
           onFocusSearch={() => setIsSearching(true)}
+          onBlurSearch={() => setIsSearching(false)}
         />
         <ScrollView
           style={styles.drawerContent}

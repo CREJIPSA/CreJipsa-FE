@@ -1,10 +1,12 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import CloseIcon from '@/assets/svgs/close.js';
 import SearchIcon from '@/assets/svgs/home/search-icon.js';
+import { useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
 
-export default function DrawerHeader({ onClose, onFocusSearch }) {
+export default function DrawerHeader({ onClose, onFocusSearch, onBlurSearch }) {
   const { styles, primaryColors } = useThemedStyle(getStyles);
+  const [query, setQuery] = useState('');
 
   return (
     <View style={styles.drawerHeader}>
@@ -17,7 +19,16 @@ export default function DrawerHeader({ onClose, onFocusSearch }) {
           style={styles.searchBox}
           placeholder="검색"
           placeholderTextColor="#959595"
-          onFocus={onFocusSearch}
+          value={query}
+          onChangeText={text => setQuery(text)}
+          onFocus={() => {
+            onFocusSearch();
+          }}
+          onBlur={() => {
+            if (!query.trim()) {
+              onBlurSearch();
+            }
+          }}
         />
         <SearchIcon color="#141619" size={20} />
       </View>
