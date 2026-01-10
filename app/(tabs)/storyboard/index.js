@@ -1,3 +1,4 @@
+import StoryboardDrawer from '@/app/components/storyboard/drawer/index.js';
 import MessageItem from '@/app/components/storyboard/message-input';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import MenuIcon from '@/assets/svgs/storyboard/menu.js';
@@ -13,7 +14,6 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import StoryboardDrawer from './drawer';
 
 export default function Storyboard() {
   const insets = useSafeAreaInsets();
@@ -117,7 +117,9 @@ export default function Storyboard() {
       </View>
       <StoryboardDrawer
         visible={drawerVisible}
-        onClose={() => setDrawerVisible(false)}
+        onClose={() => {
+          setDrawerVisible(false);
+        }}
       />
     </KeyboardAvoidingView>
   );
