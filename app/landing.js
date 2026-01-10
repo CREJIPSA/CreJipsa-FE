@@ -1,5 +1,10 @@
+import {
+  getKeyHashAndroid,
+  initializeKakaoSDK,
+} from '@react-native-kakao/core';
+import { login as kakaoLogin, me } from '@react-native-kakao/user';
 import { Redirect, useRouter } from 'expo-router';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthContext } from './_layout';
@@ -12,6 +17,23 @@ export default function Landing() {
 
   const { user } = useContext(AuthContext);
   const isLoggedIn = !!user;
+
+  useEffect(() => {
+    initializeKakaoSDK('2d0e496c2a9ff2019280d0ff3d7ffb23');
+  }, []);
+
+  const onKakaoLogin = async () => {
+    console.log('키 해시', await getKeyHashAndroid());
+    try {
+      const loginResult = await kakaoLogin();
+      console.log('Kakao login success', loginResult);
+      const loginUser = await me();
+      console.log('Kakao user info', loginUser);
+      router.replace('/(sign-up)');
+    } catch (error) {
+      console.error('Kakao login failed', error);
+    }
+  };
 
   // 로그인 상태 확인
   if (isLoggedIn) {
@@ -36,11 +58,7 @@ export default function Landing() {
         <Text style={styles.subText}>크리에이터를 위한 어시스턴트 앱</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <Pressable
-          style={styles.kakaoLoginButton}
-          // 추후 카카오 로그인 연동 필요
-          onPress={() => router.push('/(sign-up)')}
-        >
+        <Pressable style={styles.kakaoLoginButton} onPress={onKakaoLogin}>
           <Image
             source={require('../assets/images/kakao_logo.png')}
             style={{ width: 15, height: 15 }}
