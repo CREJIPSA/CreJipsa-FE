@@ -43,7 +43,10 @@ export default function Feed() {
         <NotificationIcon color={notificationIconColor} />
       </View>
       <NavigationLayout isDark={isDark} styles={styles} tabBarBg={tabBarBg} />
-      <Pressable style={styles.floatingButton} onPress={handleSearch}>
+      <Pressable
+        style={styles.floatingButton}
+        onPress={() => console.log('새 글 작성 버튼 클릭!')}
+      >
         <WriteButtonIcon
           backgroundColor={writeBtnIconBg}
           color={writeBtnIconcolor}
