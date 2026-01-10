@@ -1,54 +1,42 @@
 import SearchBar from '@/app/components/feed/SearchBar';
-import NotificationIcon from '@/assets/svgs/feed/notification-icon';
-import WriteButtonIcon from '@/assets/svgs/feed/write-button-icon';
-import { useRouter } from 'expo-router';
+import useThemedStyle from '@/app/hooks/use-themed-style';
+import BackIcon from '@/assets/svgs/feed/back-icon';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import useThemedStyle from '../../hooks/use-themed-style';
-import NavigationLayout from './(navigation)/_layout';
 
-export default function Feed() {
+export default function SearchResult() {
   const insets = useSafeAreaInsets();
   const { isDark, styles } = useThemedStyle(getStyles);
-  const [text, setText] = useState('');
   const router = useRouter();
-
-  // 검색 실행 함수
-  const handleSearch = () => {
-    if (text.trim().length > 0) {
-      router.push({
-        pathname: '/feed/results',
-        params: { q: text },
-      });
-    }
-  };
+  const { q } = useLocalSearchParams();
+  const [text, setText] = useState(q || '');
 
   // 아이콘 색상 설정
-  const notificationIconColor = isDark ? '#FAFAFA' : '#141414';
-  const tabBarBg = isDark ? '#141414' : '#FAFAFA';
-  const writeBtnIconBg = isDark ? '#CCFF66' : '#B8E65C';
-  const writeBtnIconcolor = isDark ? '#141414' : '#323232';
+  const iconColor = isDark ? '#FAFAFA' : '#141414';
+
+  // 3. 결과 페이지 내에서 다시 검색할 때 실행할 함수
+  const handleSearch = () => {
+    if (text.trim().length > 0) {
+      // 같은 페이지에서 파라미터만 업데이트 (필요 시)
+      router.setParams({ q: text });
+      console.log('결과 페이지 내 재검색:', text);
+    }
+  };
 
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
       <View style={styles.searchBarContainer}>
+        <BackIcon color={iconColor} />
         <SearchBar
-          value={text}
+          value={q}
           onChangeText={setText}
           onSubmit={handleSearch}
           styles={styles}
           isDark={isDark}
         />
-        <NotificationIcon color={notificationIconColor} />
       </View>
-      <NavigationLayout isDark={isDark} styles={styles} tabBarBg={tabBarBg} />
-      <Pressable style={styles.floatingButton} onPress={handleSearch}>
-        <WriteButtonIcon
-          backgroundColor={writeBtnIconBg}
-          color={writeBtnIconcolor}
-        />
-      </Pressable>
     </View>
   );
 }
