@@ -1,10 +1,14 @@
 import SearchBar from '@/app/components/feed/SearchBar';
+import FilterComponent from '@/app/components/my/FilterComponent';
+import DUMMY_POSTS from '@/app/constants/my/DUMMY_POSTS';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import BackIcon from '@/assets/svgs/feed/back-icon';
+import WriteButtonIcon from '@/assets/svgs/feed/write-button-icon';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import FeedScreen from '../(navigation)/FeedScreen';
 
 export default function SearchResult() {
   const insets = useSafeAreaInsets();
@@ -13,13 +17,19 @@ export default function SearchResult() {
   const { q } = useLocalSearchParams();
   const [text, setText] = useState(q || '');
 
+  const [openedFilter, setOpenedFilter] = useState(null);
+
+  const toggleFilter = filterName => {
+    setOpenedFilter(openedFilter === filterName ? null : filterName);
+  };
+
   // 아이콘 색상 설정
   const iconColor = isDark ? '#FAFAFA' : '#141414';
+  const writeBtnIconBg = isDark ? '#CCFF66' : '#B8E65C';
+  const writeBtnIconcolor = isDark ? '#141414' : '#323232';
 
-  // 3. 결과 페이지 내에서 다시 검색할 때 실행할 함수
   const handleSearch = () => {
     if (text.trim().length > 0) {
-      // 같은 페이지에서 파라미터만 업데이트 (필요 시)
       router.setParams({ q: text });
       console.log('결과 페이지 내 재검색:', text);
     }
@@ -30,13 +40,37 @@ export default function SearchResult() {
       <View style={styles.searchBarContainer}>
         <BackIcon color={iconColor} />
         <SearchBar
-          value={q}
+          value={text}
           onChangeText={setText}
           onSubmit={handleSearch}
           styles={styles}
           isDark={isDark}
         />
       </View>
+      <View style={styles.filterContainer}>
+        <FilterComponent
+          text={'전체'}
+          isOpen={openedFilter === 'category'}
+          onPress={() => toggleFilter('category')}
+          options={['전체', '일반', '팁', '같이 촬영해요']}
+        />
+        <FilterComponent
+          text={'최신순'}
+          isOpen={openedFilter === 'sort'}
+          onPress={() => toggleFilter('sort')}
+          options={['최신순', '인기순', '과거순']}
+        />
+      </View>
+      <FeedScreen styles={styles} data={DUMMY_POSTS} />
+      <Pressable
+        style={styles.floatingButton}
+        onPress={() => console.log('새 글 작성 버튼 클릭!')}
+      >
+        <WriteButtonIcon
+          backgroundColor={writeBtnIconBg}
+          color={writeBtnIconcolor}
+        />
+      </Pressable>
     </View>
   );
 }
@@ -79,25 +113,20 @@ const getStyles = (isDark, primaryColors) => {
       right: 15,
     },
 
-    tabItem: {
-      flex: 1,
+    filterContainer: {
+      backgroundColor: isDark ? '#202020' : '#FCFCFC',
       flexDirection: 'row',
-      gap: 10,
-      paddingVertical: 5,
-      paddingHorizontal: 10,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-
-    tabText: {
-      fontSize: 16,
-      fontWeight: '700',
+      gap: 16,
+      justifyContent: 'flex-start',
+      zIndex: 100,
+      paddingTop: 15,
+      paddingHorizontal: 17,
     },
 
     feedContentBox: {
       backgroundColor: isDark ? '#202020' : '#FCFCFC',
       paddingHorizontal: 17,
-      paddingTop: 30,
+      paddingTop: 15,
     },
 
     postItemSeparator: {
