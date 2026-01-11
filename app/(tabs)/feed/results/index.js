@@ -38,7 +38,9 @@ export default function SearchResult() {
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
       <View style={styles.searchBarContainer}>
-        <BackIcon color={iconColor} />
+        <Pressable onPress={() => router.back()}>
+          <BackIcon color={iconColor} />
+        </Pressable>
         <SearchBar
           value={text}
           onChangeText={setText}
@@ -119,7 +121,7 @@ const getStyles = (isDark, primaryColors) => {
       gap: 16,
       justifyContent: 'flex-start',
       zIndex: 100,
-      paddingTop: 15,
+      paddingVertical: 15,
       paddingHorizontal: 17,
     },
 
