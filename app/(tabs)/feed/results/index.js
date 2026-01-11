@@ -1,3 +1,4 @@
+import NoResult from '@/app/components/feed/NoResult';
 import SearchBar from '@/app/components/feed/SearchBar';
 import FilterComponent from '@/app/components/my/FilterComponent';
 import DUMMY_POSTS from '@/app/constants/my/DUMMY_POSTS';
@@ -5,7 +6,7 @@ import useThemedStyle from '@/app/hooks/use-themed-style';
 import BackIcon from '@/assets/svgs/feed/back-icon';
 import WriteButtonIcon from '@/assets/svgs/feed/write-button-icon';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FeedScreen from '../(navigation)/FeedScreen';
@@ -15,13 +16,19 @@ export default function SearchResult() {
   const { isDark, styles } = useThemedStyle(getStyles);
   const router = useRouter();
   const { q } = useLocalSearchParams();
+
   const [text, setText] = useState(q || '');
+  const [searchQuery, setSearchQuery] = useState(q || '');
 
   const [openedFilter, setOpenedFilter] = useState(null);
 
   const toggleFilter = filterName => {
     setOpenedFilter(openedFilter === filterName ? null : filterName);
   };
+
+  const filteredData = useMemo(() => {
+    return DUMMY_POSTS.filter(post => post.title.includes(searchQuery));
+  }, [searchQuery]);
 
   // 아이콘 색상 설정
   const iconColor = isDark ? '#FAFAFA' : '#141414';
@@ -30,8 +37,9 @@ export default function SearchResult() {
 
   const handleSearch = () => {
     if (text.trim().length > 0) {
+      setSearchQuery(text);
       router.setParams({ q: text });
-      console.log('결과 페이지 내 재검색:', text);
+      console.log('결과 페이지 내 재검색 완료:', text);
     }
   };
 
@@ -49,6 +57,7 @@ export default function SearchResult() {
           isDark={isDark}
         />
       </View>
+
       <View style={styles.filterContainer}>
         <FilterComponent
           text={'전체'}
@@ -63,11 +72,16 @@ export default function SearchResult() {
           options={['최신순', '인기순', '과거순']}
         />
       </View>
-      <FeedScreen styles={styles} data={DUMMY_POSTS} />
-      <Pressable
-        style={styles.floatingButton}
-        onPress={() => console.log('새 글 작성 버튼 클릭!')}
-      >
+
+      {filteredData.length > 0 ? (
+        <View style={{ flex: 1 }}>
+          <FeedScreen styles={styles} data={filteredData} />
+        </View>
+      ) : (
+        <NoResult searchText={searchQuery} />
+      )}
+
+      <Pressable style={styles.floatingButton}>
         <WriteButtonIcon
           backgroundColor={writeBtnIconBg}
           color={writeBtnIconcolor}
