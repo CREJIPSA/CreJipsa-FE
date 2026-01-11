@@ -25,7 +25,7 @@ export default function Feed() {
   };
 
   // 아이콘 색상 설정
-  const notificationIconColor = isDark ? '#FAFAFA' : '#141414';
+  const iconColor = isDark ? '#FAFAFA' : '#141414';
   const tabBarBg = isDark ? '#141414' : '#FAFAFA';
   const writeBtnIconBg = isDark ? '#CCFF66' : '#B8E65C';
   const writeBtnIconcolor = isDark ? '#141414' : '#323232';
@@ -38,9 +38,9 @@ export default function Feed() {
           onChangeText={setText}
           onSubmit={handleSearch}
           styles={styles}
-          isDark={isDark}
+          searchIconColor={iconColor}
         />
-        <NotificationIcon color={notificationIconColor} />
+        <NotificationIcon color={iconColor} />
       </View>
       <NavigationLayout isDark={isDark} styles={styles} tabBarBg={tabBarBg} />
       <Pressable

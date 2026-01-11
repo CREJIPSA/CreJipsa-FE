@@ -54,7 +54,7 @@ export default function SearchResult() {
           onChangeText={setText}
           onSubmit={handleSearch}
           styles={styles}
-          isDark={isDark}
+          searchIconColor={iconColor}
         />
       </View>
 
