@@ -1,38 +1,54 @@
+import NoResult from '@/app/components/feed/NoResult';
 import SearchBar from '@/app/components/feed/SearchBar';
-import NotificationIcon from '@/assets/svgs/feed/notification-icon';
+import FilterComponent from '@/app/components/my/FilterComponent';
+import DUMMY_POSTS from '@/app/constants/my/DUMMY_POSTS';
+import useThemedStyle from '@/app/hooks/use-themed-style';
+import BackIcon from '@/assets/svgs/feed/back-icon';
 import WriteButtonIcon from '@/assets/svgs/feed/write-button-icon';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import useThemedStyle from '../../hooks/use-themed-style';
-import NavigationLayout from './(navigation)/_layout';
+import FeedScreen from '../(navigation)/FeedScreen';
 
-export default function Feed() {
+export default function SearchResult() {
   const insets = useSafeAreaInsets();
   const { isDark, styles } = useThemedStyle(getStyles);
-  const [text, setText] = useState('');
   const router = useRouter();
+  const { q } = useLocalSearchParams();
 
-  // 검색 실행 함수
-  const handleSearch = () => {
-    if (text.trim().length > 0) {
-      router.push({
-        pathname: '/feed/results',
-        params: { q: text },
-      });
-    }
+  const [text, setText] = useState(q || '');
+  const [searchQuery, setSearchQuery] = useState(q || '');
+
+  const [openedFilter, setOpenedFilter] = useState(null);
+
+  const toggleFilter = filterName => {
+    setOpenedFilter(openedFilter === filterName ? null : filterName);
   };
+
+  const filteredData = useMemo(() => {
+    return DUMMY_POSTS.filter(post => post.title.includes(searchQuery));
+  }, [searchQuery]);
 
   // 아이콘 색상 설정
   const iconColor = isDark ? '#FAFAFA' : '#141414';
-  const tabBarBg = isDark ? '#141414' : '#FAFAFA';
   const writeBtnIconBg = isDark ? '#CCFF66' : '#B8E65C';
   const writeBtnIconcolor = isDark ? '#141414' : '#323232';
+
+  const handleSearch = () => {
+    if (text.trim().length > 0) {
+      setSearchQuery(text);
+      router.setParams({ q: text });
+      console.log('결과 페이지 내 재검색 완료:', text);
+    }
+  };
 
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
       <View style={styles.searchBarContainer}>
+        <Pressable onPress={() => router.back()}>
+          <BackIcon color={iconColor} />
+        </Pressable>
         <SearchBar
           value={text}
           onChangeText={setText}
@@ -40,13 +56,32 @@ export default function Feed() {
           styles={styles}
           searchIconColor={iconColor}
         />
-        <NotificationIcon color={iconColor} />
       </View>
-      <NavigationLayout isDark={isDark} styles={styles} tabBarBg={tabBarBg} />
-      <Pressable
-        style={styles.floatingButton}
-        onPress={() => console.log('새 글 작성 버튼 클릭!')}
-      >
+
+      <View style={styles.filterContainer}>
+        <FilterComponent
+          text={'전체'}
+          isOpen={openedFilter === 'category'}
+          onPress={() => toggleFilter('category')}
+          options={['전체', '일반', '팁', '같이 촬영해요']}
+        />
+        <FilterComponent
+          text={'최신순'}
+          isOpen={openedFilter === 'sort'}
+          onPress={() => toggleFilter('sort')}
+          options={['최신순', '인기순', '과거순']}
+        />
+      </View>
+
+      {filteredData.length > 0 ? (
+        <View style={{ flex: 1 }}>
+          <FeedScreen styles={styles} data={filteredData} />
+        </View>
+      ) : (
+        <NoResult searchText={searchQuery} />
+      )}
+
+      <Pressable style={styles.floatingButton}>
         <WriteButtonIcon
           backgroundColor={writeBtnIconBg}
           color={writeBtnIconcolor}
@@ -94,25 +129,20 @@ const getStyles = (isDark, primaryColors) => {
       right: 15,
     },
 
-    tabItem: {
-      flex: 1,
+    filterContainer: {
+      backgroundColor: isDark ? '#202020' : '#FCFCFC',
       flexDirection: 'row',
-      gap: 10,
-      paddingVertical: 5,
-      paddingHorizontal: 10,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-
-    tabText: {
-      fontSize: 16,
-      fontWeight: '700',
+      gap: 16,
+      justifyContent: 'flex-start',
+      zIndex: 100,
+      paddingVertical: 15,
+      paddingHorizontal: 17,
     },
 
     feedContentBox: {
       backgroundColor: isDark ? '#202020' : '#FCFCFC',
       paddingHorizontal: 17,
-      paddingTop: 30,
+      paddingTop: 15,
     },
 
     postItemSeparator: {
