@@ -1,12 +1,21 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import CommentIcon from '@/assets/svgs/my/comment-icon';
 import LikedIcon from '@/assets/svgs/my/like-icon';
+import { router } from 'expo-router';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function FeedItem({ post }) {
   const { styles, primaryColors } = useThemedStyle(getStyles);
 
   const hasImage = post.imageUrls && post.imageUrls.length > 0;
+
+  // 상세 페이지 이동 함수
+  const handlePress = () => {
+    router.push({
+      pathname: `/feed/${post.id}`, // 동적 라우팅 경로 (파일명이 [id].js 일 때)
+      params: { id: post.id }, // 파라미터 명시적 전달
+    });
+  };
 
   const textContent = (
     <>
@@ -37,7 +46,7 @@ export default function FeedItem({ post }) {
   );
 
   return (
-    <Pressable>
+    <Pressable onPress={handlePress}>
       {hasImage ? (
         <View style={styles.contentWrapperCol}>
           <View style={styles.contentWrapperRow}>
