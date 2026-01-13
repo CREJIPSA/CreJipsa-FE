@@ -38,7 +38,6 @@ export default function Feed() {
           onChangeText={setText}
           onSubmit={handleSearch}
           styles={styles}
-          searchIconColor={iconColor}
         />
         <NotificationIcon color={iconColor} />
       </View>

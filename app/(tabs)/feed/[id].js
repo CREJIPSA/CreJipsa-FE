@@ -44,7 +44,7 @@ export default function FeedDetail() {
     }
   };
 
-  const iconColor = isDark ? '#FAFAFA' : '#141414';
+  const iconColor = isDark ? '#141619' : '#141414';
 
   return (
     <KeyboardAvoidingView
@@ -62,7 +62,6 @@ export default function FeedDetail() {
             onChangeText={setText}
             onSubmit={handleSearch}
             styles={styles}
-            searchIconColor={iconColor}
           />
         </View>
         <ScrollView style={styles.scrollContainer}>
