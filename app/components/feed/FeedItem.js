@@ -12,8 +12,7 @@ export default function FeedItem({ post }) {
   // 상세 페이지 이동 함수
   const handlePress = () => {
     router.push({
-      pathname: `/feed/${post.id}`, // 동적 라우팅 경로 (파일명이 [id].js 일 때)
-      params: { id: post.id }, // 파라미터 명시적 전달
+      pathname: `/feed/${post.id}`,
     });
   };
 
