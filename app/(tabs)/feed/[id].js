@@ -7,15 +7,19 @@ import CommentIcon from '@/assets/svgs/common/comment-icon';
 import LikedIcon from '@/assets/svgs/common/like-icon';
 import ThreeDotsIcon from '@/assets/svgs/common/three-dots-icon';
 import BackIcon from '@/assets/svgs/feed/back-icon';
+import CommentSendIcon from '@/assets/svgs/feed/comment-send-icon';
 import ReplyArrowIcon from '@/assets/svgs/feed/reply-arrow-icon';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Fragment, useState } from 'react';
 import {
   Image,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,6 +32,7 @@ export default function FeedDetail() {
   const insets = useSafeAreaInsets();
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
   const [text, setText] = useState('');
+  const [commentText, setCommentText] = useState('');
   const router = useRouter();
 
   const handleSearch = () => {
@@ -42,153 +47,178 @@ export default function FeedDetail() {
   const iconColor = isDark ? '#FAFAFA' : '#141414';
 
   return (
-    <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
-      <View style={styles.searchBarContainer}>
-        <Pressable onPress={() => router.back()}>
-          <BackIcon color={iconColor} />
-        </Pressable>
-        <SearchBar
-          value={text}
-          onChangeText={setText}
-          onSubmit={handleSearch}
-          styles={styles}
-          searchIconColor={iconColor}
-        />
-      </View>
-      <ScrollView style={styles.scrollContainer}>
-        <View style={styles.postContainer}>
-          <View style={styles.categoryRow}>
-            <CategoryBadge text={post.category} />
-            <ThreeDotsIcon isDark={isDark} />
-          </View>
-          <View style={styles.mainContentBox}>
-            <View style={styles.authorProfileBox}>
-              <Image
-                source={{ uri: post.author.profileImage }}
-                style={styles.authorProfileImage}
-              />
-              <View style={styles.authorProfileDetailCol}>
-                <Text style={styles.authorName}>{post.author.name}</Text>
-                <View style={styles.authorProfileDetailRow}>
-                  <Image
-                    source={getPlatformLogo(post.author.platform)}
-                    style={styles.authorPlatformImage}
-                  />
-                  <Text style={styles.authorProfileDetailText}>
-                    {post.author.handle}
-                  </Text>
-                  <Text style={styles.authorProfileDetailText}>
-                    {post.timeAgo}
-                  </Text>
-                </View>
-              </View>
-            </View>
-            <Text style={styles.postTitleText}>{post.title}</Text>
-            <Text style={styles.defaultText}>{post.content}</Text>
-            {imageCount > 0 && (
-              <View style={styles.imageSection}>
-                {imageCount === 1 ? (
-                  // 1장일 때: 가로로 꽉 찬 이미지
-                  <Image
-                    source={{ uri: post.imageUrls[0] }}
-                    style={styles.singleImage}
-                  />
-                ) : (
-                  // 2장 이상일 때: 273x273 정사각형 스크롤
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.multiImageScrollContent}
-                  >
-                    {post.imageUrls.map((url, index) => (
-                      <Image
-                        key={index}
-                        source={{ uri: url }}
-                        style={styles.multiImage}
-                      />
-                    ))}
-                  </ScrollView>
-                )}
-              </View>
-            )}
-            <View style={styles.reactionRow}>
-              <View style={styles.reactionBox}>
-                <LikedIcon size={16} color={primaryColors.color} />
-                <Text style={styles.defaultText}>좋아요</Text>
-                <Text style={styles.defaultText}>{post.likeCount}</Text>
-              </View>
-              <View style={styles.reactionBox}>
-                <CommentIcon size={16} color={primaryColors.color} />
-                <Text style={styles.defaultText}>댓글</Text>
-                <Text style={styles.defaultText}>{post.commentCount}</Text>
-              </View>
-            </View>
-          </View>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+    >
+      <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
+        <View style={styles.searchBarContainer}>
+          <Pressable onPress={() => router.back()}>
+            <BackIcon color={iconColor} />
+          </Pressable>
+          <SearchBar
+            value={text}
+            onChangeText={setText}
+            onSubmit={handleSearch}
+            styles={styles}
+            searchIconColor={iconColor}
+          />
         </View>
-        <View style={styles.commentSection}>
-          {post.comments.map(comment => (
-            <Fragment key={comment.id}>
-              <View style={styles.commentItem}>
-                <View style={styles.authorProfileBox}>
-                  <Image
-                    source={{ uri: comment.author.profileImage }}
-                    style={styles.authorProfileImage}
-                  />
-                  <View style={styles.authorProfileDetailCol}>
-                    <Text style={styles.authorName}>{comment.author.name}</Text>
-                    <View style={styles.authorProfileDetailRow}>
-                      <Image
-                        source={getPlatformLogo(comment.author.platform)}
-                        style={styles.authorPlatformImage}
-                      />
-                      <Text style={styles.commentAuthorProfileDetailText}>
-                        {comment.author.handle}
-                      </Text>
-                      <Text style={styles.commentAuthorProfileDetailText}>
-                        {comment.timeAgo}
-                      </Text>
-                    </View>
+        <ScrollView style={styles.scrollContainer}>
+          <View style={styles.postContainer}>
+            <View style={styles.categoryRow}>
+              <CategoryBadge text={post.category} />
+              <ThreeDotsIcon isDark={isDark} />
+            </View>
+            <View style={styles.mainContentBox}>
+              <View style={styles.authorProfileBox}>
+                <Image
+                  source={{ uri: post.author.profileImage }}
+                  style={styles.authorProfileImage}
+                />
+                <View style={styles.authorProfileDetailCol}>
+                  <Text style={styles.authorName}>{post.author.name}</Text>
+                  <View style={styles.authorProfileDetailRow}>
+                    <Image
+                      source={getPlatformLogo(post.author.platform)}
+                      style={styles.authorPlatformImage}
+                    />
+                    <Text style={styles.authorProfileDetailText}>
+                      {post.author.handle}
+                    </Text>
+                    <Text style={styles.authorProfileDetailText}>
+                      {post.timeAgo}
+                    </Text>
                   </View>
                 </View>
-                <Text style={styles.defaultText}>{comment.text}</Text>
               </View>
-              {comment.replies &&
-                comment.replies.map(reply => (
-                  <View key={reply.id} style={styles.replyItem}>
-                    <ReplyArrowIcon color={primaryColors.color} />
-                    <View style={[styles.commentItem, { flex: 1 }]}>
-                      <View style={styles.authorProfileBox}>
+              <Text style={styles.postTitleText}>{post.title}</Text>
+              <Text style={styles.defaultText}>{post.content}</Text>
+              {imageCount > 0 && (
+                <View style={styles.imageSection}>
+                  {imageCount === 1 ? (
+                    // 1장일 때: 가로로 꽉 찬 이미지
+                    <Image
+                      source={{ uri: post.imageUrls[0] }}
+                      style={styles.singleImage}
+                    />
+                  ) : (
+                    // 2장 이상일 때: 273x273 정사각형 스크롤
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={styles.multiImageScrollContent}
+                    >
+                      {post.imageUrls.map((url, index) => (
                         <Image
-                          source={{ uri: reply.author.profileImage }}
-                          style={styles.authorProfileImage}
+                          key={index}
+                          source={{ uri: url }}
+                          style={styles.multiImage}
                         />
-                        <View style={styles.authorProfileDetailCol}>
-                          <Text style={styles.authorName}>
-                            {reply.author.name}
-                          </Text>
-                          <View style={styles.authorProfileDetailRow}>
-                            <Image
-                              source={getPlatformLogo(reply.author.platform)}
-                              style={styles.authorPlatformImage}
-                            />
-                            <Text style={styles.commentAuthorProfileDetailText}>
-                              {reply.author.handle}
+                      ))}
+                    </ScrollView>
+                  )}
+                </View>
+              )}
+              <View style={styles.reactionRow}>
+                <View style={styles.reactionBox}>
+                  <LikedIcon size={16} color={primaryColors.color} />
+                  <Text style={styles.defaultText}>좋아요</Text>
+                  <Text style={styles.defaultText}>{post.likeCount}</Text>
+                </View>
+                <View style={styles.reactionBox}>
+                  <CommentIcon size={16} color={primaryColors.color} />
+                  <Text style={styles.defaultText}>댓글</Text>
+                  <Text style={styles.defaultText}>{post.commentCount}</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+          <View style={styles.commentSection}>
+            {post.comments.map(comment => (
+              <Fragment key={comment.id}>
+                <View style={styles.commentItem}>
+                  <View style={styles.authorProfileBox}>
+                    <Image
+                      source={{ uri: comment.author.profileImage }}
+                      style={styles.authorProfileImage}
+                    />
+                    <View style={styles.authorProfileDetailCol}>
+                      <Text style={styles.authorName}>
+                        {comment.author.name}
+                      </Text>
+                      <View style={styles.authorProfileDetailRow}>
+                        <Image
+                          source={getPlatformLogo(comment.author.platform)}
+                          style={styles.authorPlatformImage}
+                        />
+                        <Text style={styles.commentAuthorProfileDetailText}>
+                          {comment.author.handle}
+                        </Text>
+                        <Text style={styles.commentAuthorProfileDetailText}>
+                          {comment.timeAgo}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <Text style={styles.defaultText}>{comment.text}</Text>
+                </View>
+                {comment.replies &&
+                  comment.replies.map(reply => (
+                    <View key={reply.id} style={styles.replyItem}>
+                      <ReplyArrowIcon color={primaryColors.color} />
+                      <View style={[styles.commentItem, { flex: 1 }]}>
+                        <View style={styles.authorProfileBox}>
+                          <Image
+                            source={{ uri: reply.author.profileImage }}
+                            style={styles.authorProfileImage}
+                          />
+                          <View style={styles.authorProfileDetailCol}>
+                            <Text style={styles.authorName}>
+                              {reply.author.name}
                             </Text>
-                            <Text style={styles.commentAuthorProfileDetailText}>
-                              {reply.timeAgo}
-                            </Text>
+                            <View style={styles.authorProfileDetailRow}>
+                              <Image
+                                source={getPlatformLogo(reply.author.platform)}
+                                style={styles.authorPlatformImage}
+                              />
+                              <Text
+                                style={styles.commentAuthorProfileDetailText}
+                              >
+                                {reply.author.handle}
+                              </Text>
+                              <Text
+                                style={styles.commentAuthorProfileDetailText}
+                              >
+                                {reply.timeAgo}
+                              </Text>
+                            </View>
                           </View>
                         </View>
+                        <Text style={styles.defaultText}>{reply.text}</Text>
                       </View>
-                      <Text style={styles.defaultText}>{reply.text}</Text>
                     </View>
-                  </View>
-                ))}
-            </Fragment>
-          ))}
+                  ))}
+              </Fragment>
+            ))}
+          </View>
+        </ScrollView>
+        <View style={styles.bottomBar}>
+          <TextInput
+            style={styles.commentInput}
+            placeholder="댓글을 입력하세요"
+            placeholderTextColor={isDark ? '#454545' : '#F4F2F2'}
+            value={commentText}
+            onChangeText={setCommentText}
+          />
+          <CommentSendIcon
+            bgColor={primaryColors.pointColor}
+            iconColor={primaryColors.iconPrimaryColor}
+          />
         </View>
-      </ScrollView>
-    </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -370,6 +400,22 @@ const getStyles = (isDark, primaryColors) => {
     replyItem: {
       flexDirection: 'row',
       gap: 3,
+    },
+
+    bottomBar: {
+      backgroundColor: isDark ? '#323232' : '#F4F2F2',
+      flexDirection: 'row',
+      gap: 18,
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+    },
+
+    commentInput: {
+      flex: 1,
+      minHeight: 40,
+      backgroundColor: isDark ? '#D3D3D3' : '#D3D3D3',
+      borderRadius: 20,
+      paddingHorizontal: 20,
     },
   });
 };
