@@ -7,9 +7,17 @@ import CommentIcon from '@/assets/svgs/common/comment-icon';
 import LikedIcon from '@/assets/svgs/common/like-icon';
 import ThreeDotsIcon from '@/assets/svgs/common/three-dots-icon';
 import BackIcon from '@/assets/svgs/feed/back-icon';
+import ReplyArrowIcon from '@/assets/svgs/feed/reply-arrow-icon';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Fragment, useState } from 'react';
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function FeedDetail() {
@@ -46,49 +54,113 @@ export default function FeedDetail() {
           searchIconColor={iconColor}
         />
       </View>
-      <View style={styles.postContainer}>
-        <View style={styles.categoryRow}>
-          <CategoryBadge text={post.category} />
-          <ThreeDotsIcon isDark={isDark} />
-        </View>
-        <View style={styles.mainContentBox}>
-          <View style={styles.authorProfileBox}>
-            <Image
-              source={{ uri: post.author.profileImage }}
-              style={styles.authorProfileImage}
-            />
-            <View style={styles.authorProfileDetailCol}>
-              <Text style={styles.authorName}>{post.author.name}</Text>
-              <View style={styles.authorProfileDetailRow}>
-                <Image
-                  source={getPlatformLogo(post.author.platform)}
-                  style={styles.authorPlatformImage}
-                />
-                <Text style={styles.authorProfileDetailText}>
-                  {post.author.handle}
-                </Text>
-                <Text style={styles.authorProfileDetailText}>
-                  {post.timeAgo}
-                </Text>
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.postContainer}>
+          <View style={styles.categoryRow}>
+            <CategoryBadge text={post.category} />
+            <ThreeDotsIcon isDark={isDark} />
+          </View>
+          <View style={styles.mainContentBox}>
+            <View style={styles.authorProfileBox}>
+              <Image
+                source={{ uri: post.author.profileImage }}
+                style={styles.authorProfileImage}
+              />
+              <View style={styles.authorProfileDetailCol}>
+                <Text style={styles.authorName}>{post.author.name}</Text>
+                <View style={styles.authorProfileDetailRow}>
+                  <Image
+                    source={getPlatformLogo(post.author.platform)}
+                    style={styles.authorPlatformImage}
+                  />
+                  <Text style={styles.authorProfileDetailText}>
+                    {post.author.handle}
+                  </Text>
+                  <Text style={styles.authorProfileDetailText}>
+                    {post.timeAgo}
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <Text style={styles.postTitleText}>{post.title}</Text>
+            <Text style={styles.defaultText}>{post.content}</Text>
+            <View style={styles.reactionRow}>
+              <View style={styles.reactionBox}>
+                <LikedIcon size={16} color={primaryColors.color} />
+                <Text style={styles.defaultText}>좋아요</Text>
+                <Text style={styles.defaultText}>{post.likeCount}</Text>
+              </View>
+              <View style={styles.reactionBox}>
+                <CommentIcon size={16} color={primaryColors.color} />
+                <Text style={styles.defaultText}>댓글</Text>
+                <Text style={styles.defaultText}>{post.commentCount}</Text>
               </View>
             </View>
           </View>
-          <Text style={styles.postTitleText}>{post.title}</Text>
-          <Text style={styles.defaultText}>{post.content}</Text>
-          <View style={styles.replyRow}>
-            <View style={styles.replyBox}>
-              <LikedIcon size={16} color={primaryColors.color} />
-              <Text style={styles.defaultText}>좋아요</Text>
-              <Text style={styles.defaultText}>{post.likeCount}</Text>
-            </View>
-            <View style={styles.replyBox}>
-              <CommentIcon size={16} color={primaryColors.color} />
-              <Text style={styles.defaultText}>댓글</Text>
-              <Text style={styles.defaultText}>{post.commentCount}</Text>
-            </View>
-          </View>
         </View>
-      </View>
+        <View style={styles.commentSection}>
+          {post.comments.map(comment => (
+            <Fragment key={comment.id}>
+              <View style={styles.commentItem}>
+                <View style={styles.authorProfileBox}>
+                  <Image
+                    source={{ uri: comment.author.profileImage }}
+                    style={styles.authorProfileImage}
+                  />
+                  <View style={styles.authorProfileDetailCol}>
+                    <Text style={styles.authorName}>{comment.author.name}</Text>
+                    <View style={styles.authorProfileDetailRow}>
+                      <Image
+                        source={getPlatformLogo(comment.author.platform)}
+                        style={styles.authorPlatformImage}
+                      />
+                      <Text style={styles.commentAuthorProfileDetailText}>
+                        {comment.author.handle}
+                      </Text>
+                      <Text style={styles.commentAuthorProfileDetailText}>
+                        {comment.timeAgo}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <Text style={styles.defaultText}>{comment.text}</Text>
+              </View>
+              {comment.replies &&
+                comment.replies.map(reply => (
+                  <View key={reply.id} style={styles.replyItem}>
+                    <ReplyArrowIcon color={primaryColors.color} />
+                    <View style={[styles.commentItem, { flex: 1 }]}>
+                      <View style={styles.authorProfileBox}>
+                        <Image
+                          source={{ uri: reply.author.profileImage }}
+                          style={styles.authorProfileImage}
+                        />
+                        <View style={styles.authorProfileDetailCol}>
+                          <Text style={styles.authorName}>
+                            {reply.author.name}
+                          </Text>
+                          <View style={styles.authorProfileDetailRow}>
+                            <Image
+                              source={getPlatformLogo(reply.author.platform)}
+                              style={styles.authorPlatformImage}
+                            />
+                            <Text style={styles.commentAuthorProfileDetailText}>
+                              {reply.author.handle}
+                            </Text>
+                            <Text style={styles.commentAuthorProfileDetailText}>
+                              {reply.timeAgo}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                      <Text style={styles.defaultText}>{reply.text}</Text>
+                    </View>
+                  </View>
+                ))}
+            </Fragment>
+          ))}
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -102,6 +174,10 @@ const getStyles = (isDark, primaryColors) => {
     mainContainer: {
       flex: 1,
       backgroundColor: headerBg,
+    },
+
+    scrollContainer: {
+      backgroundColor: isDark ? 'transparent' : '#ECECEC',
     },
 
     searchBarContainer: {
@@ -205,18 +281,45 @@ const getStyles = (isDark, primaryColors) => {
       fontWeight: '500',
     },
 
-    replyRow: {
+    reactionRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
     },
 
-    replyBox: {
+    reactionBox: {
       flexDirection: 'row',
       gap: 6,
       alignItems: 'center',
       paddingVertical: 10,
       paddingHorizontal: 43,
+    },
+
+    commentSection: {
+      flexDirection: 'column',
+      gap: 12,
+      paddingVertical: 12,
+      paddingHorizontal: 18,
+    },
+
+    commentItem: {
+      flexDirection: 'column',
+      gap: 16,
+      borderRadius: 20,
+      backgroundColor: contentBg,
+      padding: 20,
+    },
+
+    commentAuthorProfileDetailText: {
+      color: isDark ? '#D3D3D3' : '#666666',
+      fontSize: 14,
+      lineHeight: 14,
+      fontWeitht: 500,
+    },
+
+    replyItem: {
+      flexDirection: 'row',
+      gap: 3,
     },
   });
 };
