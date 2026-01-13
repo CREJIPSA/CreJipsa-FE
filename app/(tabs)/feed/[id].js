@@ -23,6 +23,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function FeedDetail() {
   const { id } = useLocalSearchParams();
   const post = DUMMY_POSTS.find(item => item.id === id);
+  const imageCount = post.imageUrls?.length || 0;
 
   const insets = useSafeAreaInsets();
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
@@ -84,6 +85,32 @@ export default function FeedDetail() {
             </View>
             <Text style={styles.postTitleText}>{post.title}</Text>
             <Text style={styles.defaultText}>{post.content}</Text>
+            {imageCount > 0 && (
+              <View style={styles.imageSection}>
+                {imageCount === 1 ? (
+                  // 1장일 때: 가로로 꽉 찬 이미지
+                  <Image
+                    source={{ uri: post.imageUrls[0] }}
+                    style={styles.singleImage}
+                  />
+                ) : (
+                  // 2장 이상일 때: 273x273 정사각형 스크롤
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.multiImageScrollContent}
+                  >
+                    {post.imageUrls.map((url, index) => (
+                      <Image
+                        key={index}
+                        source={{ uri: url }}
+                        style={styles.multiImage}
+                      />
+                    ))}
+                  </ScrollView>
+                )}
+              </View>
+            )}
             <View style={styles.reactionRow}>
               <View style={styles.reactionBox}>
                 <LikedIcon size={16} color={primaryColors.color} />
@@ -279,6 +306,29 @@ const getStyles = (isDark, primaryColors) => {
       color: primaryColors.color,
       fontSize: 16,
       fontWeight: '500',
+    },
+
+    imageSection: {
+      marginTop: 10,
+      marginBottom: 10,
+    },
+
+    singleImage: {
+      width: '100%',
+      height: 273,
+      borderRadius: 20,
+      resizeMode: 'cover',
+    },
+
+    multiImageScrollContent: {
+      gap: 12,
+    },
+
+    multiImage: {
+      width: 273,
+      height: 273,
+      borderRadius: 20,
+      resizeMode: 'cover',
     },
 
     reactionRow: {
