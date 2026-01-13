@@ -1,5 +1,5 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
-import ThreeDotsIcon from '@/assets/svgs/my/three-dots-icon';
+import ThreeDotsIcon from '@/assets/svgs/common/three-dots-icon';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
