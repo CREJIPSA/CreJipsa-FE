@@ -1,6 +1,6 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
-import CommentIcon from '@/assets/svgs/my/comment-icon';
-import LikedIcon from '@/assets/svgs/my/like-icon';
+import CommentIcon from '@/assets/svgs/common/comment-icon';
+import LikedIcon from '@/assets/svgs/common/like-icon';
 import { router } from 'expo-router';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
