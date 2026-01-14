@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
-import { createContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
+import { AuthContext } from '../_layout';
 
 // 회원가입 단계 컨텍스트
 export const StepContext = createContext();
@@ -33,7 +34,7 @@ export default function StepProvider({ children }) {
   const router = useRouter();
 
   const [step, setStep] = useState(1); // 회원가입 단계
-  const [signupCompleted, setSignupCompleted] = useState(false); // 회원가입 완료 여부
+  const [isSigningUp, setIsSigningUp] = useState(false); // 중복 제출 방지용
 
   // 회원가입 폼 데이터
   const [form, setForm] = useState({
@@ -62,17 +63,78 @@ export default function StepProvider({ children }) {
     });
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (step === 8) {
-      setSignupCompleted(true);
-      router.push({
-        pathname: '/(sign-up)/welcome',
-        params: { username: form.userInfo.username },
-      });
+      if (isSigningUp) return; // 중복 제출 방지
+      setIsSigningUp(true);
+
+      try {
+        await signUp();
+        router.push({
+          pathname: '/(sign-up)/welcome',
+          params: { username: form.userInfo.username },
+        });
+      } catch (error) {
+        console.error('Sign-up failed:', error);
+      } finally {
+        setIsSigningUp(false);
+      }
       return;
     } else {
       setStep(prev => Math.min(prev + 1, 8));
     }
+  };
+
+  // 채널 정보 형태 수정
+  function buildChannelPayload(channelInfo = []) {
+    const payload = {
+      activeYoutube: null,
+      activeInstagram: null,
+      activeTiktok: null,
+    };
+    channelInfo.forEach(({ platform, channelId }) => {
+      if (!platform || !channelId) return;
+      if (platform === 'YOUTUBE') {
+        payload.activeYoutube = channelId;
+      } else if (platform === 'INSTAGRAM') {
+        payload.activeInstagram = channelId;
+      } else if (platform === 'TIKTOK') {
+        payload.activeTiktok = channelId;
+      }
+    });
+    return payload;
+  }
+
+  const { kakaoEmail } = useContext(AuthContext);
+
+  const signUp = async () => {
+    if (!kakaoEmail) {
+      throw new Error('Kakao email is missing');
+    }
+    const res = await fetch('https://dev.crezipsa.site/api/user/signUp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nickName: form.userInfo.username,
+        email: kakaoEmail,
+        birth: form.userInfo.birth,
+        gender: form.userInfo.gender,
+        userInterest: form.interests,
+        ...buildChannelPayload(form.channelInfo),
+      }),
+    });
+
+    const raw = await res.text();
+    let data = null;
+    try {
+      data = raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      console.error('Failed to parse JSON response', e);
+    }
+    if (!res.ok)
+      throw new Error(data?.message ?? `signUp Failed: ${res.status}`);
+    console.log('Sign-up successful:', data);
+    return data;
   };
 
   return (
@@ -85,8 +147,6 @@ export default function StepProvider({ children }) {
         setStep,
         title,
         handleNextStep,
-        signupCompleted,
-        setSignupCompleted,
       }}
     >
       {children}

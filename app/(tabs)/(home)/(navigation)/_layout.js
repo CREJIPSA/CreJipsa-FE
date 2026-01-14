@@ -29,23 +29,23 @@ export default function NavigationLayout() {
 
   // 플랫폼 선택
   const platformOptions = [
-    { key: 'youtube', logo: youtubeLogo, name: 'YouTube' },
-    { key: 'instagram', logo: instagramLogo, name: 'Instagram' },
-    { key: 'tiktok', logo: tiktokLogo, name: 'TikTok' },
+    { key: 'YOUTUBE', logo: youtubeLogo, name: 'Youtube' },
+    { key: 'INSTAGRAM', logo: instagramLogo, name: 'Instagram' },
+    { key: 'TIKTOK', logo: tiktokLogo, name: 'TikTok' },
   ];
-  const [selectedPlatform, setSelectedPlatform] = useState('youtube');
+  const [selectedPlatform, setSelectedPlatform] = useState('YOUTUBE');
   const [isPlatformDropdownVisible, setIsPlatformDropdownVisible] =
     useState(false);
   const getPlatformInfo = selectedPlatform => {
     switch (selectedPlatform) {
-      case 'youtube':
+      case 'YOUTUBE':
         return { logo: youtubeLogo, name: 'Youtube' };
-      case 'instagram':
+      case 'INSTAGRAM':
         return { logo: instagramLogo, name: 'Instagram' };
-      case 'tiktok':
+      case 'TIKTOK':
         return { logo: tiktokLogo, name: 'TikTok' };
       default:
-        return { logo: youtubeLogo, name: 'YouTube' };
+        return { logo: youtubeLogo, name: 'Youtube' };
     }
   };
   const { logo: platformLogo, name: platformName } =
@@ -149,46 +149,30 @@ export default function NavigationLayout() {
           tabBarScrollEnabled: true,
         }}
       >
-        <MaterialTopTabs.Screen
-          name="main"
-          component={MainScreen}
-          options={{ title: '전체' }}
-        />
-        <MaterialTopTabs.Screen
-          name="dailyMeme"
-          component={DailyMemeScreen}
-          options={{ title: '일상/밈' }}
-        />
-        <MaterialTopTabs.Screen
-          name="game"
-          component={GameScreen}
-          options={{ title: '게임' }}
-        />
-        <MaterialTopTabs.Screen
-          name="fashion"
-          component={FashionScreen}
-          options={{ title: '패션' }}
-        />
-        <MaterialTopTabs.Screen
-          name="music"
-          component={MusicScreen}
-          options={{ title: '음악' }}
-        />
-        <MaterialTopTabs.Screen
-          name="pet"
-          component={PetScreen}
-          options={{ title: '반려동물' }}
-        />
-        <MaterialTopTabs.Screen
-          name="beauty"
-          component={BeautyScreen}
-          options={{ title: '뷰티' }}
-        />
-        <MaterialTopTabs.Screen
-          name="sports"
-          component={SportsScreen}
-          options={{ title: '스포츠' }}
-        />
+        <MaterialTopTabs.Screen name="main" options={{ title: '전체' }}>
+          {() => <MainScreen platform={selectedPlatform} />}
+        </MaterialTopTabs.Screen>
+        <MaterialTopTabs.Screen name="dailyMeme" options={{ title: '일상/밈' }}>
+          {() => <DailyMemeScreen platform={selectedPlatform} />}
+        </MaterialTopTabs.Screen>
+        <MaterialTopTabs.Screen name="game" options={{ title: '게임' }}>
+          {() => <GameScreen platform={selectedPlatform} />}
+        </MaterialTopTabs.Screen>
+        <MaterialTopTabs.Screen name="fashion" options={{ title: '패션' }}>
+          {() => <FashionScreen platform={selectedPlatform} />}
+        </MaterialTopTabs.Screen>
+        <MaterialTopTabs.Screen name="music" options={{ title: '음악' }}>
+          {() => <MusicScreen platform={selectedPlatform} />}
+        </MaterialTopTabs.Screen>
+        <MaterialTopTabs.Screen name="pet" options={{ title: '반려동물' }}>
+          {() => <PetScreen platform={selectedPlatform} />}
+        </MaterialTopTabs.Screen>
+        <MaterialTopTabs.Screen name="beauty" options={{ title: '뷰티' }}>
+          {() => <BeautyScreen platform={selectedPlatform} />}
+        </MaterialTopTabs.Screen>
+        <MaterialTopTabs.Screen name="sports" options={{ title: '스포츠' }}>
+          {() => <SportsScreen platform={selectedPlatform} />}
+        </MaterialTopTabs.Screen>
       </MaterialTopTabs.Navigator>
     </View>
   );

@@ -2,8 +2,8 @@ import {
   getKeyHashAndroid,
   initializeKakaoSDK,
 } from '@react-native-kakao/core';
-import { login as kakaoLogin, me } from '@react-native-kakao/user';
-import { Redirect, useRouter } from 'expo-router';
+import { login as kakaoLogin } from '@react-native-kakao/user';
+import { useRouter } from 'expo-router';
 import { useContext, useEffect } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,8 +15,8 @@ export default function Landing() {
   const insets = useSafeAreaInsets();
   const { styles } = useThemedStyle(getStyles);
 
-  const { user } = useContext(AuthContext);
-  const isLoggedIn = !!user;
+  const { setAccessToken, setRefreshToken, setUser, setKakaoEmail } =
+    useContext(AuthContext);
 
   useEffect(() => {
     initializeKakaoSDK('2d0e496c2a9ff2019280d0ff3d7ffb23');
@@ -25,20 +25,62 @@ export default function Landing() {
   const onKakaoLogin = async () => {
     console.log('키 해시', await getKeyHashAndroid());
     try {
+      // 카카오 로그인
+      console.log('before kakao login');
       const loginResult = await kakaoLogin();
-      console.log('Kakao login success', loginResult);
-      const loginUser = await me();
-      console.log('Kakao user info', loginUser);
-      router.replace('/(sign-up)');
+      console.log('kakao login result', loginResult);
+      console.log('after kakao login');
+      const kakaoAccessToken = loginResult?.accessToken;
+      console.log('kakaoAccessToken exists?', !!kakaoAccessToken);
+      if (!kakaoAccessToken) {
+        throw new Error('No Kakao access token');
+      }
+
+      // 서버 인증 api 호출
+      const res = await fetch('https://dev.crezipsa.site/api/auth/kakaoLogin', {
+        method: 'GET',
+        headers: {
+          'Kakao-Authorization': `${kakaoAccessToken}`,
+        },
+      });
+
+      // raw data
+      const rawText = await res.text();
+      console.log('auth status', res.status);
+      console.log('auth raw response', rawText);
+
+      let data = null;
+      try {
+        data = rawText ? JSON.parse(rawText) : null;
+      } catch (e) {
+        console.error('Failed to parse JSON response', e);
+      }
+      if (!res.ok) throw new Error('Auth API error');
+
+      // result
+      const result = data?.result;
+
+      // 신규 유저는 바로 회원가입으로
+      if (result.newUser) {
+        setUser(result.kakaoUserInfo);
+        setKakaoEmail(loginResult.scopes.account_email);
+        router.replace('/(sign-up)');
+        return;
+      }
+
+      // 기존 유저는 토큰 저장 후 홈으로 이동
+      if (!result.accessToken || !result.refreshToken) {
+        throw new Error('No tokens received from server');
+      }
+      setAccessToken(result.accessToken);
+      setRefreshToken(result.refreshToken);
+      setUser(result.kakaoUserInfo);
+      setKakaoEmail(loginResult.scopes.account_email);
+      router.replace('/(tabs)');
     } catch (error) {
       console.error('Kakao login failed', error);
     }
   };
-
-  // 로그인 상태 확인
-  if (isLoggedIn) {
-    return <Redirect href="/(tabs)" />;
-  }
 
   return (
     <View
@@ -58,7 +100,10 @@ export default function Landing() {
         <Text style={styles.subText}>크리에이터를 위한 어시스턴트 앱</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <Pressable style={styles.kakaoLoginButton} onPress={onKakaoLogin}>
+        <Pressable
+          style={styles.kakaoLoginButton}
+          onPress={() => onKakaoLogin()}
+        >
           <Image
             source={require('../assets/images/kakao_logo.png')}
             style={{ width: 15, height: 15 }}
