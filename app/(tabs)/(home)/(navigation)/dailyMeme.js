@@ -35,6 +35,10 @@ export default function DailyMeme({ platform }) {
       })
       .then(data => {
         const result = data?.result;
+        if (!result || !Array.isArray(result)) {
+          console.error('Invalid trend data format', data);
+          return;
+        }
         const top4 = result.slice(0, 4).map(({ keyword }) => keyword);
         setRankTrends(top4);
       })

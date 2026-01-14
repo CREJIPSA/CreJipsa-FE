@@ -59,11 +59,14 @@ export default function Landing() {
 
       // result
       const result = data?.result;
+      if (!result) {
+        throw new Error('No result in Auth API response');
+      }
 
       // 신규 유저는 바로 회원가입으로
       if (result.newUser) {
         setUser(result.kakaoUserInfo);
-        setKakaoEmail(loginResult.scopes.account_email);
+        setKakaoEmail(loginResult.scopes.account_email ?? null);
         router.replace('/(sign-up)');
         return;
       }
@@ -75,7 +78,7 @@ export default function Landing() {
       setAccessToken(result.accessToken);
       setRefreshToken(result.refreshToken);
       setUser(result.kakaoUserInfo);
-      setKakaoEmail(loginResult.scopes.account_email);
+      setKakaoEmail(loginResult.scopes.account_email ?? null);
       router.replace('/(tabs)');
     } catch (error) {
       console.error('Kakao login failed', error);
