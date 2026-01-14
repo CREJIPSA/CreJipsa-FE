@@ -1,23 +1,43 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ImageBackground, Text, View } from 'react-native';
+import * as Linking from 'expo-linking';
+import { ImageBackground, Pressable, Text, View } from 'react-native';
 
-export default function RelatedVideo({ title, views, thumbnailUrl }) {
+export default function RelatedVideo({ title, views, thumbnailUrl, url }) {
   const { styles } = useThemedStyle(getStyles);
 
+  // 인스타는 조회수 표시 안 함
+  const insta = url => {
+    return url.includes('instagram.com');
+  };
+
   return (
-    <ImageBackground source={thumbnailUrl} style={styles.thumbnail}>
-      <LinearGradient
-        colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.5)']}
-        style={styles.thumbnailGradient}
-      />
-      <View style={styles.videoInfoContainer}>
-        <Text style={styles.videoTitle} ellipsizeMode="tail" numberOfLines={1}>
-          {title}
-        </Text>
-        <Text style={styles.videoViews}>조회수 {views}회</Text>
-      </View>
-    </ImageBackground>
+    <Pressable
+      onPress={() => {
+        if (url) {
+          Linking.openURL(url);
+        }
+      }}
+    >
+      <ImageBackground source={thumbnailUrl} style={styles.thumbnail}>
+        <LinearGradient
+          colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.5)']}
+          style={styles.thumbnailGradient}
+        />
+        <View style={styles.videoInfoContainer}>
+          <Text
+            style={styles.videoTitle}
+            ellipsizeMode="tail"
+            numberOfLines={1}
+          >
+            {title}
+          </Text>
+          <Text style={styles.videoViews}>
+            {!insta(url) ? `조회수 ${views}회` : ''}
+          </Text>
+        </View>
+      </ImageBackground>
+    </Pressable>
   );
 }
 

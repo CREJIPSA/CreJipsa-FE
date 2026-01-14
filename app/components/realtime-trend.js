@@ -258,7 +258,7 @@ const RealTimeTrend = ({ rankTrends = [] }) => {
           >
             <RealTimeTrendCard
               {...realTimeTrendData[0]}
-              inputTitle={rankTrends[0]}
+              inputTitle={trends[0]?.keyword}
               styles={styles}
             />
           </Pressable>
@@ -271,7 +271,7 @@ const RealTimeTrend = ({ rankTrends = [] }) => {
           >
             <RealTimeTrendCard
               {...realTimeTrendData[3]}
-              inputTitle={rankTrends[3]}
+              inputTitle={trends[3]?.keyword}
               styles={styles}
             />
           </Pressable>
@@ -285,7 +285,7 @@ const RealTimeTrend = ({ rankTrends = [] }) => {
           >
             <RealTimeTrendCard
               {...realTimeTrendData[1]}
-              inputTitle={rankTrends[1]}
+              inputTitle={trends[1]?.keyword}
               styles={styles}
             />
           </Pressable>
@@ -298,7 +298,7 @@ const RealTimeTrend = ({ rankTrends = [] }) => {
           >
             <RealTimeTrendCard
               {...realTimeTrendData[2]}
-              inputTitle={rankTrends[2]}
+              inputTitle={trends[2]?.keyword}
               styles={styles}
             />
           </Pressable>

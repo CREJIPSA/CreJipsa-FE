@@ -1,4 +1,4 @@
-import RelatedVideo from '@/app/components/search/video';
+import RelatedVideo from '@/app/components/search/related-video';
 import AlarmIcon from '@/assets/svgs/home/alarm-icon.js';
 import AddBtn from '@/assets/svgs/trend/add.js';
 import ShareBtn from '@/assets/svgs/trend/share.js';
@@ -6,48 +6,101 @@ import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { ImageBackground } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useContext, useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import useThemedStyle from '../../hooks/use-themed-style';
 
+import { AuthContext } from '@/app/_layout';
+
 export default function Trend() {
   const router = useRouter();
   const { isDark, styles } = useThemedStyle(getStyles);
   const insets = useSafeAreaInsets();
-  const { trend } = useLocalSearchParams();
+  const { trend, id } = useLocalSearchParams();
+
+  const { accessToken } = useContext(AuthContext);
 
   // (임시) 현재 시간을 마지막 업데이트로 설정
   const lastUpdateTime = format(new Date(), 'yyyy년 MM월 dd일 HH:mm');
 
-  // 관련 영상 더미 데이터
-  const relatedVideos = [
-    {
-      title: '신상 가나디 행사',
-      views: '18만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-1.png'),
-    },
-    {
-      title: '우린 이별했다고',
-      views: '25만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-2.png'),
-    },
-    {
-      title: '10점짜리 소리 찾기',
-      views: '32만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-3.png'),
-    },
-    {
-      title: '가나디 케이크',
-      views: '41만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-4.png'),
-    },
-    {
-      title: '오븐 없이 초초간편 가나디 케이크',
-      views: '12만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-5.png'),
-    },
-  ];
+  // 트렌드 상세 정보
+  const [frequency, setFrequency] = useState(null); //흥행 가능성
+  const [overallRank, setOverallRank] = useState(null); //실시간 트렌드 순위
+  const [category, setCategory] = useState(null); //카테고리
+  const [categoryRank, setCategoryRank] = useState(null); //카테고리 내 순위
+
+  // 관련 영상 정보
+  const [videoInfo, setVideoInfo] = useState([]);
+
+  useEffect(() => {
+    fetch(`https://dev.crezipsa.site/api/main/trend/detail/${id}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+      .then(async res => {
+        const raw = await res.text();
+        console.log('trend detail api status', res.status);
+        console.log('trend detail api raw response', raw);
+
+        let data = null;
+        try {
+          data = raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          console.error('Failed to parse JSON response', e);
+        }
+
+        if (!res.ok)
+          throw new Error(`Trend Detail API error: ${res.status}, raw=${raw}`);
+        return data;
+      })
+      .then(data => {
+        const result = data?.result;
+        if (!result) {
+          console.error('Invalid trend detail data format', data);
+          return;
+        }
+        // 트렌드 상세 정보
+        setFrequency(result.frequency);
+        setOverallRank(result.overall_rank);
+        setCategory(result.category);
+        console.log('Category:', result.category);
+        setCategoryRank(result.category_rank);
+        // 관련 영상 정보
+        setVideoInfo(result.urls || []);
+      })
+      .catch(error => {
+        console.error('Failed to fetch trend detail data', error);
+      });
+  }, [accessToken, id]);
+
+  // 관련 영상 데이터
+  const relatedVideos = videoInfo.map(video => ({
+    title: video.title,
+    views: video.viewCount,
+    thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-1.png'), // 썸네일 추가 필요
+    url: video.url,
+  }));
+
+  // 조회수 포맷팅 함수
+  function formatViews(views) {
+    // 1000회 이하는 n
+    if (views < 1000) {
+      return String(views);
+    }
+    // 1000~9999회는 n천
+    if (views < 10000) {
+      return `${Math.floor(views / 1000)}천`;
+    }
+    // 1만~9999만회는 n만
+    if (views < 100000000) {
+      return `${Math.floor(views / 10000)}만`;
+    }
+    return `${Math.floor(views / 10000)}만`;
+  }
 
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
@@ -100,7 +153,9 @@ export default function Trend() {
                   <View style={styles.label}>
                     <Text style={styles.labelText}>흥행 가능성</Text>
                   </View>
-                  <Text style={[styles.valueText, { fontSize: 24 }]}>94%</Text>
+                  <Text style={[styles.valueText, { fontSize: 24 }]}>
+                    {frequency}%
+                  </Text>
                 </View>
               </View>
               <View style={styles.analysisBox}>
@@ -108,13 +163,13 @@ export default function Trend() {
                   <View style={styles.label}>
                     <Text style={styles.labelText}>실시간 트렌드</Text>
                   </View>
-                  <Text style={styles.valueText}>1위</Text>
+                  <Text style={styles.valueText}>{overallRank}위</Text>
                 </View>
                 <View style={styles.labelContainer}>
                   <View style={styles.label}>
-                    <Text style={styles.labelText}>음악 분야</Text>
+                    <Text style={styles.labelText}>{category} 분야</Text>
                   </View>
-                  <Text style={styles.valueText}>1위</Text>
+                  <Text style={styles.valueText}>{categoryRank}위</Text>
                 </View>
               </View>
             </View>
@@ -142,12 +197,13 @@ export default function Trend() {
             </Pressable>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {relatedVideos.map((video, index) => (
+            {relatedVideos.slice(0, 5).map((video, index) => (
               <RelatedVideo
                 key={index}
                 title={video.title}
-                views={video.views}
+                views={formatViews(video.views)}
                 thumbnailUrl={video.thumbnailUrl}
+                url={video.url}
               />
             ))}
           </ScrollView>
