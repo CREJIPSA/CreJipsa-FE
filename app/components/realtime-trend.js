@@ -222,14 +222,6 @@ const RealTimeTrend = ({ rankTrends = [] }) => {
     },
   ];
 
-  // 실시간 트렌드 데이터
-  const trends = [
-    rankTrends[0] ?? null,
-    rankTrends[1] ?? null,
-    rankTrends[2] ?? null,
-    rankTrends[3] ?? null,
-  ];
-
   // 카드 클릭 시 이동
   const goTrendReport = trend => {
     if (!trend?.id) return;
@@ -252,26 +244,26 @@ const RealTimeTrend = ({ rankTrends = [] }) => {
         <View style={styles.trendCardTopContainer}>
           <Pressable
             onPress={() => {
-              goTrendReport(trends[0]);
+              goTrendReport(rankTrends[0]);
             }}
-            disabled={!trends[0]}
+            disabled={!rankTrends[0]}
           >
             <RealTimeTrendCard
               {...realTimeTrendData[0]}
-              inputTitle={trends[0]?.keyword}
+              inputTitle={rankTrends[0]?.keyword}
               styles={styles}
             />
           </Pressable>
           <Pressable
             style={styles.rank4TrendCard}
             onPress={() => {
-              goTrendReport(trends[3]);
+              goTrendReport(rankTrends[3]);
             }}
-            disabled={!trends[3]}
+            disabled={!rankTrends[3]}
           >
             <RealTimeTrendCard
               {...realTimeTrendData[3]}
-              inputTitle={trends[3]?.keyword}
+              inputTitle={rankTrends[3]?.keyword}
               styles={styles}
             />
           </Pressable>
@@ -279,26 +271,26 @@ const RealTimeTrend = ({ rankTrends = [] }) => {
         <View style={styles.trendCardBottomContainer}>
           <Pressable
             onPress={() => {
-              goTrendReport(trends[1]);
+              goTrendReport(rankTrends[1]);
             }}
-            disabled={!trends[1]}
+            disabled={!rankTrends[1]}
           >
             <RealTimeTrendCard
               {...realTimeTrendData[1]}
-              inputTitle={trends[1]?.keyword}
+              inputTitle={rankTrends[1]?.keyword}
               styles={styles}
             />
           </Pressable>
           <Pressable
             style={styles.rank3TrendCard}
             onPress={() => {
-              goTrendReport(trends[2]);
+              goTrendReport(rankTrends[2]);
             }}
-            disabled={!trends[2]}
+            disabled={!rankTrends[2]}
           >
             <RealTimeTrendCard
               {...realTimeTrendData[2]}
-              inputTitle={trends[2]?.keyword}
+              inputTitle={rankTrends[2]?.keyword}
               styles={styles}
             />
           </Pressable>

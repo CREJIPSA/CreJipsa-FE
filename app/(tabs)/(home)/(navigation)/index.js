@@ -11,8 +11,10 @@ export default function Home({ platform }) {
 
   const { accessToken } = useContext(AuthContext);
 
+  const [isLoading, setIsLoading] = useState(true);
   const [rankTrends, setRankTrends] = useState([]);
   useEffect(() => {
+    setIsLoading(true);
     const url = `https://dev.crezipsa.site/api/main/trend?platform=${platform}`;
     // 플랫폼과 카테고리에 따른 실시간 트렌드 데이터 가져오기
     fetch(url, {
@@ -45,9 +47,11 @@ export default function Home({ platform }) {
           .slice(0, 4)
           .map(({ id, keyword }) => ({ id, keyword }));
         setRankTrends(top4);
+        setIsLoading(false);
       })
       .catch(error => {
         console.error('Failed to fetch trend data', error);
+        setIsLoading(false);
       });
   }, [platform, accessToken]);
 
@@ -190,7 +194,7 @@ export default function Home({ platform }) {
   return (
     <ScrollView style={styles.mainContainer}>
       {/* 실시간 트렌드 */}
-      <RealTimeTrend rankTrends={rankTrends} />
+      {!isLoading && <RealTimeTrend rankTrends={rankTrends} />}
       {/* 분야별 트렌드 추천 */}
       {/* 전체 트렌드 추천 */}
       {renderSection(trendData[0], 0)}

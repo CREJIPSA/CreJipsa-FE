@@ -9,8 +9,10 @@ export default function Beauty({ platform }) {
 
   const { accessToken } = useContext(AuthContext);
 
+  const [isLoading, setIsLoading] = useState(true);
   const [rankTrends, setRankTrends] = useState([]);
   useEffect(() => {
+    setIsLoading(true);
     const url = `https://dev.crezipsa.site/api/main/trend?platform=${platform}&category=뷰티`;
     // 플랫폼과 카테고리에 따른 실시간 트렌드 데이터 가져오기
     fetch(url, {
@@ -39,17 +41,21 @@ export default function Beauty({ platform }) {
           console.error('Invalid trend data format', data);
           return;
         }
-        const top4 = result.slice(0, 4).map(({ keyword }) => keyword);
+        const top4 = result
+          .slice(0, 4)
+          .map(({ id, keyword }) => ({ id, keyword }));
         setRankTrends(top4);
+        setIsLoading(false);
       })
       .catch(error => {
         console.error('Failed to fetch trend data', error);
+        setIsLoading(false);
       });
   }, [platform, accessToken]);
 
   return (
     <View style={styles.mainContainer}>
-      <RealTimeTrend rankTrends={rankTrends} />
+      {!isLoading && <RealTimeTrend rankTrends={rankTrends} />}
     </View>
   );
 }
