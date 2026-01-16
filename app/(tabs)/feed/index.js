@@ -44,7 +44,7 @@ export default function Feed() {
       <NavigationLayout isDark={isDark} styles={styles} tabBarBg={tabBarBg} />
       <Pressable
         style={styles.floatingButton}
-        onPress={() => console.log('새 글 작성 버튼 클릭!')}
+        onPress={() => router.push('write-post')}
       >
         <WriteButtonIcon
           backgroundColor={writeBtnIconBg}
