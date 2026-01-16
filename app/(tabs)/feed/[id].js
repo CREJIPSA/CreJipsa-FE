@@ -46,6 +46,14 @@ export default function FeedDetail() {
 
   const iconColor = isDark ? '#FAFAFA' : '#141414';
 
+  const [replyTarget, setReplyTarget] = useState(null); // { id: 'c1', name: '크리에이터' } 형식으로 저장
+
+  // 댓글 클릭 시 답글 모드 활성화
+  const handleReplyPress = (commentId, authorName) => {
+    setReplyTarget({ id: commentId, name: authorName });
+    setCommentText(`@${authorName} `);
+  };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -137,32 +145,42 @@ export default function FeedDetail() {
           <View style={styles.commentSection}>
             {post.comments.map(comment => (
               <Fragment key={comment.id}>
-                <View style={styles.commentItem}>
-                  <View style={styles.authorProfileBox}>
-                    <Image
-                      source={{ uri: comment.author.profileImage }}
-                      style={styles.authorProfileImage}
-                    />
-                    <View style={styles.authorProfileDetailCol}>
-                      <Text style={styles.authorName}>
-                        {comment.author.name}
-                      </Text>
-                      <View style={styles.authorProfileDetailRow}>
-                        <Image
-                          source={getPlatformLogo(comment.author.platform)}
-                          style={styles.authorPlatformImage}
-                        />
-                        <Text style={styles.commentAuthorProfileDetailText}>
-                          {comment.author.handle}
+                <Pressable
+                  onPress={() =>
+                    handleReplyPress(comment.id, comment.author.name)
+                  }
+                  style={[
+                    styles.commentItem,
+                    replyTarget?.id === comment.id && styles.activeCommentItem,
+                  ]}
+                >
+                  <View>
+                    <View style={styles.authorProfileBox}>
+                      <Image
+                        source={{ uri: comment.author.profileImage }}
+                        style={styles.authorProfileImage}
+                      />
+                      <View style={styles.authorProfileDetailCol}>
+                        <Text style={styles.authorName}>
+                          {comment.author.name}
                         </Text>
-                        <Text style={styles.commentAuthorProfileDetailText}>
-                          {comment.timeAgo}
-                        </Text>
+                        <View style={styles.authorProfileDetailRow}>
+                          <Image
+                            source={getPlatformLogo(comment.author.platform)}
+                            style={styles.authorPlatformImage}
+                          />
+                          <Text style={styles.commentAuthorProfileDetailText}>
+                            {comment.author.handle}
+                          </Text>
+                          <Text style={styles.commentAuthorProfileDetailText}>
+                            {comment.timeAgo}
+                          </Text>
+                        </View>
                       </View>
                     </View>
+                    <Text style={styles.defaultText}>{comment.text}</Text>
                   </View>
-                  <Text style={styles.defaultText}>{comment.text}</Text>
-                </View>
+                </Pressable>
                 {comment.replies &&
                   comment.replies.map(reply => (
                     <View key={reply.id} style={styles.replyItem}>
@@ -387,6 +405,12 @@ const getStyles = (isDark, primaryColors) => {
       borderRadius: 20,
       backgroundColor: contentBg,
       padding: 20,
+      borderWidth: 2,
+      borderColor: 'transparent',
+    },
+
+    activeCommentItem: {
+      borderColor: primaryColors.pointColor,
     },
 
     commentAuthorProfileDetailText: {
