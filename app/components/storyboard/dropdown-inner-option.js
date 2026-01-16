@@ -29,6 +29,7 @@ export default function DropdownInnerOption({
 
     const newTitle = chatRoomTitle.trim();
     const prevTitle = prevTitleRef.current.trim();
+    if (!newTitle || newTitle === prevTitle) return;
 
     try {
       const res = await fetch(
@@ -39,7 +40,7 @@ export default function DropdownInnerOption({
             'Content-Type': 'application/json',
             Authorization: `Bearer ${accessToken}`,
           },
-          body: JSON.stringify({ title: chatRoomTitle }),
+          body: JSON.stringify({ title: newTitle }),
         },
       );
       if (!res.ok)
