@@ -1,19 +1,75 @@
+import { AuthContext } from '@/app/_layout';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import { useRouter } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { Pressable, Text, TextInput, View } from 'react-native';
+
 // 드롭다운 내부 옵션 컴포넌트
-export default function DropdownInnerOption({ label, text, route }) {
+export default function DropdownInnerOption({
+  label,
+  text,
+  route,
+  chatRoomId,
+}) {
   const { styles } = useThemedStyle(getStyles);
   const router = useRouter();
 
+  const { accessToken } = useContext(AuthContext);
+
+  const [chatRoomTitle, setChatRoomTitle] = useState(text);
+  const prevTitleRef = useRef(text);
+
+  useEffect(() => {
+    setChatRoomTitle(text);
+    prevTitleRef.current = text;
+  }, [text]);
+
+  async function changeTitle() {
+    if (!accessToken || !chatRoomId) return;
+
+    const newTitle = chatRoomTitle.trim();
+    const prevTitle = prevTitleRef.current.trim();
+    if (!newTitle || newTitle === prevTitle) return;
+
+    try {
+      const res = await fetch(
+        `https://dev.crezipsa.site/api/chats/${chatRoomId}/title`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ title: newTitle }),
+        },
+      );
+      if (!res.ok)
+        throw new Error(`Change Chat Title API error: ${res.status}`);
+      prevTitleRef.current = newTitle;
+      setChatRoomTitle(newTitle);
+    } catch (error) {
+      console.error('Failed to change chat room title', error);
+      setChatRoomTitle(prevTitle);
+    }
+  }
+
   return (
     <View style={styles.drawerInnerOption}>
-      <Text style={styles.drawerInnerOptionText}>{text}</Text>
+      <TextInput
+        style={styles.drawerInnerOptionText}
+        value={chatRoomTitle}
+        onChangeText={setChatRoomTitle}
+        editable={label === 'chatting'}
+        onSubmitEditing={changeTitle}
+      />
       <Pressable
         style={styles.drawerInnerOptionButton}
         onPress={() => {
-          // 라벨에 따라 다른 화면으로 이동하도록 수정
-          router.push('/storyboard/edit');
+          if (label === 'storyboard') {
+            router.push(`/storyboard/edit`);
+          } else {
+            router.push(`/storyboard/${route}`);
+          }
         }}
       >
         <Text style={styles.drawerInnerOptionButtonText}>
