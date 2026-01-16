@@ -18,6 +18,8 @@ function extractYoutubeVideoId(url) {
     if (u.pathname.startsWith('/shorts/')) {
       return u.pathname.split('/shorts/')[1]?.split('?')[0] ?? null;
     }
+
+    return null;
   } catch {
     return null;
   }

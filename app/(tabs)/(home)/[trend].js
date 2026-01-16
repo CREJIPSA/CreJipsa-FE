@@ -97,7 +97,7 @@ export default function Trend() {
     if (views < 100000000) {
       return `${Math.floor(views / 10000)}만`;
     }
-    return `${Math.floor(views / 10000)}만`;
+    return `${Math.floor(views / 100000000)}억`;
   }
 
   return (
@@ -161,13 +161,13 @@ export default function Trend() {
                   <View style={styles.label}>
                     <Text style={styles.labelText}>실시간 트렌드</Text>
                   </View>
-                  <Text style={styles.valueText}>{overallRank}위</Text>
+                  <Text style={styles.valueText}>{overallRank ?? '-'}위</Text>
                 </View>
                 <View style={styles.labelContainer}>
                   <View style={styles.label}>
-                    <Text style={styles.labelText}>{category} 분야</Text>
+                    <Text style={styles.labelText}>{category ?? '-'} 분야</Text>
                   </View>
-                  <Text style={styles.valueText}>{categoryRank}위</Text>
+                  <Text style={styles.valueText}>{categoryRank ?? '-'}위</Text>
                 </View>
               </View>
             </View>
