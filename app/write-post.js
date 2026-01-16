@@ -168,7 +168,6 @@ const getStyles = (isDark, primaryColors) => {
       color: primaryColors.color,
       paddingVertical: 10,
       backgroundColor: 'transparent',
-      outlineStyle: 'none',
     },
 
     inputWrapper: {
