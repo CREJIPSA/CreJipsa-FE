@@ -1,7 +1,7 @@
 import { AuthContext } from '@/app/_layout';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import { useRouter } from 'expo-router';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
 // 드롭다운 내부 옵션 컴포넌트
@@ -17,9 +17,18 @@ export default function DropdownInnerOption({
   const { accessToken } = useContext(AuthContext);
 
   const [chatRoomTitle, setChatRoomTitle] = useState(text);
+  const prevTitleRef = useRef(text);
+
+  useEffect(() => {
+    setChatRoomTitle(text);
+    prevTitleRef.current = text;
+  }, [text]);
 
   async function changeTitle() {
     if (!accessToken || !chatRoomId) return;
+
+    const newTitle = chatRoomTitle.trim();
+    const prevTitle = prevTitleRef.current.trim();
 
     try {
       const res = await fetch(
@@ -35,8 +44,11 @@ export default function DropdownInnerOption({
       );
       if (!res.ok)
         throw new Error(`Change Chat Title API error: ${res.status}`);
+      prevTitleRef.current = newTitle;
+      setChatRoomTitle(newTitle);
     } catch (error) {
       console.error('Failed to change chat room title', error);
+      setChatRoomTitle(prevTitle);
     }
   }
 
