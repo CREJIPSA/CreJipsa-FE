@@ -66,7 +66,7 @@ export default function Landing() {
       // 신규 유저는 바로 회원가입으로
       if (result.newUser) {
         setUser(result.kakaoUserInfo);
-        setKakaoEmail(result.kakaoUserInfo.email ?? null);
+        setKakaoEmail(result.kakaoUserInfo?.email ?? null);
         router.replace('/(sign-up)');
         return;
       }
@@ -78,7 +78,7 @@ export default function Landing() {
       setAccessToken(result.accessToken);
       setRefreshToken(result.refreshToken);
       setUser(result.kakaoUserInfo);
-      setKakaoEmail(result.kakaoUserInfo.email ?? null);
+      setKakaoEmail(result.kakaoUserInfo?.email ?? null);
       router.replace('/(tabs)');
     } catch (error) {
       console.error('Kakao login failed', error);
