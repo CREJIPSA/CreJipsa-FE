@@ -103,16 +103,16 @@ export default function ChatScreen({ roomId }) {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const raw = await res.text();
-      console.log('create chat room api status', res.status);
-      console.log('create chat room api raw response', raw);
       if (!res.ok) {
         console.error(`Create Chat Room API error: ${res.status}`);
         return null;
       }
-      const data = JSON.parse(raw);
+      const data = await res.json();
       roomIdRef.current = data.result;
       return roomIdRef.current;
+    } catch (error) {
+      console.error('Failed to create chat room', error);
+      return null;
     } finally {
       creatingRoomRef.current = false;
     }

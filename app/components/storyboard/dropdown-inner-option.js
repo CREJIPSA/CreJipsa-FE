@@ -19,14 +19,25 @@ export default function DropdownInnerOption({
   const [chatRoomTitle, setChatRoomTitle] = useState(text);
 
   async function changeTitle() {
-    await fetch(`https://dev.crezipsa.site/api/chats/${chatRoomId}/title`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({ title: chatRoomTitle }),
-    });
+    if (!accessToken || !chatRoomId) return;
+
+    try {
+      const res = await fetch(
+        `https://dev.crezipsa.site/api/chats/${chatRoomId}/title`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ title: chatRoomTitle }),
+        },
+      );
+      if (!res.ok)
+        throw new Error(`Change Chat Title API error: ${res.status}`);
+    } catch (error) {
+      console.error('Failed to change chat room title', error);
+    }
   }
 
   return (
