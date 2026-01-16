@@ -2,7 +2,7 @@ import useThemedStyle from '@/app/hooks/use-themed-style';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { launchImageLibraryAsync } from 'expo-image-picker';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   Alert,
   Image,
@@ -13,6 +13,11 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import {
+  RichEditor,
+  RichToolbar,
+  actions,
+} from 'react-native-pell-rich-editor';
 import FilterComponent from './components/my/FilterComponent';
 
 export default function WritePost() {
@@ -21,6 +26,7 @@ export default function WritePost() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
+  const richText = useRef();
 
   const toggleFilter = filterName => {
     setOpenedFilter(openedFilter === filterName ? null : filterName);
@@ -51,7 +57,7 @@ export default function WritePost() {
     <View style={styles.mainContainer}>
       <View style={styles.headerRow}>
         <Text style={styles.headerText}>피드 작성</Text>
-        <Pressable onPress={() => console.log('업로드')}>
+        <Pressable onPress={() => console.log(content)}>
           <Text style={styles.uploadBtnText}>업로드</Text>
         </Pressable>
       </View>
@@ -77,14 +83,17 @@ export default function WritePost() {
           images.length > 0 && styles.inputWrapperWithImages,
         ]}
       >
-        <TextInput
-          style={styles.textInput}
+        <RichEditor
+          ref={richText}
+          style={styles.richEditor}
           placeholder="피드 내용을 입력해주세요. 각 게시판 목적과 알맞지 않은 내용의 피드는 관리자의 관리에 따라 삭제될 수 있습니다."
-          placeholderTextColor={isDark ? '#D3D3D3' : '#666666'}
-          multiline
-          value={content}
-          onChangeText={setContent}
-          textAlignVertical="top"
+          editorStyle={{
+            backgroundColor: 'transparent',
+            color: primaryColors.color,
+            placeholderColor: isDark ? '#D3D3D3' : '#666666',
+            contentCSSText: 'font-size: 16px; line-height: 22px;',
+          }}
+          onChange={setContent}
         />
         {images.length > 0 && (
           <View style={styles.imageHorizontalList}>
@@ -97,31 +106,24 @@ export default function WritePost() {
             </ScrollView>
           </View>
         )}
-        <View style={styles.toolbar}>
-          <View style={styles.formatIcons}>
-            <Pressable onPress={() => console.log('Bold')}>
-              <MaterialCommunityIcons
-                name="format-bold"
-                size={24}
-                color={primaryColors.color}
-              />
-            </Pressable>
-            <Pressable onPress={() => console.log('Underline')}>
-              <MaterialCommunityIcons
-                name="format-underline"
-                size={24}
-                color={primaryColors.color}
-              />
-            </Pressable>
-            <Pressable onPress={pickImage}>
+        <RichToolbar
+          editor={richText}
+          actions={[actions.setBold, actions.setUnderline, 'insertImage']}
+          iconMap={{
+            insertImage: ({ tintColor }) => (
               <MaterialCommunityIcons
                 name="image-outline"
                 size={24}
-                color={primaryColors.color}
+                color={tintColor}
               />
-            </Pressable>
-          </View>
-        </View>
+            ),
+          }}
+          insertImage={pickImage}
+          style={styles.customToolbar}
+          flatContainerStyle={styles.toolbarContainer}
+          selectedIconTint={primaryColors.pointColor}
+          iconTint={primaryColors.color}
+        />
       </View>
     </View>
   );
@@ -179,6 +181,11 @@ const getStyles = (isDark, primaryColors) => {
       justifyContent: 'space-between',
     },
 
+    richEditor: {
+      flex: 1,
+      backgroundColor: 'transparent',
+    },
+
     inputWrapperWithImages: {
       minHeight: 539,
     },
@@ -207,17 +214,17 @@ const getStyles = (isDark, primaryColors) => {
       resizeMode: 'cover',
     },
 
-    toolbar: {
+    customToolbar: {
       position: 'absolute',
-      bottom: 30,
+      bottom: 20,
       right: 16,
-      flexDirection: 'row',
+      backgroundColor: 'transparent',
     },
 
-    formatIcons: {
+    toolbarContainer: {
+      backgroundColor: 'transparent',
       flexDirection: 'row',
       gap: 8,
-      alignItems: 'center',
     },
   });
 };
