@@ -15,14 +15,6 @@ const MessageItem = ({ text, isUser }) => {
   const updateNarrow = () => {
     const bubbleWidth = bubbleWidthRef.current;
     const buttonWidth = buttonWidthRef.current;
-    console.log(
-      'bubble',
-      bubbleWidthRef.current,
-      'buttons',
-      buttonWidthRef.current,
-      'isNarrow',
-      isNarrow,
-    );
     if (bubbleWidth && buttonWidth) {
       const next = bubbleWidth < buttonWidth + 20; // 여유 공간 20px
       setIsNarrow(prev => (prev === next ? prev : next));

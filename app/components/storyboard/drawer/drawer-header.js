@@ -2,6 +2,7 @@ import useThemedStyle from '@/app/hooks/use-themed-style';
 import CloseIcon from '@/assets/svgs/close.js';
 import SearchIcon from '@/assets/svgs/home/search-icon.js';
 import { Pressable, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function DrawerHeader({
   onClose,
@@ -12,9 +13,10 @@ export default function DrawerHeader({
   onSubmitEditing,
 }) {
   const { styles, primaryColors } = useThemedStyle(getStyles);
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.drawerHeader}>
+    <View style={[styles.drawerHeader, { paddingTop: insets.top }]}>
       <Pressable onPress={onClose}>
         <CloseIcon color={primaryColors.color} size={13} />
       </Pressable>
