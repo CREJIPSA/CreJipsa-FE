@@ -1,0 +1,201 @@
+[33mab91dcc[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeat/trend-report[m[33m)[m feat(trend-report): #71 - 트렌드 상세 조회 api 연결
+[33m543ef5d[m feat(trend-report): #71 - 트렌드 ID 파라미터 추가
+[33mc0fd6e7[m[33m ([m[1;31morigin/feat/login[m[33m, [m[1;32mfeat/login[m[33m)[m refactor(main-home): #69 - 실시간 트렌드 데이터 null 체크
+[33m8cf3739[m feat(login/main-home): #62, #69 - 카카오 로그인, 회원가입, 실시간 트렌드 API 연동
+[33m6d348dc[m feat(login): #62 - 카카오 앱 연결
+[33mf9c73f0[m Merge pull request #65 from CREJIPSA/feat/storyboard
+[33md541879[m[33m ([m[1;31morigin/feat/storyboard[m[33m, [m[1;32mfeat/storyboard[m[33m)[m feat(storyboard): 2 - 채팅 보관함 index 변경
+[33m3bb5c6b[m feat(storyboard): #42 - 사이드바 내부 검색 UI 구현
+[33m959da96[m feat(storyboard): #42 - 검색 화면 전환 설정
+[33m1a868ba[m refactor(storyboard): #42 - 사이드바 레이아웃 구조 변경
+[33m6fa047e[m Merge pull request #63 from CREJIPSA/feat/feed
+[33mfca41f2[m refactor(feed): #57 - FlatList의 keyExtractor에서 불필요한 toString() 호출 제거
+[33m08359fd[m refactor(feed): #57 - FeedItem의 미사용 isFeed 속성 제거
+[33m532d590[m refactor(feed): #57 - FeedScreen 컴포넌트 구현하여 중복 코드 제거
+[33m620da9c[m feat(feed): #57 - 글쓰기 버튼 구현
+[33m5b2899b[m refactor(feed): #57 - 피드 화면 구조 분리 및 네비게이션 레이아웃화 - 기존 feed.js를 feed 폴더로 구조화 - 기존 feed.js를 feed/index.js로 변경 - 각 탭별 화면을 개별 컴포넌트로 분리
+[33mccca40a[m feat(feed): #57 - 탭 별 화면 전환 구현
+[33m9efeb78[m refactor(feed): #57 - 사용되지 않는 변수 제거
+[33m8e9a926[m feat(feed): #57 - FeedItem 구현
+[33mf18c3da[m refactor(feed): #57 - 불필요한 탭바 스타일 제거
+[33m01bd21c[m feat(feed): #57 - 검색 행과 탭바 UI 구현
+[33m42ef839[m Merge pull request #61 from CREJIPSA/feat/storyboard
+[33mf7596cd[m feat(storyboard): #42 - 사이드바 스크롤 간격 조정
+[33m2db9443[m feat(trend-report): #30 - 라이트모드 토스트 색상 조정
+[33mb96dae6[m feat(storyboard): #42 - 새 스토리보드 버튼 추가
+[33mca68391[m Merge branch 'develop' of https://github.com/CREJIPSA/CreJipsa-FE into develop
+[33m5f5bf11[m Merge pull request #60 from CREJIPSA/feat/storyboard
+[33m6b19e3b[m refactor(storyboard): #42 - 배열 key 수정
+[33maa0297f[m refactor(storyboard): #42 - 컷 컴포넌트 분리
+[33m46b213b[m refactor(storyboard): #42 - 보관함 드롭다운 컴포넌트 id 추가
+[33m0aa2dae[m feat(storyboard): #42 - 라이트모드 색상 조정
+[33ma145026[m feat(storyboard): #42 - 컷 추가 시 자동 스크롤 구현
+[33m7cc38ba[m feat(storyboard): #42 - 컷 구성 컴포넌트 추가
+[33me7d4160[m feat(storyboard): #42 - 채팅 편집 버튼 컨테이너 추가
+[33m0180ac8[m feat(storyboard): #42 - 채팅 말풍선 구현
+[33m64e979f[m feat(storyboard): #42 - 보관함 항목 컴포넌트 추가
+[33mc5037ba[m feat(storyboard): #42 - 보관함 레이아웃 헤더 추가
+[33m187f432[m feat(develop): #42 - 보관함 더보기 버튼 추가
+[33m24b63ec[m Merge pull request #59 from CREJIPSA/refactor/my
+[33mdcdf141[m[33m ([m[1;31morigin/refactor/my[m[33m)[m refactor(my): #58 - svg 아이콘 컴포넌트로 사용 가능하도록 수정
+[33mb23353c[m feat(develop): #42 - 보관함 더보기 버튼 추가
+[33mc96d414[m feat(my): #58 - 프로필 수정 이동 추가
+[33mea0044d[m feat(my): #58 - 프로필 수정 아이콘 제거
+[33mf7ce268[m Merge pull request #56 from CREJIPSA/chore/coderabbit
+[33m032f028[m[33m ([m[1;31morigin/chore/coderabbit[m[33m)[m chore(coderabbit): 이슈 자동 분석 및 댓글 기능 비활성화
+[33mdc43c79[m Merge pull request #53 from CREJIPSA/feat/sign-up
+[33m06b5518[m[33m ([m[1;31morigin/feat/sign-up[m[33m, [m[1;32mfeat/sign-up[m[33m)[m feat(sign-up): #4 - 생년월일 달력 삭제 및 텍스트 필드 복구
+[33m2f86de9[m fix(sign-up): #4 - initialDate 전달 방식 변경
+[33m4e73af0[m refactor(sign-up): #4 - 불필요한 View 제거
+[33mf9c9d6c[m refactor(sign-up): #4 - 생년월일 캘린더를 컴포넌트로 분리
+[33m41055d6[m feat(sign-up): #4 - 삭제 모달 컴포넌트 수정 및 추가
+[33md078cac[m feat(sign-up): #4 - 생년월일 캘린더 모듈 추가
+[33m84c49a1[m Merge pull request #52 from CREJIPSA/feat/sign-up
+[33m6f2b913[m Merge pull request #51 from CREJIPSA/feat/search
+[33m11f94b7[m Merge pull request #50 from CREJIPSA/feat/my-replys
+[33mf929323[m feat(sign-up): #4 - 채널 추가 버튼 패딩 삭제
+[33m143aea5[m[33m ([m[1;31morigin/feat/my-replys[m[33m)[m feat(my-replys): #49 - 디자인 변경에 맞춰 UI 변경
+[33ma308698[m[33m ([m[1;31morigin/feat/search[m[33m, [m[1;32mfeat/search[m[33m)[m feat(search): #38 - 검색 결과 없음 화면 추가
+[33m04dc259[m feat(my-replys): #49 - 내 댓글함으로 화면 전환 추가
+[33md5990af[m feat(my-replys): #49 - 내 댓글함 UI 구현
+[33m3c15745[m feat(my-replys): #49 - PostItem 내 댓글함에서도 사용 가능하도록 수정
+[33m2ded9d4[m feat(search): #38 - 검색 결과 하이라이트 추가
+[33m162310e[m feat(sign-up): #4 - 채널 추가 컨테이너 아이콘 크기 수정
+[33m9e0fce4[m feat(sign-up): #4 - BackButton 삭제
+[33mfbbfe38[m Merge pull request #46 from CREJIPSA/feat/my-posts
+[33m94999c1[m Merge pull request #48 from CREJIPSA/chore/coderabbit
+[33m9110f2c[m Merge pull request #45 from CREJIPSA/feat/notifications
+[33m515bf20[m Merge pull request #43 from CREJIPSA/feat/storyboard
+[33ma0bc643[m chore(coderabbit): #47 - 연관 이슈 접근 설정 비활성화
+[33m12101c9[m chore(coderabbit): #47 - 불필요한 속성 제거와 수정
+[33m3150151[m[33m ([m[1;31morigin/feat/my-posts[m[33m)[m Merge branch 'develop' into feat/my-posts
+[33m187f7a2[m feat(my-posts): #34 - 아이콘 클릭 시 삭제버튼 보이도록 구현
+[33m2dd709a[m[33m ([m[1;31morigin/feat/notifications[m[33m, [m[1;32mfeat/notifications[m[33m)[m feat(notifications): #44 - ScrollView를 FlatList로 변경
+[33m090af2a[m feat(notifications): #44 - 알림 아이콘 라우팅
+[33mcb2a1df[m feat(notifications): #44 - 피드 알림 탭 UI 구현
+[33m502ddb2[m feat(notifications): #44 - 일반 알림 탭 UI 구현
+[33mdfc7eeb[m feat(storyboard): #42 - 스토리보드 편집 사이드바 연결
+[33m30871f9[m Merge pull request #41 from CREJIPSA/feat/trend-report
+[33mdfc5911[m feat(storyboard): #42 - 스토리보드 편집 화면 UI 구현
+[33m2311d61[m feat(storyboard): #42 - KeyboardAvoidingView 설정
+[33m2bde99b[m feat(storyboard): #42 - 사이드바 드롭다운 UI 구현
+[33m882cd55[m feat(storyboard): #42 - 사이드바 UI 구현
+[33ma8b251a[m feat(storyboard): #42 - 스토리보드 새 채팅 UI 구현
+[33ma090d69[m[33m ([m[1;31morigin/feat/trend-report[m[33m)[m fix(rootlayout): style 매개변수 수정
+[33md502740[m fix(search): #38 - 뒤로가기 라우팅 수정
+[33m6612804[m feat(main-home): #12 - 최근 피드 섹션 삭제
+[33m3e8cffe[m feat(trend-report): #30 - 헤더 수정
+[33m76405bf[m feat(trend-report): #30 - 예상 조회수를 흥행 가능성으로 변경
+[33md849b8f[m feat(trend-report): #30 - react-native-toast-message 모듈로 토스트 수정
+[33m0994e6b[m feat(trend-report): #30 - 헤더 수정
+[33m858bc95[m feat(search): #38 - 검색 결과 화면 UI 구현
+[33mcfa01a4[m Merge pull request #40 from CREJIPSA/feat/search
+[33m9dbd89f[m fix(search): 최근 검색어 매핑 키 수정
+[33mfec8ec5[m refactor(search): #38 - 중복된 컴포넌트명 변경
+[33m609e07b[m feat(search): #38 - 홈화면 검색 아이콘 라우팅
+[33m751b102[m feat(search): #38 - 트렌드 분석 화면에서 관련 영상 링크로 라우팅 추가
+[33mc341f8b[m feat(search): #38 - 관련 영상 링크 화면 UI 구현
+[33m814f87d[m feat(search): #38 - 검색 결과 화면 UI 구현
+[33m81cba7e[m feat(search): #38 - 트렌드 검색 탭 화면 UI 구현
+[33m15dfc39[m feat(my-posts): #34 - 게시물마다 삭제 버튼 추가
+[33m818a20e[m Merge pull request #39 from CREJIPSA/feat/my-trends
+[33m6db872e[m[33m ([m[1;31morigin/feat/my-trends[m[33m)[m fix(my-trends): #37 - SafeAreaView에서 지원하지 않는 stickyHeader prop 제거
+[33m9f6ff0c[m refactor(my-trends): #37 - 트렌드 더미데이터 파일 분리
+[33md6a1e7b[m Merge pull request #33 from CREJIPSA/feat/sign-up
+[33me884148[m feat(my-trends): #37 - 내 트렌드함 UI 구현
+[33m522271c[m fix: SportsIcon SVG clipPath 태그 오류 수정
+[33m78bc994[m feat(my-trends): #37 - 내 트렌드함 화면전환 구현
+[33m846025a[m Merge pull request #35 from CREJIPSA/feat/my-posts
+[33mfc23569[m fix(sign-up): #4 - 뒤로가기 버튼 로직 수정
+[33mf9ce18c[m feat(sign-up): #4 - 등록 채널 모두 삭제 시 화면 추가
+[33mb3de673[m refactor(sign-up): #4 - 채널 추가 로직 단순화
+[33m4f82b52[m feat(my-posts): #34 - 내가 쓴 글 UI 구현
+[33mfd3d361[m feat(my-posts): #34 - 내가 쓴 글로 화면전환 추가
+[33m5989644[m fix(sign-up): #4 - 채널 정보 key 변경
+[33mcda28f2[m feat(sign-up): #4 - 입력 필드 형식 오류 메시지 추가
+[33m6f9092a[m feat(sign-up): #4 - 라이트모드 색상 설정
+[33mf32a18c[m fix(sign-up): #4 - updateForm 수정
+[33mbd26854[m fix(sign-up): #4 - 관심분야 정보 중복 코드 수정
+[33m5eb5fc5[m fix(sign-up): #4 - 채널 정보 저장 로직 수정
+[33m19c996d[m feat(sign-up): #4 - welcome 화면에서 이름이 뜨지 않는 오류 수정
+[33m3156993[m feat(sign-up): #4 - 채널 추가 하단 컨테이너 수정
+[33m919ecc4[m feat(sign-up): #4 - channelInfo 유효성 검사 로직 구현
+[33mcb5cb66[m feat(sign-up): #4 - interestsInfo 다음 버튼 활성화 상태 관리
+[33mbd5652b[m feat(sign-up): #4 - interestsInfo 유효성 검사 로직 구현
+[33m745ba80[m feat(sign-up): #4 - userInfo 다음 버튼 활성화 상태 관리
+[33m1771711[m feat(sign-up): #4 - userInfo 유효성 검사 로직 구현
+[33mb768aaa[m feat(sign-up): #4 - 약관 모달 로직 추가
+[33m5d93553[m feat(sign-up): #4 - 필수 약관 미동의 시 비활성화 버튼
+[33m255cd5a[m feat(sign-up): #4 - 크집사 로고 추가
+[33m11a0e82[m Merge pull request #32 from CREJIPSA/feat/my-likes
+[33m8482e61[m[33m ([m[1;31morigin/feat/my-likes[m[33m)[m feat(my-likes): #29 - 필터 클릭시 모달창 구현
+[33m96bdfee[m feat(my-likes): #29 - 내 좋아요함 페이지 UI 구현
+[33m8625093[m Merge pull request #31 from CREJIPSA/feat/trend-report
+[33m1674794[m refactor(trend-report): #30 - 트렌드 분석 console.log 제거
+[33m4359251[m fix(trend-report): #30 - 토스트 타이머 정리
+[33m905038d[m refactor(trend-report): #30 - 실시간 트렌드 console.log 제거
+[33m49235bb[m refactor(trend-report): #30 - 실시간 트렌드 라우트 파라미터 수정
+[33m3affe9c[m fix(trend-report): #30 - 토스트 위치 조정
+[33m5b25643[m feat(trend-report): #30 - 내 트렌드함 저장 버튼 클릭 시 토스트 구현
+[33m0743980[m feat(trend-report): #30 - 배경 및 라이트모드 색상 설정
+[33mc738658[m feat(trend-report): #30 - 트렌드분석 UI Layout 구현
+[33m1902476[m Merge pull request #28 from CREJIPSA/feat/main-home
+[33m8b45fba[m[33m ([m[1;31morigin/feat/main-home[m[33m)[m fix(main-home): #12 - 이번주 팁 이미지 비율 수정
+[33mbd1491e[m refactor(main-home): #12 - 중첩 View 제거
+[33m23ac061[m refactor(main-home): #12 - 최근 피드 컴포넌트 매핑 Fragment 수정
+[33md323146[m feat(main-home): #12 - 최근 피드 섹션 추가
+[33ma2f13d7[m feat(main-home): #12 - 이번주 팁 섹션 추가
+[33mba3c51f[m feat(main-home): #12 - 실시간 트렌드 레이아웃 수정
+[33m2699245[m[33m ([m[1;32mmain[m[33m)[m Merge pull request #27 from CREJIPSA/feat/main-home
+[33mb199066[m Merge pull request #26 from CREJIPSA/feat/profile-edit
+[33md1968e3[m fix(profile-edit): #20 - 대표 뱃지 수직 패딩 수정
+[33m0de5582[m fix(profile-edit): #20 - edit 버튼 위치 동적으로 계산하도록 수정
+[33me89e114[m chore: svg 오타 수정
+[33ma04df2b[m feat(main-home): #4 - 트렌드 키워드 컴포넌트 레이아웃 수정 & 아이콘 경로 추가
+[33mc019f62[m fix(profile-edit): #20 - styles에서 colors 사용하지 않도록 수정
+[33m1d5038a[m fix(profile-edit): #20 - colors 변수명 중복되었던 부분 수정
+[33m7061c63[m feat(profile-edit): #20 - 사진 선택시 프로필사진 바뀌도록 수정
+[33md1f7180[m fix(css): #20 - fontWeight 문자열 아닌 부분 수정
+[33m668b38b[m fix(profile-edit): #20 - 채널 정보 수직 정렬 안되는 부분 수정
+[33mc4a5dfe[m Merge branch 'develop' into feat/profile-edit
+[33m0a4b620[m Merge pull request #25 from CREJIPSA/feat/sign-up
+[33m3af6ec6[m refactor(profile-edit): #20 - 불필요한 주석 제거
+[33m4d754e0[m feat(profile-edit): #20 - 다크모드 화면 UI 구현 및 세부 css 수정
+[33m21e324d[m chore(sign-up): 중복 코드 삭제
+[33m5221755[m feat(sign-up): #4 - 필수 약관 미동의 시 경고 문구 표시
+[33m932db17[m refactor(sign-up): #4 - 회원가입 절차 userInfo/channelInfo 구분
+[33m5d51d27[m chore(asset): #20 - SVG 폴더 구조 재정리
+[33m757269e[m feat(profile-edit): #20 - useThemedStyle 이용하여 다크/라이트 모드 전환하도록 수정
+[33md86c27d[m chore(asset): #20 - tiktok 로고 이미지 이름 수정
+[33m227b124[m Merge remote-tracking branch 'origin/feat/sign-up' into feat/profile-edit
+[33m3a57087[m feat(profile-edit): #20 - 내 채널/기본/관심분야 정보 섹션 UI 구현
+[33m406a029[m Merge pull request #24 from CREJIPSA/feat/main-home
+[33m810bdd7[m feat(sign-up): #4 - 헤더 삭제
+[33m8764bf7[m feat(sign-up): #4 - 모달 옵션 색상 변경
+[33m889e558[m feat(sign-up): #4 - 라이트모드 색상 설정
+[33m0d7f4c7[m refactor: colorScheme 설정을 hook으로 분리
+[33mc352396[m refactor: svg 아이콘 컴포넌트 분리
+[33m03f271e[m feat(sign-up): #4 - 채널 추가 기능 구현
+[33ma0570b8[m feat(sign-up): #4 - 회원가입 버튼 레이아웃 수정
+[33m9bf319f[m feat(landing): #4 - Landing 카카오 로그인으로 버튼 수정
+[33mbb21af0[m feat(main-home): #12 - 내비게이션 탭별 실시간 트렌드 추가
+[33m6cd81d2[m Merge branch 'develop' into feat/profile-edit
+[33m5cfdf15[m Merge pull request #23 from CREJIPSA/chore/setup-coderabbit
+[33mb385ae9[m chore(coderabbit): #18 - tone_instructions 250자 이하로 수정
+[33m0725091[m chore(coderabbit): #18 - 리뷰 톤 및 한국어 설정 추가
+[33md5996da[m Merge pull request #22 from CREJIPSA/chore/setup-svg-transformer
+[33m9396e82[m[33m ([m[1;31morigin/chore/setup-svg-transformer[m[33m)[m chore(deps): #21 - react-native-svg-transformer 설치
+[33m31c7aa0[m refactor(main-home): #12 - 실시간 트렌드 카드 태그와 제목만 입력 받도록 수정
+[33ma91142d[m refactor(main-home): #12 - 실시간 트렌드 섹션 컴포넌트로 분리
+[33me0d3f9a[m refactor(main-home): #12 - 트렌드 리포트 카드 컴포넌트로 분리
+[33md1c9612[m chore(config): #21 - Metro SVG transformer 설정 추가
+[33mcfef02d[m feat(profile-edit): #20 - 기본 레이아웃 및 이미지 선택 기능 추가
+[33m49f0cdf[m feat(main-home): #12 - 실시간 트렌드 그래픽 이미지 수정
+[33m80d809e[m Merge pull request #19 from CREJIPSA/chore/setup-coderabbit
+[33m39331d0[m chore(coderabbit): #18 - 설정 오류 해결을 위해 version 필드 제거
+[33m2607529[m chore(coderabbit): #18 - 코드래빗 자동 리뷰 설정 파일 추가
+[33m93a1d8b[m Merge pull request #17 from CREJIPSA/feat/mypage-ui
+[33m017f6f3[m[33m ([m[1;31morigin/feat/mypage-ui[m[33m)[m feat(mypage): #3 - 화이트모드 모달창 전환 추가
+[33m03db0ae[m feat(mypage): #3 - 회원 탈퇴 알림 모달창 추가
+[33mbb424d7[m chore(deps): #3 - react-native-modal 패키지 설치
+[33mb58afa5[m Merge pull request #16 from CREJIPSA/feat/main-home

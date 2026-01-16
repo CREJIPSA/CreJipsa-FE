@@ -181,7 +181,7 @@ const RealTimeTrendCard = ({
   );
 };
 
-const RealTimeTrend = ({ rankTrends }) => {
+const RealTimeTrend = ({ rankTrends = [] }) => {
   const router = useRouter();
   const { styles } = useThemedStyle(getStyles);
 
@@ -222,6 +222,15 @@ const RealTimeTrend = ({ rankTrends }) => {
     },
   ];
 
+  // 카드 클릭 시 이동
+  const goTrendReport = trend => {
+    if (!trend?.id) return;
+    router.push({
+      pathname: `/(tabs)/(home)/${encodeURIComponent(trend.keyword)}`,
+      params: { id: String(trend.id) },
+    });
+  };
+
   return (
     <>
       <View style={{ justifyContent: 'flex-end' }}>
@@ -235,28 +244,26 @@ const RealTimeTrend = ({ rankTrends }) => {
         <View style={styles.trendCardTopContainer}>
           <Pressable
             onPress={() => {
-              router.push(
-                `/(tabs)/(home)/${encodeURIComponent(rankTrends[0])}`,
-              );
+              goTrendReport(rankTrends[0]);
             }}
+            disabled={!rankTrends[0]}
           >
             <RealTimeTrendCard
               {...realTimeTrendData[0]}
-              inputTitle={rankTrends[0]}
+              inputTitle={rankTrends[0]?.keyword}
               styles={styles}
             />
           </Pressable>
           <Pressable
             style={styles.rank4TrendCard}
             onPress={() => {
-              router.push(
-                `/(tabs)/(home)/${encodeURIComponent(rankTrends[3])}`,
-              );
+              goTrendReport(rankTrends[3]);
             }}
+            disabled={!rankTrends[3]}
           >
             <RealTimeTrendCard
               {...realTimeTrendData[3]}
-              inputTitle={rankTrends[3]}
+              inputTitle={rankTrends[3]?.keyword}
               styles={styles}
             />
           </Pressable>
@@ -264,28 +271,26 @@ const RealTimeTrend = ({ rankTrends }) => {
         <View style={styles.trendCardBottomContainer}>
           <Pressable
             onPress={() => {
-              router.push(
-                `/(tabs)/(home)/${encodeURIComponent(rankTrends[1])}`,
-              );
+              goTrendReport(rankTrends[1]);
             }}
+            disabled={!rankTrends[1]}
           >
             <RealTimeTrendCard
               {...realTimeTrendData[1]}
-              inputTitle={rankTrends[1]}
+              inputTitle={rankTrends[1]?.keyword}
               styles={styles}
             />
           </Pressable>
           <Pressable
             style={styles.rank3TrendCard}
             onPress={() => {
-              router.push(
-                `/(tabs)/(home)/${encodeURIComponent(rankTrends[2])}`,
-              );
+              goTrendReport(rankTrends[2]);
             }}
+            disabled={!rankTrends[2]}
           >
             <RealTimeTrendCard
               {...realTimeTrendData[2]}
-              inputTitle={rankTrends[2]}
+              inputTitle={rankTrends[2]?.keyword}
               styles={styles}
             />
           </Pressable>

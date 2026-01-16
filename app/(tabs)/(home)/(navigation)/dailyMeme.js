@@ -39,7 +39,9 @@ export default function DailyMeme({ platform }) {
           console.error('Invalid trend data format', data);
           return;
         }
-        const top4 = result.slice(0, 4).map(({ keyword }) => keyword);
+        const top4 = result
+          .slice(0, 4)
+          .map(({ id, keyword }) => ({ id, keyword }));
         setRankTrends(top4);
       })
       .catch(error => {
@@ -49,7 +51,6 @@ export default function DailyMeme({ platform }) {
 
   return (
     <View style={styles.mainContainer}>
-      {/* 실시간 트렌드 */}
       <RealTimeTrend rankTrends={rankTrends} />
     </View>
   );

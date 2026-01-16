@@ -39,7 +39,9 @@ export default function Pet({ platform }) {
           console.error('Invalid trend data format', data);
           return;
         }
-        const top4 = result.slice(0, 4).map(({ keyword }) => keyword);
+        const top4 = result
+          .slice(0, 4)
+          .map(({ id, keyword }) => ({ id, keyword }));
         setRankTrends(top4);
       })
       .catch(error => {
