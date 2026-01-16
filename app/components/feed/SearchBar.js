@@ -1,13 +1,7 @@
 import SearchIcon from '@/assets/svgs/feed/search-icon';
 import { Pressable, TextInput, View } from 'react-native';
 
-export default function SearchBar({
-  value,
-  onChangeText,
-  onSubmit,
-  styles,
-  searchIconColor,
-}) {
+export default function SearchBar({ value, onChangeText, onSubmit, styles }) {
   return (
     <View style={styles.inputWrapper}>
       <TextInput
@@ -23,7 +17,7 @@ export default function SearchBar({
       />
       <View style={styles.searchIconContainer}>
         <Pressable onPress={onSubmit}>
-          <SearchIcon color={searchIconColor} />
+          <SearchIcon color="#141619" />
         </Pressable>
       </View>
     </View>

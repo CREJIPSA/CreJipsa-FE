@@ -1,12 +1,20 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
-import CommentIcon from '@/assets/svgs/my/comment-icon';
-import LikedIcon from '@/assets/svgs/my/like-icon';
+import CommentIcon from '@/assets/svgs/common/comment-icon';
+import LikedIcon from '@/assets/svgs/common/like-icon';
+import { router } from 'expo-router';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function FeedItem({ post }) {
   const { styles, primaryColors } = useThemedStyle(getStyles);
 
-  const hasImage = !!post.imageUrl;
+  const hasImage = post.imageUrls && post.imageUrls.length > 0;
+
+  // 상세 페이지 이동 함수
+  const handlePress = () => {
+    router.push({
+      pathname: `/feed/${post.id}`,
+    });
+  };
 
   const textContent = (
     <>
@@ -16,7 +24,7 @@ export default function FeedItem({ post }) {
         </Text>
       </View>
       <Text style={styles.contentText} numberOfLines={2}>
-        {post.contentPreview}
+        {post.content}
       </Text>
       <View style={styles.detailRow}>
         <Text style={styles.detailText}># {post.category}</Text>
@@ -37,13 +45,13 @@ export default function FeedItem({ post }) {
   );
 
   return (
-    <Pressable>
+    <Pressable onPress={handlePress}>
       {hasImage ? (
         <View style={styles.contentWrapperCol}>
           <View style={styles.contentWrapperRow}>
             <View style={styles.contentWrapperCol}>{textContent}</View>
             <Image
-              source={{ uri: post.imageUrl }}
+              source={{ uri: post.imageUrls?.[0] }}
               style={styles.thumbnail}
               resizeMode="cover"
             />
