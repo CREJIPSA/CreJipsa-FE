@@ -1,9 +1,11 @@
+import { AuthContext } from '@/app/_layout';
 import StoryboardDrawer from '@/app/components/storyboard/drawer/index.js';
 import MessageItem from '@/app/components/storyboard/message-input';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import MenuIcon from '@/assets/svgs/storyboard/menu.js';
 import SendIcon from '@/assets/svgs/storyboard/send.js';
-import { useEffect, useRef, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -16,6 +18,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Storyboard() {
+  const { accessToken } = useContext(AuthContext);
+
   const insets = useSafeAreaInsets();
   const { styles, primaryColors } = useThemedStyle(getStyles);
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -23,29 +27,113 @@ export default function Storyboard() {
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!messageInput.trim()) return;
+
+    const roomId = activeRoomId;
+    if (!roomId) return;
+
     setMessages(prevMessages => [
       ...prevMessages,
       { id: Date.now(), text: messageInput, isUser: true },
     ]);
     setMessageInput('');
 
-    // (임시) AI 응답 확인용 테스트 코드
-    setTimeout(() => {
-      const replies = [
-        '짧게: 좋아요!',
-        '긴 문장 테스트: 이 메시지는 버블이 화면을 넘치지 않고 자연스럽게 줄바꿈 되는지 확인하기 위한 아주 긴 텍스트입니다. 계속 길게 써볼게요. 계속 계속…',
-        '줄바꿈 테스트:\n1) 씬1: 인트로\n2) 씬2: 갈등\n3) 씬3: 결말',
-        '이모지 테스트 🙂🔥✨',
-      ];
-      const randomReply = replies[Math.floor(Math.random() * replies.length)];
+    try {
+      const res = await fetch(
+        `https://dev.crezipsa.site/api/chats/${activeRoomId}/messages`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: messageInput,
+          }),
+        },
+      );
+
+      const raw = await res.text();
+      console.log('chat message api status', res.status);
+      console.log('chat message api raw response', raw);
+
+      if (!res.ok) {
+        throw new Error(`Chat Message API error: ${res.status}`);
+      }
+
+      const data = await JSON.parse(raw);
       setMessages(prevMessages => [
         ...prevMessages,
-        { id: Date.now(), text: randomReply, isUser: false },
+        { id: Date.now() + 1, text: data.result.content, isUser: false },
       ]);
-    }, 2000);
+      setHasActivity(true); // 기록이 생겼음을 표시
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
+
+  // 새 채팅방 만들기
+  const [activeRoomId, setActiveRoomId] = useState(null); // 활성 채팅방 ID
+  const [hasActivity, setHasActivity] = useState(false); // 기록이 있는지
+  const creatingRef = useRef(false); // 중복 생성 방지
+
+  // 새 채팅방 생성 함수
+  const createNewChatRoom = useCallback(async () => {
+    if (creatingRef.current) return null; // 이미 생성 중이면 무시
+    creatingRef.current = true;
+    try {
+      const res = await fetch('https://dev.crezipsa.site/api/chats', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!res.ok) throw new Error(`Create Chat Room API error: ${res.status}`);
+
+      const data = await res.json();
+      return data.result; // 새로 생성된 채팅방 ID 반환
+    } finally {
+      creatingRef.current = false;
+    }
+  }, [accessToken]);
+
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false; // 유효성 확인
+
+      async function ensureNewChatRoom() {
+        // 새 채팅방이 없으면 생성
+        if (!activeRoomId) {
+          const id = await createNewChatRoom();
+          if (!cancelled) {
+            // 유효
+            setActiveRoomId(id); // 활성 채팅방 설정
+            setHasActivity(false);
+          }
+          return;
+        }
+
+        // 기존 채팅방에 기록이 있으면 새 채팅방 생성
+        if (hasActivity) {
+          const id = await createNewChatRoom();
+          if (!cancelled) {
+            // 유효
+            setActiveRoomId(id);
+            setHasActivity(false);
+          }
+        }
+
+        // 활동 안 했으면 그대로 사용
+      }
+
+      ensureNewChatRoom();
+      return () => {
+        cancelled = true;
+      }; // 무효화
+    }, [activeRoomId, hasActivity, createNewChatRoom]),
+  );
 
   // 자동 스크롤 구현
   const listRef = useRef(null);
