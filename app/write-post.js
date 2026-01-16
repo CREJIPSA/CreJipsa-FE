@@ -1,17 +1,50 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import { launchImageLibraryAsync } from 'expo-image-picker';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import FilterComponent from './components/my/FilterComponent';
 
 export default function WritePost() {
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
+  const [openedFilter, setOpenedFilter] = useState(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [openedFilter, setOpenedFilter] = useState(null);
+  const [images, setImages] = useState([]);
 
   const toggleFilter = filterName => {
     setOpenedFilter(openedFilter === filterName ? null : filterName);
+  };
+
+  const pickImage = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      Alert.alert('사진첩 접근 권한이 없습니다!');
+      return;
+    }
+
+    const result = await launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsMultipleSelection: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const selectedUris = result.assets.map(asset => asset.uri);
+      setImages([...images, ...selectedUris]);
+    }
   };
 
   return (
@@ -33,12 +66,17 @@ export default function WritePost() {
       <TextInput
         style={styles.titleInput}
         placeholder="제목을 입력해주세요"
-        placeholderTextColor={primaryColors.color} // 테마에 따른 placeholder 색상
+        placeholderTextColor={primaryColors.color}
         value={title}
         onChangeText={setTitle}
-        returnKeyType="next" // 키보드에서 '다음' 버튼 표시
+        returnKeyType="next"
       />
-      <View style={styles.inputWrapper}>
+      <View
+        style={[
+          styles.inputWrapper,
+          images.length > 0 && styles.inputWrapperWithImages,
+        ]}
+      >
         <TextInput
           style={styles.textInput}
           placeholder="피드 내용을 입력해주세요. 각 게시판 목적과 알맞지 않은 내용의 피드는 관리자의 관리에 따라 삭제될 수 있습니다."
@@ -48,6 +86,17 @@ export default function WritePost() {
           onChangeText={setContent}
           textAlignVertical="top"
         />
+        {images.length > 0 && (
+          <View style={styles.imageHorizontalList}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {images.map((uri, index) => (
+                <View key={index} style={styles.imageContainer}>
+                  <Image source={{ uri }} style={styles.previewImage} />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
         <View style={styles.toolbar}>
           <View style={styles.formatIcons}>
             <Pressable onPress={() => console.log('Bold')}>
@@ -64,7 +113,7 @@ export default function WritePost() {
                 color={primaryColors.color}
               />
             </Pressable>
-            <Pressable onPress={() => console.log('Image Picker')}>
+            <Pressable onPress={pickImage}>
               <MaterialCommunityIcons
                 name="image-outline"
                 size={24}
@@ -127,6 +176,11 @@ const getStyles = (isDark, primaryColors) => {
       minHeight: 390,
       position: 'relative',
       backgroundColor: isDark ? '#323232' : '#E6E6E6',
+      justifyContent: 'space-between',
+    },
+
+    inputWrapperWithImages: {
+      minHeight: 539,
     },
 
     textInput: {
@@ -134,6 +188,23 @@ const getStyles = (isDark, primaryColors) => {
       lineHeight: 22,
       color: primaryColors.color,
       paddingBottom: 40,
+    },
+
+    imageHorizontalList: {
+      height: 293,
+      marginBottom: 40,
+    },
+
+    imageContainer: {
+      position: 'relative',
+      marginRight: 12,
+    },
+
+    previewImage: {
+      width: 273,
+      height: 273,
+      borderRadius: 15,
+      resizeMode: 'cover',
     },
 
     toolbar: {
