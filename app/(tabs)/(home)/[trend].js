@@ -26,7 +26,7 @@ export default function Trend() {
   const lastUpdateTime = format(new Date(), 'yyyy년 MM월 dd일 HH:mm');
 
   // 트렌드 상세 정보
-  const [frequency, setFrequency] = useState(null); //흥행 가능성
+  const [viralityScore, setViralityScore] = useState(null); //흥행 가능성
   const [overallRank, setOverallRank] = useState(null); //실시간 트렌드 순위
   const [category, setCategory] = useState(null); //카테고리
   const [categoryRank, setCategoryRank] = useState(null); //카테고리 내 순위
@@ -64,10 +64,9 @@ export default function Trend() {
           return;
         }
         // 트렌드 상세 정보
-        setFrequency(result.frequency);
+        setViralityScore(result.viralityScore);
         setOverallRank(result.overall_rank);
         setCategory(result.category);
-        console.log('Category:', result.category);
         setCategoryRank(result.category_rank);
         // 관련 영상 정보
         setVideoInfo(result.urls || []);
@@ -81,7 +80,6 @@ export default function Trend() {
   const relatedVideos = videoInfo.map(video => ({
     title: video.title,
     views: video.viewCount,
-    thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-1.png'), // 썸네일 추가 필요
     url: video.url,
   }));
 
@@ -154,7 +152,7 @@ export default function Trend() {
                     <Text style={styles.labelText}>흥행 가능성</Text>
                   </View>
                   <Text style={[styles.valueText, { fontSize: 24 }]}>
-                    {frequency}%
+                    {viralityScore}%
                   </Text>
                 </View>
               </View>
@@ -202,7 +200,6 @@ export default function Trend() {
                 key={index}
                 title={video.title}
                 views={formatViews(video.views)}
-                thumbnailUrl={video.thumbnailUrl}
                 url={video.url}
               />
             ))}
