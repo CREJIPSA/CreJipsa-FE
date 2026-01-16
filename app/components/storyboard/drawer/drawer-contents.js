@@ -15,9 +15,14 @@ export default function StoryboardDrawerDefault({ onClose }) {
   const { styles, primaryColors, isDark } = useThemedStyle(getStyles);
 
   const router = useRouter();
-  const [isStoryboardDropdownVisible, setIsStoryboardDropdownVisible] =
-    useState(false);
-  const [isChatDropdownVisible, setIsChatDropdownVisible] = useState(false);
+
+  const [openDropdown, setOpenDropdown] = useState(null); // 'storyboard' or 'chatting' or null
+  const toggleStoryboardDropdown = () => {
+    setOpenDropdown(prev => (prev === 'storyboard' ? null : 'storyboard'));
+  };
+  const toggleChatDropdown = () => {
+    setOpenDropdown(prev => (prev === 'chatting' ? null : 'chatting'));
+  };
 
   // 드롭다운이 있는 옵션 컴포넌트
   const dropdownOption = (icon, text, visible) => {
@@ -29,9 +34,9 @@ export default function StoryboardDrawerDefault({ onClose }) {
         ]}
         onPress={() => {
           if (text === '스토리보드 보관함') {
-            setIsStoryboardDropdownVisible(!isStoryboardDropdownVisible);
+            toggleStoryboardDropdown();
           } else if (text === '채팅 보관함') {
-            setIsChatDropdownVisible(!isChatDropdownVisible);
+            toggleChatDropdown();
           }
         }}
       >
@@ -151,10 +156,10 @@ export default function StoryboardDrawerDefault({ onClose }) {
       {dropdownOption(
         StoryboardIcon,
         '스토리보드 보관함',
-        isStoryboardDropdownVisible,
+        openDropdown === 'storyboard',
       )}
       {/* 스토리보드 드롭다운 */}
-      {isStoryboardDropdownVisible && (
+      {openDropdown === 'storyboard' && (
         <View style={styles.dropdownContainer}>
           {StoryboardStorageData.slice(0, 5).map((item, index) => (
             <DropdownInnerOption
@@ -168,9 +173,13 @@ export default function StoryboardDrawerDefault({ onClose }) {
           {moreOption('storyboard')}
         </View>
       )}
-      {dropdownOption(ChatStorageIcon, '채팅 보관함', isChatDropdownVisible)}
+      {dropdownOption(
+        ChatStorageIcon,
+        '채팅 보관함',
+        openDropdown === 'chatting',
+      )}
       {/* 채팅 드롭다운 */}
-      {isChatDropdownVisible && (
+      {openDropdown === 'chatting' && (
         <View style={styles.dropdownContainer}>
           {myChatList.slice(0, 5).map(item => (
             <DropdownInnerOption
