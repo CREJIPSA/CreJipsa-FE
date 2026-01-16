@@ -335,7 +335,7 @@ const getStyles = (isDark, primaryColors) => {
       color: primaryColors.color,
       fontSize: 14,
       lineHeight: 14,
-      fontWeitht: 500,
+      fontWeight: '500',
     },
 
     authorPlatformImage: {
@@ -417,7 +417,7 @@ const getStyles = (isDark, primaryColors) => {
       color: isDark ? '#D3D3D3' : '#666666',
       fontSize: 14,
       lineHeight: 14,
-      fontWeitht: 500,
+      fontWeight: '500',
     },
 
     replyItem: {
