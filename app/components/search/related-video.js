@@ -61,12 +61,14 @@ export default function RelatedVideo({ title, views, url }) {
 
   // 인스타는 조회수 표시 안 함
   const insta = url => {
-    return url.includes('instagram.com');
+    return url.includes('instagram.com') ?? false;
   };
 
   const [thumbnail, setThumbnail] = useState(null);
   useEffect(() => {
-    getVideoThumbnail(url).then(setThumbnail);
+    getVideoThumbnail(url)
+      .then(setThumbnail)
+      .catch(() => setThumbnail(img_placeholder));
   }, [url]);
 
   return (
