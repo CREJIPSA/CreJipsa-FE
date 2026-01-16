@@ -38,7 +38,7 @@ export default forwardRef(function UserInfo(props, ref) {
       .required('이름을 입력해주세요.'),
     birth: Yup.string()
       .matches(
-        /^(19|20)\d{2}\.(0[1-9]|1[0-2])\.(0[1-9]|[12][0-9]|3[01])$/,
+        /^(19|20)\d{2}\-(0[1-9]|1[0-2])\-(0[1-9]|[12][0-9]|3[01])$/,
         '입력 형식이 잘못되었어요.',
       )
       .required('생년월일을 입력해주세요.'),
@@ -183,7 +183,11 @@ export default forwardRef(function UserInfo(props, ref) {
         <Text style={styles.inputTitle} />
         <View style={[styles.inputForm, styles.genderInputFormContainer]}>
           <Text style={styles.genderInputText}>
-            {formik.values.gender === '' ? '성별' : formik.values.gender}
+            {formik.values.gender === ''
+              ? '성별'
+              : formik.values.gender === 'MALE'
+                ? '남성'
+                : '여성'}
           </Text>
           <Pressable onPress={() => setIsGenderModalVisible(true)}>
             <Ionicons
@@ -210,7 +214,7 @@ export default forwardRef(function UserInfo(props, ref) {
               : {},
           ]}
           value={formik.values.birth}
-          placeholder="0000.00.00"
+          placeholder="0000-00-00"
           placeholderTextColor={isDark ? '#8A8A8A' : '#D3D3D3'}
           onChangeText={text => {
             formik.handleChange('birth')(text);
@@ -379,14 +383,14 @@ export default forwardRef(function UserInfo(props, ref) {
               <Pressable
                 style={[
                   styles.genderModalOption,
-                  formik.values.gender === '남성' && {
+                  formik.values.gender === 'MALE' && {
                     borderWidth: 0.5,
                     borderColor: styles.genderModalOptionBorderColor.color,
                   },
-                  formik.values.gender === '여성' && styles.dimmedOption,
+                  formik.values.gender === 'FEMALE' && styles.dimmedOption,
                 ]}
                 onPress={async () => {
-                  const newGenderValue = '남성';
+                  const newGenderValue = 'MALE';
                   await formik.setFieldValue('gender', newGenderValue);
                   await formik.setFieldTouched('gender', true);
                   updateForm('userInfo', { gender: newGenderValue });
@@ -405,7 +409,7 @@ export default forwardRef(function UserInfo(props, ref) {
                 <GenderMaleIcon
                   size={80}
                   color={
-                    formik.values.gender === '여성'
+                    formik.values.gender === 'FEMALE'
                       ? styles.dimmedGenderOptionIconColor.color
                       : styles.selectedGenderOptionIconColor.color
                   }
@@ -415,14 +419,14 @@ export default forwardRef(function UserInfo(props, ref) {
               <Pressable
                 style={[
                   styles.genderModalOption,
-                  formik.values.gender === '여성' && {
+                  formik.values.gender === 'FEMALE' && {
                     borderWidth: 0.5,
                     borderColor: styles.genderModalOptionBorderColor.color,
                   },
-                  formik.values.gender === '남성' && styles.dimmedOption,
+                  formik.values.gender === 'MALE' && styles.dimmedOption,
                 ]}
                 onPress={async () => {
-                  const newGenderValue = '여성';
+                  const newGenderValue = 'FEMALE';
                   await formik.setFieldValue('gender', newGenderValue);
                   await formik.setFieldTouched('gender', true);
                   updateForm('userInfo', { gender: newGenderValue });
@@ -441,7 +445,7 @@ export default forwardRef(function UserInfo(props, ref) {
                 <GenderFemaleIcon
                   size={80}
                   color={
-                    formik.values.gender === '남성'
+                    formik.values.gender === 'MALE'
                       ? styles.dimmedGenderOptionIconColor.color
                       : styles.selectedGenderOptionIconColor.color
                   }

@@ -1,5 +1,10 @@
-import { Redirect, useRouter } from 'expo-router';
-import { useContext } from 'react';
+import {
+  getKeyHashAndroid,
+  initializeKakaoSDK,
+} from '@react-native-kakao/core';
+import { login as kakaoLogin } from '@react-native-kakao/user';
+import { useRouter } from 'expo-router';
+import { useContext, useEffect } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthContext } from './_layout';
@@ -10,13 +15,75 @@ export default function Landing() {
   const insets = useSafeAreaInsets();
   const { styles } = useThemedStyle(getStyles);
 
-  const { user } = useContext(AuthContext);
-  const isLoggedIn = !!user;
+  const { setAccessToken, setRefreshToken, setUser, setKakaoEmail } =
+    useContext(AuthContext);
 
-  // 로그인 상태 확인
-  if (isLoggedIn) {
-    return <Redirect href="/(tabs)" />;
-  }
+  useEffect(() => {
+    initializeKakaoSDK('2d0e496c2a9ff2019280d0ff3d7ffb23');
+  }, []);
+
+  const onKakaoLogin = async () => {
+    console.log('키 해시', await getKeyHashAndroid());
+    try {
+      // 카카오 로그인
+      console.log('before kakao login');
+      const loginResult = await kakaoLogin();
+      console.log('kakao login result', loginResult);
+      console.log('after kakao login');
+      const kakaoAccessToken = loginResult?.accessToken;
+      console.log('kakaoAccessToken exists?', !!kakaoAccessToken);
+      if (!kakaoAccessToken) {
+        throw new Error('No Kakao access token');
+      }
+
+      // 서버 인증 api 호출
+      const res = await fetch('https://dev.crezipsa.site/api/auth/kakaoLogin', {
+        method: 'GET',
+        headers: {
+          'Kakao-Authorization': `${kakaoAccessToken}`,
+        },
+      });
+
+      // raw data
+      const rawText = await res.text();
+      console.log('auth status', res.status);
+      console.log('auth raw response', rawText);
+
+      let data = null;
+      try {
+        data = rawText ? JSON.parse(rawText) : null;
+      } catch (e) {
+        console.error('Failed to parse JSON response', e);
+      }
+      if (!res.ok) throw new Error('Auth API error');
+
+      // result
+      const result = data?.result;
+      if (!result) {
+        throw new Error('No result in Auth API response');
+      }
+
+      // 신규 유저는 바로 회원가입으로
+      if (result.newUser) {
+        setUser(result.kakaoUserInfo);
+        setKakaoEmail(loginResult.scopes.account_email ?? null);
+        router.replace('/(sign-up)');
+        return;
+      }
+
+      // 기존 유저는 토큰 저장 후 홈으로 이동
+      if (!result.accessToken || !result.refreshToken) {
+        throw new Error('No tokens received from server');
+      }
+      setAccessToken(result.accessToken);
+      setRefreshToken(result.refreshToken);
+      setUser(result.kakaoUserInfo);
+      setKakaoEmail(loginResult.scopes.account_email ?? null);
+      router.replace('/(tabs)');
+    } catch (error) {
+      console.error('Kakao login failed', error);
+    }
+  };
 
   return (
     <View
@@ -38,8 +105,7 @@ export default function Landing() {
       <View style={styles.buttonContainer}>
         <Pressable
           style={styles.kakaoLoginButton}
-          // 추후 카카오 로그인 연동 필요
-          onPress={() => router.push('/(sign-up)')}
+          onPress={() => onKakaoLogin()}
         >
           <Image
             source={require('../assets/images/kakao_logo.png')}

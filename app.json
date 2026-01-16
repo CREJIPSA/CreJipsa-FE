@@ -40,7 +40,26 @@
           }
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": [
+              "https://devrepo.kakao.com/nexus/content/groups/public/"
+            ]
+          }
+        }
+      ],
+      [
+        "@react-native-kakao/core",
+        {
+          "nativeAppKey": "2d0e496c2a9ff2019280d0ff3d7ffb23",
+          "android": {
+            "autoCoreHandlerActivity": true
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
