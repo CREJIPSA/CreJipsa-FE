@@ -17,7 +17,10 @@ export default function SearchKeyword() {
   const [relatedVideos, setRelatedVideos] = useState([]);
 
   useEffect(() => {
-    fetch(`https://dev.crezipsa.site/api/main/trend/search/${query}`, {
+    const encodedQuery = encodeURIComponent(
+      Array.isArray(query) ? (query[0] ?? '') : (query ?? ''),
+    );
+    fetch(`https://dev.crezipsa.site/api/main/trend/search/${encodedQuery}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -45,8 +48,8 @@ export default function SearchKeyword() {
           console.warn('No result found in search API response');
           return;
         }
-        setTrendSearchData(result.trends);
-        setRelatedVideos(result.videos);
+        setTrendSearchData(Array.isArray(result.trends) ? result.trends : []);
+        setRelatedVideos(Array.isArray(result.videos) ? result.videos : []);
       })
       .catch(error => {
         console.error('Error during search API request:', error);
@@ -114,7 +117,7 @@ export default function SearchKeyword() {
           <Pressable
             style={styles.seeMoreContainer}
             onPress={() => {
-              router.push({
+              router.replace({
                 pathname: '/search/results/related-video',
                 params: { query },
               });

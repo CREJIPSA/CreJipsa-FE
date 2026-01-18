@@ -13,7 +13,10 @@ export default function RelatedVideo() {
   const [relatedVideos, setRelatedVideos] = useState([]);
 
   useEffect(() => {
-    fetch(`https://dev.crezipsa.site/api/main/trend/search/${query}`, {
+    const encodedQuery = encodeURIComponent(
+      Array.isArray(query) ? (query[0] ?? '') : (query ?? ''),
+    );
+    fetch(`https://dev.crezipsa.site/api/main/trend/search/${encodedQuery}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -41,7 +44,7 @@ export default function RelatedVideo() {
           console.warn('No result found in search API response');
           return;
         }
-        setRelatedVideos(result.videos);
+        setRelatedVideos(Array.isArray(result.videos) ? result.videos : []);
       })
       .catch(error => {
         console.error('Error during search API request:', error);
