@@ -1,20 +1,25 @@
+import { AuthContext } from '@/app/_layout';
+import { fetchCommunityPosts } from '@/app/api/feed';
 import SearchBar from '@/app/components/feed/SearchBar';
 import NotificationIcon from '@/assets/svgs/feed/notification-icon';
 import WriteButtonIcon from '@/assets/svgs/feed/write-button-icon';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyle from '../../hooks/use-themed-style';
 import NavigationLayout from './(navigation)/_layout';
 
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+
 export default function Feed() {
   const insets = useSafeAreaInsets();
   const { isDark, styles } = useThemedStyle(getStyles);
   const [text, setText] = useState('');
+  const [posts, setPosts] = useState([]);
+  const { accessToken } = useContext(AuthContext);
   const router = useRouter();
 
-  // 검색 실행 함수
   const handleSearch = () => {
     if (text.trim().length > 0) {
       router.push({
@@ -23,6 +28,29 @@ export default function Feed() {
       });
     }
   };
+
+  const fetchPosts = useCallback(
+    async (selectedField = 'RECOMMEND') => {
+      try {
+        const data = await fetchCommunityPosts(selectedField, accessToken);
+
+        if (data.success) {
+          setPosts(data.result);
+        } else {
+          console.warn('API Error Message:', data.message);
+        }
+      } catch (error) {
+        console.error('Network/System Error:', error);
+      }
+    },
+    [accessToken],
+  );
+
+  useEffect(() => {
+    if (accessToken) {
+      fetchPosts();
+    }
+  }, [fetchPosts, accessToken]);
 
   // 아이콘 색상 설정
   const iconColor = isDark ? '#FAFAFA' : '#141414';
@@ -41,7 +69,13 @@ export default function Feed() {
         />
         <NotificationIcon color={iconColor} />
       </View>
-      <NavigationLayout isDark={isDark} styles={styles} tabBarBg={tabBarBg} />
+      <NavigationLayout
+        isDark={isDark}
+        styles={styles}
+        tabBarBg={tabBarBg}
+        onTabChange={fetchPosts}
+        posts={posts}
+      />
       <Pressable
         style={styles.floatingButton}
         onPress={() => router.push('write-post')}
