@@ -17,3 +17,15 @@ export const fetchCommunityPosts = async (field = 'RECOMMEND', accessToken) => {
 
   return await response.json();
 };
+
+export const fetchPostDetail = async (communityId, accessToken) => {
+  const response = await fetch(`${API_BASE_URL}/community/${communityId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return await response.json();
+};

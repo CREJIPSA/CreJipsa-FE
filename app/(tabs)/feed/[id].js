@@ -1,7 +1,9 @@
+import { AuthContext } from '@/app/_layout';
+import { fetchPostDetail } from '@/app/api/feed';
 import CategoryBadge from '@/app/components/feed/CategoryBadge';
 import SearchBar from '@/app/components/feed/SearchBar';
+import { COMMUNITY_FIELDS } from '@/app/constants/common/COMMUNITY_FIELDS';
 import { getPlatformLogo } from '@/app/constants/common/PLATFORM_LOGOS';
-import DUMMY_POSTS from '@/app/constants/my/DUMMY_POSTS';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import CommentIcon from '@/assets/svgs/common/comment-icon';
 import LikedIcon from '@/assets/svgs/common/like-icon';
@@ -10,7 +12,7 @@ import BackIcon from '@/assets/svgs/feed/back-icon';
 import CommentSendIcon from '@/assets/svgs/feed/comment-send-icon';
 import ReplyArrowIcon from '@/assets/svgs/feed/reply-arrow-icon';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Fragment, useState } from 'react';
+import { Fragment, useContext, useEffect, useState } from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -26,29 +28,55 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function FeedDetail() {
   const { id } = useLocalSearchParams();
-  const post = DUMMY_POSTS.find(item => item.id === id);
-  const imageCount = post.imageUrls?.length || 0;
-
+  const { accessToken } = useContext(AuthContext);
   const insets = useSafeAreaInsets();
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
-  const [text, setText] = useState('');
-  const [commentText, setCommentText] = useState('');
   const router = useRouter();
 
-  const handleSearch = () => {
-    if (text.trim().length > 0) {
-      router.push({
-        pathname: '/feed/results',
-        params: { q: text },
-      });
-    }
-  };
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [text, setText] = useState('');
+  const [commentText, setCommentText] = useState('');
+  const [replyTarget, setReplyTarget] = useState(null);
 
+  useEffect(() => {
+    const loadDetail = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchPostDetail(id, accessToken);
+        if (data.success) {
+          setPost(data.result);
+          console.log(data.result);
+        }
+      } catch (error) {
+        console.error('상세 조회 실패:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadDetail();
+  }, [id, accessToken]);
+
+  if (loading || !post) {
+    return (
+      <View
+        style={[
+          styles.mainContainer,
+          {
+            paddingTop: insets.top,
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+        ]}
+      >
+        <Text style={{ color: primaryColors.color }}>로딩 중...</Text>
+      </View>
+    );
+  }
+
+  const imageCount = post.imageUrls?.length || 0;
   const iconColor = isDark ? '#FAFAFA' : '#141414';
 
-  const [replyTarget, setReplyTarget] = useState(null); // { id: 'c1', name: '크리에이터' } 형식으로 저장
-
-  // 댓글 클릭 시 답글 모드 활성화
   const handleReplyPress = (commentId, authorName) => {
     setReplyTarget({ id: commentId, name: authorName });
     setCommentText(`@${authorName} `);
@@ -65,37 +93,32 @@ export default function FeedDetail() {
           <Pressable onPress={() => router.back()}>
             <BackIcon color={iconColor} />
           </Pressable>
-          <SearchBar
-            value={text}
-            onChangeText={setText}
-            onSubmit={handleSearch}
-            styles={styles}
-          />
+          <SearchBar value={text} onChangeText={setText} styles={styles} />
         </View>
         <ScrollView style={styles.scrollContainer}>
           <View style={styles.postContainer}>
             <View style={styles.categoryRow}>
-              <CategoryBadge text={post.category} />
+              <CategoryBadge text={COMMUNITY_FIELDS[post.field]} />
               <ThreeDotsIcon isDark={isDark} />
             </View>
             <View style={styles.mainContentBox}>
               <View style={styles.authorProfileBox}>
                 <Image
-                  source={{ uri: post.author.profileImage }}
+                  source={{ uri: post.writer.profileImageUrl }}
                   style={styles.authorProfileImage}
                 />
                 <View style={styles.authorProfileDetailCol}>
-                  <Text style={styles.authorName}>{post.author.name}</Text>
+                  <Text style={styles.authorName}>{post.writer.nickName}</Text>
                   <View style={styles.authorProfileDetailRow}>
                     <Image
-                      source={getPlatformLogo(post.author.platform)}
+                      source={getPlatformLogo(post.writer.mainPlatform)}
                       style={styles.authorPlatformImage}
                     />
                     <Text style={styles.authorProfileDetailText}>
-                      {post.author.handle}
+                      {post.writer.mainPlatformId}
                     </Text>
                     <Text style={styles.authorProfileDetailText}>
-                      {post.timeAgo}
+                      {post.relativeTime}
                     </Text>
                   </View>
                 </View>
@@ -144,76 +167,81 @@ export default function FeedDetail() {
           </View>
           <View style={styles.commentSection}>
             {post.comments.map(comment => (
-              <Fragment key={comment.id}>
+              <Fragment key={comment.commentId}>
                 <Pressable
                   onPress={() =>
-                    handleReplyPress(comment.id, comment.author.name)
+                    handleReplyPress(comment.commentId, comment.writer.nickName)
                   }
                   style={[
                     styles.commentItem,
-                    replyTarget?.id === comment.id && styles.activeCommentItem,
+                    replyTarget?.id === comment.commentId &&
+                      styles.activeCommentItem,
                   ]}
                 >
                   <View>
                     <View style={styles.authorProfileBox}>
                       <Image
-                        source={{ uri: comment.author.profileImage }}
+                        source={{ uri: comment.writer.profileImageUrl }}
                         style={styles.authorProfileImage}
                       />
                       <View style={styles.authorProfileDetailCol}>
                         <Text style={styles.authorName}>
-                          {comment.author.name}
+                          {comment.writer.nickName}
                         </Text>
                         <View style={styles.authorProfileDetailRow}>
                           <Image
-                            source={getPlatformLogo(comment.author.platform)}
+                            source={getPlatformLogo(
+                              comment.writer.mainPlatform,
+                            )}
                             style={styles.authorPlatformImage}
                           />
                           <Text style={styles.commentAuthorProfileDetailText}>
-                            {comment.author.handle}
+                            {comment.writer.mainPlatformId}
                           </Text>
                           <Text style={styles.commentAuthorProfileDetailText}>
-                            {comment.timeAgo}
+                            {comment.createdAt}
                           </Text>
                         </View>
                       </View>
                     </View>
-                    <Text style={styles.defaultText}>{comment.text}</Text>
+                    <Text style={styles.defaultText}>{comment.content}</Text>
                   </View>
                 </Pressable>
                 {comment.replies &&
                   comment.replies.map(reply => (
-                    <View key={reply.id} style={styles.replyItem}>
+                    <View key={reply.commentId} style={styles.replyItem}>
                       <ReplyArrowIcon color={primaryColors.color} />
                       <View style={[styles.commentItem, { flex: 1 }]}>
                         <View style={styles.authorProfileBox}>
                           <Image
-                            source={{ uri: reply.author.profileImage }}
+                            source={{ uri: reply.writer.profileImageUrl }}
                             style={styles.authorProfileImage}
                           />
                           <View style={styles.authorProfileDetailCol}>
                             <Text style={styles.authorName}>
-                              {reply.author.name}
+                              {reply.writer.nickName}
                             </Text>
                             <View style={styles.authorProfileDetailRow}>
                               <Image
-                                source={getPlatformLogo(reply.author.platform)}
+                                source={getPlatformLogo(
+                                  reply.writer.mainPlatform,
+                                )}
                                 style={styles.authorPlatformImage}
                               />
                               <Text
                                 style={styles.commentAuthorProfileDetailText}
                               >
-                                {reply.author.handle}
+                                {reply.writer.mainPlatformId}
                               </Text>
                               <Text
                                 style={styles.commentAuthorProfileDetailText}
                               >
-                                {reply.timeAgo}
+                                {reply.createdAt}
                               </Text>
                             </View>
                           </View>
                         </View>
-                        <Text style={styles.defaultText}>{reply.text}</Text>
+                        <Text style={styles.defaultText}>{reply.content}</Text>
                       </View>
                     </View>
                   ))}
