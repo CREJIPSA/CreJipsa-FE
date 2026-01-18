@@ -10,8 +10,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyle from '../../hooks/use-themed-style';
 import NavigationLayout from './(navigation)/_layout';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
-
 export default function Feed() {
   const insets = useSafeAreaInsets();
   const { isDark, styles } = useThemedStyle(getStyles);
