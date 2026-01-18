@@ -1,7 +1,9 @@
+import { AuthContext } from '@/app/_layout';
 import RelatedVideo from '@/app/components/search/video';
 import TrendKeywordCard from '@/app/components/trend-keyword-card';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
+import { useContext, useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import useThemedStyle from '../../../hooks/use-themed-style';
 
@@ -9,19 +11,45 @@ export default function SearchKeyword() {
   const { query } = useLocalSearchParams();
   const { styles, isDark } = useThemedStyle(getStyles);
 
-  // 트렌드 검색 결과 데이터
-  const trendSearchData = [
-    { tag: '일상/밈', title: '듀 가나디 팝업' },
-    { tag: '게임', title: '듀 가나디 게임' },
-    { tag: '패션', title: '듀 가나디 티셔츠' },
-    { tag: '일상/밈', title: '나 안아' },
-    { tag: '일상/밈', title: '듀 가나디 이모티콘' },
-    { tag: '음악', title: '듀듀듀듀' },
-    { tag: '일상/밈', title: '듀' },
-    { tag: '스포츠', title: '천하제일 듀 가나디 대회' },
-    { tag: '반려동물', title: '가나디' },
-    { tag: '뷰티', title: '듀 가나디 콜라보' },
-  ];
+  const { accessToken } = useContext(AuthContext);
+
+  const [trendSearchData, setTrendSearchData] = useState([]);
+
+  useEffect(() => {
+    fetch(`https://dev.crezipsa.site/api/main/trend/search/${query}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(async res => {
+        const raw = await res.text();
+        console.log('search api status', res.status);
+        console.log('search api response', raw);
+
+        let data = null;
+        try {
+          data = raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          console.error('Error parsing search API response JSON:', e);
+        }
+
+        if (!res.ok) throw new Error('Search API request failed');
+        return data;
+      })
+      .then(data => {
+        const result = data?.result.trends;
+        if (!result) {
+          console.warn('No result found in search API response');
+          return;
+        }
+        setTrendSearchData(result);
+      })
+      .catch(error => {
+        console.error('Error during search API request:', error);
+      });
+  }, [accessToken, query]);
 
   // 관련 영상 더미 데이터
   const relatedVideos = [
@@ -82,8 +110,8 @@ export default function SearchKeyword() {
               {firstRow.map((item, index) => (
                 <TrendKeywordCard
                   key={index}
-                  tag={item.tag}
-                  title={item.title}
+                  tag={item.category}
+                  title={item.keyword}
                   showTag={true} // 태그 표시 여부
                 />
               ))}
@@ -93,8 +121,8 @@ export default function SearchKeyword() {
               {secondRow.map((item, index) => (
                 <TrendKeywordCard
                   key={index}
-                  tag={item.tag}
-                  title={item.title}
+                  tag={item.category}
+                  title={item.keyword}
                   showTag={true} // 태그 표시 여부
                 />
               ))}
