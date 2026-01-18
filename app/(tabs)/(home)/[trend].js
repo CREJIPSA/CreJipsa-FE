@@ -26,6 +26,7 @@ export default function Trend() {
   const lastUpdateTime = format(new Date(), 'yyyy년 MM월 dd일 HH:mm');
 
   // 트렌드 상세 정보
+  const [keywordId, setKeywordId] = useState(null); //키워드 id
   const [viralityScore, setViralityScore] = useState(null); //흥행 가능성
   const [overallRank, setOverallRank] = useState(null); //실시간 트렌드 순위
   const [category, setCategory] = useState(null); //카테고리
@@ -64,6 +65,7 @@ export default function Trend() {
           return;
         }
         // 트렌드 상세 정보
+        setKeywordId(result.id);
         setViralityScore(result.viralityScore);
         setOverallRank(result.overall_rank);
         setCategory(result.category);
@@ -75,6 +77,34 @@ export default function Trend() {
         console.error('Failed to fetch trend detail data', error);
       });
   }, [accessToken, id]);
+
+  const addTrend = () => {
+    fetch('https://dev.crezipsa.site/api/main/trend/save', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        keywordId: keywordId,
+        keyword: trend,
+        category: category,
+      }),
+    })
+      .then(async res => {
+        const raw = await res.text();
+        console.log('add trend api status', res.status);
+        console.log('add trend api raw response', raw);
+
+        if (!res.ok)
+          throw new Error(`Add Trend API error: ${res.status}, raw=${raw}`);
+
+        return raw;
+      })
+      .catch(error => {
+        console.error('Failed to add trend', error);
+      });
+  };
 
   // 관련 영상 데이터
   const relatedVideos = videoInfo.map(video => ({
@@ -130,6 +160,7 @@ export default function Trend() {
             <View style={styles.buttonContainer}>
               <Pressable
                 onPress={() => {
+                  addTrend();
                   Toast.show({
                     type: 'addTrendToast',
                     text1: '저장이 완료되었습니다!',
