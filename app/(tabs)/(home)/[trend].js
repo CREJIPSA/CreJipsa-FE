@@ -113,23 +113,6 @@ export default function Trend() {
     url: video.url,
   }));
 
-  // 조회수 포맷팅 함수
-  function formatViews(views) {
-    // 1000회 이하는 n
-    if (views < 1000) {
-      return String(views);
-    }
-    // 1000~9999회는 n천
-    if (views < 10000) {
-      return `${Math.floor(views / 1000)}천`;
-    }
-    // 1만~9999만회는 n만
-    if (views < 100000000) {
-      return `${Math.floor(views / 10000)}만`;
-    }
-    return `${Math.floor(views / 100000000)}억`;
-  }
-
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
       {/* 헤더 */}
@@ -230,7 +213,7 @@ export default function Trend() {
               <RelatedVideo
                 key={index}
                 title={video.title}
-                views={formatViews(video.views)}
+                views={video.views}
                 url={video.url}
               />
             ))}

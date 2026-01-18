@@ -1,7 +1,9 @@
-import RelatedVideo from '@/app/components/search/video';
+import { AuthContext } from '@/app/_layout';
+import RelatedVideo from '@/app/components/search/related-video';
 import TrendKeywordCard from '@/app/components/trend-keyword-card';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
+import { useContext, useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import useThemedStyle from '../../../hooks/use-themed-style';
 
@@ -9,48 +11,50 @@ export default function SearchKeyword() {
   const { query } = useLocalSearchParams();
   const { styles, isDark } = useThemedStyle(getStyles);
 
-  // 트렌드 검색 결과 데이터
-  const trendSearchData = [
-    { tag: '일상/밈', title: '듀 가나디 팝업' },
-    { tag: '게임', title: '듀 가나디 게임' },
-    { tag: '패션', title: '듀 가나디 티셔츠' },
-    { tag: '일상/밈', title: '나 안아' },
-    { tag: '일상/밈', title: '듀 가나디 이모티콘' },
-    { tag: '음악', title: '듀듀듀듀' },
-    { tag: '일상/밈', title: '듀' },
-    { tag: '스포츠', title: '천하제일 듀 가나디 대회' },
-    { tag: '반려동물', title: '가나디' },
-    { tag: '뷰티', title: '듀 가나디 콜라보' },
-  ];
+  const { accessToken } = useContext(AuthContext);
 
-  // 관련 영상 더미 데이터
-  const relatedVideos = [
-    {
-      title: '오븐 없이 초초간편 가나디 케이크',
-      views: '12만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-5.png'),
-    },
-    {
-      title: '가나디 잠옷!!!',
-      views: '8만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-6.png'),
-    },
-    {
-      title: '가나디 티셔츠 사이즈 팁',
-      views: '15만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-7.png'),
-    },
-    {
-      title: '듀 가나디와 함께하는 브이로그',
-      views: '20만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-8.png'),
-    },
-    {
-      title: '듀 가나디 굿즈 언박싱!',
-      views: '30만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-9.png'),
-    },
-  ];
+  const [trendSearchData, setTrendSearchData] = useState([]);
+  const [relatedVideos, setRelatedVideos] = useState([]);
+
+  useEffect(() => {
+    const encodedQuery = encodeURIComponent(
+      Array.isArray(query) ? (query[0] ?? '') : (query ?? ''),
+    );
+    fetch(`https://dev.crezipsa.site/api/main/trend/search/${encodedQuery}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(async res => {
+        const raw = await res.text();
+        console.log('search api status', res.status);
+        console.log('search api response', raw);
+
+        let data = null;
+        try {
+          data = raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          console.error('Error parsing search API response JSON:', e);
+        }
+
+        if (!res.ok) throw new Error('Search API request failed');
+        return data;
+      })
+      .then(data => {
+        const result = data?.result;
+        if (!result) {
+          console.warn('No result found in search API response');
+          return;
+        }
+        setTrendSearchData(Array.isArray(result.trends) ? result.trends : []);
+        setRelatedVideos(Array.isArray(result.videos) ? result.videos : []);
+      })
+      .catch(error => {
+        console.error('Error during search API request:', error);
+      });
+  }, [accessToken, query]);
 
   // 스크롤뷰 데이터 다섯 개씩 렌더링
   const splitIntoTwoRows = items => {
@@ -82,8 +86,8 @@ export default function SearchKeyword() {
               {firstRow.map((item, index) => (
                 <TrendKeywordCard
                   key={index}
-                  tag={item.tag}
-                  title={item.title}
+                  tag={item.category}
+                  title={item.keyword}
                   showTag={true} // 태그 표시 여부
                 />
               ))}
@@ -93,8 +97,8 @@ export default function SearchKeyword() {
               {secondRow.map((item, index) => (
                 <TrendKeywordCard
                   key={index}
-                  tag={item.tag}
-                  title={item.title}
+                  tag={item.category}
+                  title={item.keyword}
                   showTag={true} // 태그 표시 여부
                 />
               ))}
@@ -113,7 +117,7 @@ export default function SearchKeyword() {
           <Pressable
             style={styles.seeMoreContainer}
             onPress={() => {
-              router.push({
+              router.replace({
                 pathname: '/search/results/related-video',
                 params: { query },
               });
@@ -139,12 +143,12 @@ export default function SearchKeyword() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 16, marginTop: 20 }}
           >
-            {relatedVideos.map((video, index) => (
+            {relatedVideos.slice(0, 5).map((video, index) => (
               <RelatedVideo
                 key={index}
                 title={video.title}
-                views={video.views}
-                thumbnailUrl={video.thumbnailUrl}
+                views={video.viewCount}
+                url={video.url}
               />
             ))}
           </ScrollView>
