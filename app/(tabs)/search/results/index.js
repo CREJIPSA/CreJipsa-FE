@@ -1,5 +1,5 @@
 import { AuthContext } from '@/app/_layout';
-import RelatedVideo from '@/app/components/search/video';
+import RelatedVideo from '@/app/components/search/related-video';
 import TrendKeywordCard from '@/app/components/trend-keyword-card';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -14,6 +14,7 @@ export default function SearchKeyword() {
   const { accessToken } = useContext(AuthContext);
 
   const [trendSearchData, setTrendSearchData] = useState([]);
+  const [relatedVideos, setRelatedVideos] = useState([]);
 
   useEffect(() => {
     fetch(`https://dev.crezipsa.site/api/main/trend/search/${query}`, {
@@ -39,46 +40,18 @@ export default function SearchKeyword() {
         return data;
       })
       .then(data => {
-        const result = data?.result.trends;
+        const result = data?.result;
         if (!result) {
           console.warn('No result found in search API response');
           return;
         }
-        setTrendSearchData(result);
+        setTrendSearchData(result.trends);
+        setRelatedVideos(result.videos);
       })
       .catch(error => {
         console.error('Error during search API request:', error);
       });
   }, [accessToken, query]);
-
-  // 관련 영상 더미 데이터
-  const relatedVideos = [
-    {
-      title: '오븐 없이 초초간편 가나디 케이크',
-      views: '12만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-5.png'),
-    },
-    {
-      title: '가나디 잠옷!!!',
-      views: '8만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-6.png'),
-    },
-    {
-      title: '가나디 티셔츠 사이즈 팁',
-      views: '15만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-7.png'),
-    },
-    {
-      title: '듀 가나디와 함께하는 브이로그',
-      views: '20만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-8.png'),
-    },
-    {
-      title: '듀 가나디 굿즈 언박싱!',
-      views: '30만',
-      thumbnailUrl: require('@/assets/images/thumbnail/video-thumbnail-9.png'),
-    },
-  ];
 
   // 스크롤뷰 데이터 다섯 개씩 렌더링
   const splitIntoTwoRows = items => {
@@ -167,12 +140,12 @@ export default function SearchKeyword() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 16, marginTop: 20 }}
           >
-            {relatedVideos.map((video, index) => (
+            {relatedVideos.slice(0, 5).map((video, index) => (
               <RelatedVideo
                 key={index}
                 title={video.title}
-                views={video.views}
-                thumbnailUrl={video.thumbnailUrl}
+                views={video.viewCount}
+                url={video.url}
               />
             ))}
           </ScrollView>

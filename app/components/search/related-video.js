@@ -56,7 +56,7 @@ async function getVideoThumbnail(url) {
   }
 }
 
-export default function RelatedVideo({ title, views, url }) {
+export default function RelatedVideo({ title, views, url, width, height }) {
   const { styles } = useThemedStyle(getStyles);
 
   // 인스타는 조회수 표시 안 함
@@ -71,6 +71,26 @@ export default function RelatedVideo({ title, views, url }) {
       .catch(() => setThumbnail(img_placeholder));
   }, [url]);
 
+  // 조회수 포맷팅 함수
+  function formatViews(views) {
+    // 1000회 이하는 n
+    if (views < 1000) {
+      return String(views);
+    }
+
+    // 1000~9999회는 n천
+    if (views < 10000) {
+      return `${Math.floor(views / 1000)}천`;
+    }
+
+    // 1만~9999만회는 n만
+    if (views < 100000000) {
+      return `${Math.floor(views / 10000)}만`;
+    }
+
+    return `${Math.floor(views / 100000000)}억`;
+  }
+
   return (
     <Pressable
       onPress={() => {
@@ -81,7 +101,11 @@ export default function RelatedVideo({ title, views, url }) {
     >
       <ImageBackground
         source={thumbnail ? thumbnail : img_placeholder}
-        style={styles.thumbnail}
+        style={[
+          styles.thumbnail,
+          width && { width: width || 140 },
+          height && { height: height || 245 },
+        ]}
       >
         <LinearGradient
           colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.5)']}
@@ -96,7 +120,7 @@ export default function RelatedVideo({ title, views, url }) {
             {title}
           </Text>
           <Text style={styles.videoViews}>
-            {!insta(url) ? `조회수 ${views}회` : ''}
+            {!insta(url) ? `조회수 ${formatViews(views)}회` : ''}
           </Text>
         </View>
       </ImageBackground>
