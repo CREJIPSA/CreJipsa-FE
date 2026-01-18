@@ -1,8 +1,7 @@
-import DUMMY_POSTS from '@/app/constants/my/DUMMY_POSTS';
 import FeedScreen from './FeedScreen';
 
-const RecommendScreen = ({ styles }) => {
-  return <FeedScreen styles={styles} data={DUMMY_POSTS} />;
+const RecommendScreen = ({ styles, posts }) => {
+  return <FeedScreen styles={styles} data={posts} />;
 };
 
 export default RecommendScreen;

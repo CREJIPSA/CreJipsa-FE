@@ -5,7 +5,13 @@ import TipScreen from './TipScreen';
 
 const MaterialTopTabs = createMaterialTopTabNavigator();
 
-export default function NavigationLayout({ isDark, styles, tabBarBg }) {
+export default function NavigationLayout({
+  isDark,
+  styles,
+  tabBarBg,
+  onTabChange,
+  posts,
+}) {
   return (
     <MaterialTopTabs.Navigator
       screenOptions={{
@@ -26,19 +32,34 @@ export default function NavigationLayout({ isDark, styles, tabBarBg }) {
         tabBarPressColor: 'transparent',
       }}
     >
-      <MaterialTopTabs.Screen name="recommend" options={{ title: '추천' }}>
-        {() => <RecommendScreen styles={styles} />}
+      <MaterialTopTabs.Screen
+        name="recommend"
+        options={{ title: '추천' }}
+        listeners={{
+          focus: () => onTabChange('RECOMMEND'),
+        }}
+      >
+        {() => <RecommendScreen styles={styles} posts={posts} />}
       </MaterialTopTabs.Screen>
 
-      <MaterialTopTabs.Screen name="tip" options={{ title: '팁' }}>
-        {() => <TipScreen styles={styles} />}
+      <MaterialTopTabs.Screen
+        name="tip"
+        options={{ title: '팁' }}
+        listeners={{
+          focus: () => onTabChange('TIP'),
+        }}
+      >
+        {() => <TipScreen styles={styles} posts={posts} />}
       </MaterialTopTabs.Screen>
 
       <MaterialTopTabs.Screen
         name="collab"
         options={{ title: '같이 촬영해요' }}
+        listeners={{
+          focus: () => onTabChange('COLLAB'),
+        }}
       >
-        {() => <CollaborationScreen styles={styles} />}
+        {() => <CollaborationScreen styles={styles} posts={posts} />}
       </MaterialTopTabs.Screen>
     </MaterialTopTabs.Navigator>
   );

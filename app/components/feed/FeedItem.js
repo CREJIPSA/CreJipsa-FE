@@ -1,3 +1,4 @@
+import { COMMUNITY_FIELDS } from '@/app/constants/common/COMMUNITY_FIELDS';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import CommentIcon from '@/assets/svgs/common/comment-icon';
 import LikedIcon from '@/assets/svgs/common/like-icon';
@@ -7,28 +8,37 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 export default function FeedItem({ post }) {
   const { styles, primaryColors } = useThemedStyle(getStyles);
 
-  const hasImage = post.imageUrls && post.imageUrls.length > 0;
+  const {
+    communityId,
+    field,
+    title,
+    contentPreview,
+    likeCount,
+    commentCount,
+    relativeTime,
+    thumbnailUrl,
+  } = post;
+  const fieldLabel = COMMUNITY_FIELDS[field] || field;
 
-  // 상세 페이지 이동 함수
+  const hasImage = !!thumbnailUrl;
+
   const handlePress = () => {
-    router.push({
-      pathname: `/feed/${post.id}`,
-    });
+    router.push(`/feed/${communityId}`);
   };
 
   const textContent = (
     <>
       <View style={styles.titleTextRow}>
         <Text style={styles.titleText} numberOfLines={1}>
-          {post.title}
+          {title}
         </Text>
       </View>
       <Text style={styles.contentText} numberOfLines={2}>
-        {post.content}
+        {contentPreview}
       </Text>
       <View style={styles.detailRow}>
-        <Text style={styles.detailText}># {post.category}</Text>
-        <Text style={styles.detailText}>{post.timeAgo}</Text>
+        <Text style={styles.detailText}>#{fieldLabel}</Text>
+        <Text style={styles.detailText}>{relativeTime}</Text>
       </View>
     </>
   );
@@ -37,9 +47,9 @@ export default function FeedItem({ post }) {
     <>
       <View style={styles.reactionRow}>
         <LikedIcon color={primaryColors.color} />
-        <Text style={styles.reactionText}>{post.likeCount}</Text>
+        <Text style={styles.reactionText}>{likeCount}</Text>
         <CommentIcon color={primaryColors.color} />
-        <Text style={styles.reactionText}>{post.commentCount}</Text>
+        <Text style={styles.reactionText}>{commentCount}</Text>
       </View>
     </>
   );
@@ -51,7 +61,7 @@ export default function FeedItem({ post }) {
           <View style={styles.contentWrapperRow}>
             <View style={styles.contentWrapperCol}>{textContent}</View>
             <Image
-              source={{ uri: post.imageUrls?.[0] }}
+              source={{ uri: thumbnailUrl }}
               style={styles.thumbnail}
               resizeMode="cover"
             />

@@ -6,7 +6,7 @@ const FeedScreen = ({ styles, data }) => (
     style={styles.feedContentBox}
     data={data}
     renderItem={({ item }) => <FeedItem post={item} />}
-    keyExtractor={item => item.id}
+    keyExtractor={item => item.communityId}
     ItemSeparatorComponent={() => <View style={styles.postItemSeparator} />}
     contentContainerStyle={{ paddingBottom: 60 }}
   />
