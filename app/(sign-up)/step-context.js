@@ -91,6 +91,7 @@ export default function StepProvider({ children }) {
       activeYoutube: null,
       activeInstagram: null,
       activeTiktok: null,
+      mainPlatform: null,
     };
     channelInfo.forEach(({ platform, channelId }) => {
       if (!platform || !channelId) return;
@@ -102,6 +103,13 @@ export default function StepProvider({ children }) {
         payload.activeTiktok = channelId;
       }
     });
+    if (channelInfo.activeYoutube) {
+      payload.mainPlatform = 'YOUTUBE';
+    } else if (channelInfo.activeInstagram) {
+      payload.mainPlatform = 'INSTAGRAM';
+    } else if (channelInfo.activeTiktok) {
+      payload.mainPlatform = 'TIKTOK';
+    }
     return payload;
   }
 
