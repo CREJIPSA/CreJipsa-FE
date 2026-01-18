@@ -51,75 +51,83 @@ export default function Home({ platform }) {
       });
   }, [platform, accessToken]);
 
-  // 분야별 트렌드 추천 더미 데이터
-  const trendData = [
-    {
-      items: [
-        { tag: '음악', title: 'FaSHioN' },
-        { tag: '게임', title: '페이커' },
-        { tag: '음악', title: '샤이니' },
-        { tag: '반려동물', title: '토끼' },
-        { tag: '일상/밈', title: '아이폰 16 Pro' },
-        { tag: '음악', title: 'AOA 짧은 치마' },
-        { tag: '일상/밈', title: '졸업전시' },
-        { tag: '뷰티', title: '올영세일' },
-        { tag: '일상/밈', title: '샤넬챌린지' },
-        { tag: '패션', title: '지방시' },
-      ],
-    },
-    {
-      items: {
-        tag: '일상/밈',
-        title: [
-          '느좋카',
-          '하룰라라',
-          '각할모',
-          '왼얼사',
-          '듀 가나디',
-          '붐따',
-          '너 정말 핵심을 찔렀어',
-          '듀벅듀벅',
-          '칠가이',
-          '챌린지',
-        ],
+  const [overallTrendData, setOverallTrendData] = useState([]);
+  useEffect(() => {
+    fetch(
+      `https://dev.crezipsa.site/api/main/trend/recommendations/by-platform`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       },
-    },
-    {
-      items: {
-        tag: '게임',
-        title: [
-          '리그오브레전드',
-          '페이커',
-          '메이플스토리',
-          '롤드컵',
-          '배틀그라운드',
-          '마인크래프트',
-          '로블록스',
-          '구마유시',
-          '오버워치',
-          '카트라이더',
-        ],
+    )
+      .then(async res => {
+        const raw = await res.text();
+        console.log('overall trend api status', res.status);
+        console.log('overall trend api raw response', raw);
+
+        let data = null;
+        try {
+          data = raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          console.error('Failed to parse JSON response', e);
+        }
+
+        if (!res.ok) throw new Error(`Overall Trend API error: ${res.status}`);
+        return data;
+      })
+      .then(data => {
+        const result = data?.result;
+        if (!result || !Array.isArray(result)) {
+          console.error('Invalid overall trend data format', data);
+          return;
+        }
+        setOverallTrendData(result);
+      })
+      .catch(error => {
+        console.error('Failed to fetch overall trend data', error);
+      });
+  }, [accessToken]);
+
+  const [interestTrendData, setInterestTrendData] = useState([]);
+  useEffect(() => {
+    fetch(
+      `https://dev.crezipsa.site/api/main/trend/recommendations/by-interests`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       },
-    },
-  ];
+    )
+      .then(async res => {
+        const raw = await res.text();
+        console.log('interest trend api status', res.status);
+        console.log('interest trend api raw response', raw);
 
-  const normalizedTrendData = section => {
-    // 전체 트렌드 추천
-    if (Array.isArray(section.items)) {
-      return section.items;
-    }
-    // 분야별 트렌드 추천
-    return section.items.title.map(t => ({ tag: section.items.tag, title: t }));
-  };
+        let data = null;
+        try {
+          data = raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          console.error('Failed to parse JSON response', e);
+        }
 
-  // 섹션 제목
-  const getSectionTitle = section => {
-    const { items } = section;
-    if (Array.isArray(items)) {
-      return '전체';
-    }
-    return items.tag;
-  };
+        if (!res.ok) throw new Error(`Interest Trend API error: ${res.status}`);
+        return data;
+      })
+      .then(data => {
+        const result = data?.result;
+        if (!result || !Array.isArray(result)) {
+          console.error('Invalid interest trend data format', data);
+          return;
+        }
+        setInterestTrendData(result);
+      })
+      .catch(error => {
+        console.error('Failed to fetch interest trend data', error);
+      });
+  }, [accessToken]);
 
   // 스크롤뷰 데이터 다섯 개씩 렌더링
   const splitIntoTwoRows = items => {
@@ -129,13 +137,11 @@ export default function Home({ platform }) {
   };
 
   // 분야별 트렌츠 추천 섹션 렌더링
-  const renderSection = (section, sectionIndex) => {
-    const showTag = Array.isArray(section.items);
-    const { firstRow, secondRow } = splitIntoTwoRows(
-      normalizedTrendData(section),
-    );
+  const renderSection = items => {
+    const showTag = overallTrendData === items; // 전체 트렌드일 때 태그 표시
+    const { firstRow, secondRow } = splitIntoTwoRows(items);
     return (
-      <View key={sectionIndex}>
+      <View key={items === overallTrendData ? 'overall' : items[0]?.category}>
         {/* 섹션 헤더 */}
         <View style={styles.fieldSectionHeader}>
           <Text style={styles.headerText}>
@@ -146,7 +152,7 @@ export default function Home({ platform }) {
                 color: isDark ? '#CCFF66' : '#C6E945',
               }}
             >
-              {getSectionTitle(section)}
+              {items === overallTrendData ? '전체' : items[0]?.category}
             </Text>{' '}
             분야의 트렌드 추천
           </Text>
@@ -156,13 +162,14 @@ export default function Home({ platform }) {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingRight: 16 }}
             style={styles.trendKeywordCardContainer}
           >
-            {firstRow.map((item, index) => (
+            {firstRow.map(item => (
               <TrendKeywordCard
-                key={index}
-                tag={item.tag}
-                title={item.title}
+                key={item.id}
+                tag={item.category}
+                title={item.keyword}
                 showTag={showTag} // 태그 표시 여부
               />
             ))}
@@ -171,13 +178,14 @@ export default function Home({ platform }) {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingRight: 16 }}
             style={styles.trendKeywordCardContainer}
           >
-            {secondRow.map((item, index) => (
+            {secondRow.map(item => (
               <TrendKeywordCard
-                key={index}
-                tag={item.tag}
-                title={item.title}
+                key={item.id}
+                tag={item.category}
+                title={item.keyword}
                 showTag={showTag} // 태그 표시 여부
               />
             ))}
@@ -193,7 +201,7 @@ export default function Home({ platform }) {
       <RealTimeTrend rankTrends={rankTrends} />
       {/* 분야별 트렌드 추천 */}
       {/* 전체 트렌드 추천 */}
-      {renderSection(trendData[0], 0)}
+      {renderSection(overallTrendData)}
       {/* 이번주 팁 */}
       <View style={styles.tipContainer}>
         <Text style={styles.headerText}>이번주 팁</Text>
@@ -221,13 +229,24 @@ export default function Home({ platform }) {
           </View>
         </View>
       </View>
-      {/* 관심분야 트렌드 추천 */}
-      {trendData
-        .slice(1)
-        .map((section, sectionIndex) =>
-          renderSection(section, sectionIndex + 1),
-        )}
-      <View style={{ height: 50 }} />
+      <View
+        style={{
+          flexDirection: 'column-reverse',
+          marginBottom: 20,
+        }}
+      >
+        {/* 관심분야 트렌드 추천 */}
+        {interestTrendData
+          .filter((_, index) => index % 10 === 0)
+          .map((_, groupIndex) => {
+            const chunk = interestTrendData.slice(
+              groupIndex * 10,
+              groupIndex * 10 + 10,
+            );
+            return renderSection(chunk);
+          })}
+        <View style={{ height: 50 }} />
+      </View>
     </ScrollView>
   );
 }
@@ -276,15 +295,15 @@ const getStyles = isDark => {
     },
     trendRecommendContainer: {
       marginTop: 20,
-      marginBottom: 50,
+      marginBottom: 40,
       gap: 16,
     },
     trendKeywordCardContainer: {
       paddingLeft: 16,
+      paddingRight: 16,
     },
     tipContainer: {
       paddingHorizontal: 16,
-      marginBottom: 40,
       gap: 20,
     },
     tipContent: {

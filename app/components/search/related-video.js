@@ -4,7 +4,7 @@ import * as Linking from 'expo-linking';
 import { useEffect, useState } from 'react';
 import { ImageBackground, Pressable, Text, View } from 'react-native';
 
-const img_placeholder = require('@/assets/images/thumbnail/video-thumbnail-placeholder.png');
+const img_placeholder = require('@/assets/images/thumbnail/no-thumbnail.png');
 function extractYoutubeVideoId(url) {
   try {
     const u = new URL(url);

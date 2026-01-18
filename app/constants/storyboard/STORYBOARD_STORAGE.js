@@ -2,7 +2,7 @@ const STORYBOARD_STORAGE = [
   // route 추가 예정
   {
     id: 'vlog1',
-    text: '브이로그',
+    text: '스토리보드 제목',
   },
   {
     id: 'travel1',
