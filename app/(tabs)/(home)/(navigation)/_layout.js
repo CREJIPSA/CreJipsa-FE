@@ -238,7 +238,7 @@ const getStyles = isDark => {
     },
     dropdownContainer: {
       position: 'absolute',
-      top: 45,
+      top: 80,
       left: 16,
       backgroundColor: '#323232',
       borderRadius: 10,
