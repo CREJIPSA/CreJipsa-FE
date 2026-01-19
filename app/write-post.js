@@ -1,8 +1,15 @@
+import { createPost, getPresignedUrl, uploadFileToS3 } from '@/app/api/feed';
+import {
+  COMMUNITY_FIELDS,
+  getCommunityFieldLabels,
+  getFieldKeyByLabel,
+} from '@/app/constants/common/COMMUNITY_FIELDS';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { launchImageLibraryAsync } from 'expo-image-picker';
-import { useRef, useState } from 'react';
+import { router } from 'expo-router';
+import { useContext, useRef, useState } from 'react';
 import {
   Alert,
   Image,
@@ -18,15 +25,27 @@ import {
   RichToolbar,
   actions,
 } from 'react-native-pell-rich-editor';
+import { AuthContext } from './_layout';
 import FilterComponent from './components/my/FilterComponent';
 
 export default function WritePost() {
+  const { accessToken } = useContext(AuthContext);
+  const [isUploading, setIsUploading] = useState(false);
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
   const [openedFilter, setOpenedFilter] = useState(null);
+  const [selectedField, setSelectedField] = useState('RECOMMEND');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
   const richText = useRef();
+
+  const handleSelectFilter = label => {
+    const key = getFieldKeyByLabel(label);
+    if (key) {
+      setSelectedField(key);
+    }
+    setOpenedFilter(null);
+  };
 
   const toggleFilter = filterName => {
     setOpenedFilter(openedFilter === filterName ? null : filterName);
@@ -53,20 +72,107 @@ export default function WritePost() {
     }
   };
 
+  const handleUpload = async () => {
+    if (isUploading) return;
+
+    const plainText = content.replace(/<[^>]*>/g, '').trim();
+    if (!title.trim() || !plainText) {
+      Alert.alert('제목과 내용을 입력해주세요.');
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      const uploadedImageUrls = [];
+
+      for (const uri of images) {
+        console.log('--- 업로드 프로세스 시작: ', uri);
+
+        const filename = uri.split('/').pop();
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1].toLowerCase()}` : `image/jpeg`;
+        console.log(type);
+        const uniqueFileName = `community/${Date.now()}-${filename}`;
+
+        console.log(uniqueFileName);
+
+        const urlData = await getPresignedUrl(
+          uniqueFileName,
+          type,
+          accessToken,
+        );
+
+        if (urlData.success) {
+          const { uploadUrl, fileUrl } = urlData.result;
+
+          console.log('S3 PUT 시작...');
+          const uploadResp = await uploadFileToS3(uploadUrl, uri, type);
+          console.log('S3 응답 상태:', uploadResp.status);
+
+          if (uploadResp.ok) {
+            uploadedImageUrls.push(fileUrl);
+            console.log(
+              '배열 추가 성공! 현재 배열 길이:',
+              uploadedImageUrls.length,
+            );
+          } else {
+            // S3 업로드 실패 시 상세 내용 확인
+            const errorText = await uploadResp.text();
+            console.error('S3 업로드 실패 상세:', errorText);
+          }
+        }
+      }
+
+      // 모든 사진 업로드 완료 후 최종 게시글 데이터 구성
+      const postData = {
+        title,
+        content: content,
+        field: selectedField,
+        imageUrls: uploadedImageUrls,
+      };
+
+      // 최종 게시글 API 호출
+      const result = await createPost(postData, accessToken);
+      console.log('보낸 데이터(JSON):', JSON.stringify(postData, null, 2));
+      console.log('서버 응답 결과:', JSON.stringify(result, null, 2));
+
+      if (result.success) {
+        Alert.alert('성공', '게시글이 업로드되었습니다.', [
+          {
+            text: '확인',
+            onPress: () => {
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.replace('/(tabs)/feed');
+              }
+            },
+          },
+        ]);
+      }
+    } catch (error) {
+      console.error('Upload Error:', error);
+      Alert.alert('업로드 실패', '오류가 발생했습니다.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <View style={styles.mainContainer}>
       <View style={styles.headerRow}>
         <Text style={styles.headerText}>피드 작성</Text>
-        <Pressable onPress={() => console.log(content)}>
+        <Pressable onPress={handleUpload}>
           <Text style={styles.uploadBtnText}>업로드</Text>
         </Pressable>
       </View>
       <View style={styles.filterComponent}>
         <FilterComponent
-          text={'전체'}
+          text={COMMUNITY_FIELDS[selectedField]}
           isOpen={openedFilter === 'category'}
           onPress={() => toggleFilter('category')}
-          options={['일반', '팁', '같이 촬영해요']}
+          options={getCommunityFieldLabels()}
+          onSelect={handleSelectFilter}
         />
       </View>
       <TextInput
