@@ -86,73 +86,73 @@ export default function WritePost() {
       const uploadedImageUrls = [];
 
       for (const uri of images) {
-        console.log('--- 업로드 프로세스 시작: ', uri);
-
         const filename = uri.split('/').pop();
         const match = /\.(\w+)$/.exec(filename);
         const type = match ? `image/${match[1].toLowerCase()}` : `image/jpeg`;
-        console.log(type);
         const uniqueFileName = `community/${Date.now()}-${filename}`;
 
-        console.log(uniqueFileName);
-
+        // 1. Presigned URL 발급 및 검증
         const urlData = await getPresignedUrl(
           uniqueFileName,
           type,
           accessToken,
         );
 
-        if (urlData.success) {
-          const { uploadUrl, fileUrl } = urlData.result;
-
-          console.log('S3 PUT 시작...');
-          const uploadResp = await uploadFileToS3(uploadUrl, uri, type);
-          console.log('S3 응답 상태:', uploadResp.status);
-
-          if (uploadResp.ok) {
-            uploadedImageUrls.push(fileUrl);
-            console.log(
-              '배열 추가 성공! 현재 배열 길이:',
-              uploadedImageUrls.length,
-            );
-          } else {
-            // S3 업로드 실패 시 상세 내용 확인
-            const errorText = await uploadResp.text();
-            console.error('S3 업로드 실패 상세:', errorText);
-          }
+        if (!urlData?.success) {
+          throw new Error('업로드 주소 발급에 실패했습니다.');
         }
+
+        const { uploadUrl, fileUrl } = urlData.result;
+
+        // 2. S3 업로드 및 검증
+        const uploadResp = await uploadFileToS3(uploadUrl, uri, type);
+
+        if (!uploadResp.ok) {
+          const errorText = await uploadResp.text();
+          throw new Error(`이미지 서버 업로드 실패: ${errorText}`);
+        }
+
+        uploadedImageUrls.push(fileUrl);
       }
 
-      // 모든 사진 업로드 완료 후 최종 게시글 데이터 구성
+      // 3. 최종 게시글 생성 데이터 구성
       const postData = {
         title,
-        content: content,
+        content,
         field: selectedField,
         imageUrls: uploadedImageUrls,
       };
 
-      // 최종 게시글 API 호출
+      // 4. 게시글 API 호출 및 결과 처리
       const result = await createPost(postData, accessToken);
-      console.log('보낸 데이터(JSON):', JSON.stringify(postData, null, 2));
-      console.log('서버 응답 결과:', JSON.stringify(result, null, 2));
 
-      if (result.success) {
-        Alert.alert('성공', '게시글이 업로드되었습니다.', [
-          {
-            text: '확인',
-            onPress: () => {
-              if (router.canGoBack()) {
-                router.back();
-              } else {
-                router.replace('/(tabs)/feed');
-              }
-            },
-          },
-        ]);
+      if (!result?.success) {
+        Alert.alert(
+          '업로드 실패',
+          result?.message ?? '서버 오류가 발생했습니다.',
+        );
+        return;
       }
+
+      // 최종 성공 시 처리
+      Alert.alert('성공', '게시글이 업로드되었습니다.', [
+        {
+          text: '확인',
+          onPress: () => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/(tabs)/feed');
+            }
+          },
+        },
+      ]);
     } catch (error) {
       console.error('Upload Error:', error);
-      Alert.alert('업로드 실패', '오류가 발생했습니다.');
+      Alert.alert(
+        '오류 발생',
+        error.message || '알 수 없는 오류가 발생했습니다.',
+      );
     } finally {
       setIsUploading(false);
     }
