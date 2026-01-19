@@ -2,7 +2,13 @@ import useThemedStyle from '@/app/hooks/use-themed-style';
 import FilterIcon from '@/assets/svgs/my/filter-icon';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-export default function FilterComponent({ text, isOpen, onPress, options }) {
+export default function FilterComponent({
+  text,
+  isOpen,
+  onPress,
+  options,
+  onSelect,
+}) {
   const { isDark, styles } = useThemedStyle(getStyles);
 
   return (
@@ -15,7 +21,14 @@ export default function FilterComponent({ text, isOpen, onPress, options }) {
       {isOpen && (
         <View style={styles.dropdownContainer}>
           {options.map((option, index) => (
-            <Pressable key={index} style={styles.optionItem} onPress={onPress}>
+            <Pressable
+              key={index}
+              style={styles.optionItem}
+              onPress={() => {
+                onSelect?.(option);
+                onPress();
+              }}
+            >
               <Text style={styles.optionText}>{option}</Text>
             </Pressable>
           ))}
