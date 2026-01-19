@@ -31,7 +31,6 @@ export const fetchPostDetail = async (communityId, accessToken) => {
 };
 
 export const getPresignedUrl = async (fileName, contentType, token) => {
-  // 슬래시(/) 등 특수문자가 포함된 파라미터를 안전하게 인코딩합니다.
   const encodedFileName = encodeURIComponent(fileName);
   const encodedContentType = encodeURIComponent(contentType);
 
@@ -70,6 +69,17 @@ export const createPost = async (postData, accessToken) => {
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify(postData),
+  });
+  return await response.json();
+};
+
+export const likeFeedPost = async (communityId, accessToken) => {
+  const response = await fetch(`${API_BASE_URL}/likes/${communityId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
   return await response.json();
 };
