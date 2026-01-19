@@ -90,7 +90,6 @@ export default function FeedDetail() {
       } else {
         // 좋아요 취소 (현재 true -> false로 변함)
         result = await unlikeFeedPost(id, accessToken);
-        console.log(result.message);
       }
 
       if (!result?.success) {
