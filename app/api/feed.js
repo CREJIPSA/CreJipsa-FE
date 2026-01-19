@@ -83,3 +83,14 @@ export const likeFeedPost = async (communityId, accessToken) => {
   });
   return await response.json();
 };
+
+export const unlikeFeedPost = async (communityId, accessToken) => {
+  const response = await fetch(`${API_BASE_URL}/likes/${communityId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  return await response.json();
+};

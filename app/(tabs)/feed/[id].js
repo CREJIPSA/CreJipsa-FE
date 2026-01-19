@@ -1,5 +1,5 @@
 import { AuthContext } from '@/app/_layout';
-import { fetchPostDetail, likeFeedPost } from '@/app/api/feed';
+import { fetchPostDetail, likeFeedPost, unlikeFeedPost } from '@/app/api/feed';
 import CategoryBadge from '@/app/components/feed/CategoryBadge';
 import SearchBar from '@/app/components/feed/SearchBar';
 import { COMMUNITY_FIELDS } from '@/app/constants/common/COMMUNITY_FIELDS';
@@ -83,18 +83,25 @@ export default function FeedDetail() {
     setLikeCount(prev => (nextState ? prev + 1 : prev - 1));
 
     try {
-      const result = await likeFeedPost(id, accessToken);
-      console.log(result.message);
+      let result;
+      if (nextState) {
+        // 좋아요 등록 (현재 false -> true로 변함)
+        result = await likeFeedPost(id, accessToken);
+      } else {
+        // 좋아요 취소 (현재 true -> false로 변함)
+        result = await unlikeFeedPost(id, accessToken);
+        console.log(result.message);
+      }
 
-      if (!result.success) {
+      if (!result?.success) {
         setIsLiked(!nextState);
         setLikeCount(prev => (nextState ? prev - 1 : prev + 1));
-        Alert.alert('알림', '처리에 실패했습니다.');
+        Alert.alert('알림', result?.message || '처리에 실패했습니다.');
       }
     } catch (error) {
       setIsLiked(!nextState);
       setLikeCount(prev => (nextState ? prev - 1 : prev + 1));
-      console.error('Like Error:', error);
+      console.error('Like Toggle Error:', error);
     }
   };
 
