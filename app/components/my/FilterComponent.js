@@ -25,7 +25,7 @@ export default function FilterComponent({
               key={index}
               style={styles.optionItem}
               onPress={() => {
-                onSelect(option);
+                onSelect?.(option);
                 onPress();
               }}
             >
