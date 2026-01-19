@@ -1,3 +1,5 @@
+import { parseJsonResponse } from './utils.js';
+
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export const fetchCommunityPosts = async (field = 'RECOMMEND', accessToken) => {
@@ -11,11 +13,7 @@ export const fetchCommunityPosts = async (field = 'RECOMMEND', accessToken) => {
     },
   });
 
-  if (!response.ok) {
-    throw new Error(`API Error: ${response.status}`);
-  }
-
-  return await response.json();
+  return await parseJsonResponse(response);
 };
 
 export const fetchPostDetail = async (communityId, accessToken) => {
@@ -27,11 +25,10 @@ export const fetchPostDetail = async (communityId, accessToken) => {
     },
   });
 
-  return await response.json();
+  return await parseJsonResponse(response);
 };
 
 export const getPresignedUrl = async (fileName, contentType, token) => {
-  // 슬래시(/) 등 특수문자가 포함된 파라미터를 안전하게 인코딩합니다.
   const encodedFileName = encodeURIComponent(fileName);
   const encodedContentType = encodeURIComponent(contentType);
 
@@ -45,14 +42,14 @@ export const getPresignedUrl = async (fileName, contentType, token) => {
     },
   });
 
-  return await response.json();
+  return await parseJsonResponse(response);
 };
 
 export const uploadFileToS3 = async (uploadUrl, uri, contentType) => {
   const response = await fetch(uri);
   const blob = await response.blob();
 
-  return await fetch(uploadUrl, {
+  const uploadResponse = await fetch(uploadUrl, {
     method: 'PUT',
     body: blob,
     headers: {
@@ -60,6 +57,8 @@ export const uploadFileToS3 = async (uploadUrl, uri, contentType) => {
       'x-amz-acl': 'public-read',
     },
   });
+
+  return await parseJsonResponse(uploadResponse);
 };
 
 export const createPost = async (postData, accessToken) => {
@@ -71,5 +70,30 @@ export const createPost = async (postData, accessToken) => {
     },
     body: JSON.stringify(postData),
   });
-  return await response.json();
+
+  return await parseJsonResponse(response);
+};
+
+export const likeFeedPost = async (communityId, accessToken) => {
+  const response = await fetch(`${API_BASE_URL}/likes/${communityId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return await parseJsonResponse(response);
+};
+
+export const unlikeFeedPost = async (communityId, accessToken) => {
+  const response = await fetch(`${API_BASE_URL}/likes/${communityId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return await parseJsonResponse(response);
 };

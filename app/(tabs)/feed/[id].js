@@ -1,5 +1,5 @@
 import { AuthContext } from '@/app/_layout';
-import { fetchPostDetail } from '@/app/api/feed';
+import { fetchPostDetail, likeFeedPost, unlikeFeedPost } from '@/app/api/feed';
 import CategoryBadge from '@/app/components/feed/CategoryBadge';
 import SearchBar from '@/app/components/feed/SearchBar';
 import { COMMUNITY_FIELDS } from '@/app/constants/common/COMMUNITY_FIELDS';
@@ -14,6 +14,7 @@ import ReplyArrowIcon from '@/assets/svgs/feed/reply-arrow-icon';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Fragment, useContext, useEffect, useState } from 'react';
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -38,6 +39,8 @@ export default function FeedDetail() {
   const [text, setText] = useState('');
   const [commentText, setCommentText] = useState('');
   const [replyTarget, setReplyTarget] = useState(null);
+  const [isLiked, setIsLiked] = useState(false); // 로컬 상태
+  const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
     const loadDetail = async () => {
@@ -46,7 +49,7 @@ export default function FeedDetail() {
         const data = await fetchPostDetail(id, accessToken);
         if (data.success) {
           setPost(data.result);
-          console.log(data.result);
+          setLikeCount(data.result.likeCount || 0);
         }
       } catch (error) {
         console.error('상세 조회 실패:', error);
@@ -73,6 +76,33 @@ export default function FeedDetail() {
       </View>
     );
   }
+
+  const handleLikePress = async () => {
+    const nextState = !isLiked;
+    setIsLiked(nextState);
+    setLikeCount(prev => (nextState ? prev + 1 : prev - 1));
+
+    try {
+      let result;
+      if (nextState) {
+        // 좋아요 등록 (현재 false -> true로 변함)
+        result = await likeFeedPost(id, accessToken);
+      } else {
+        // 좋아요 취소 (현재 true -> false로 변함)
+        result = await unlikeFeedPost(id, accessToken);
+      }
+
+      if (!result?.success) {
+        setIsLiked(!nextState);
+        setLikeCount(prev => (nextState ? prev - 1 : prev + 1));
+        Alert.alert('알림', result?.message || '처리에 실패했습니다.');
+      }
+    } catch (error) {
+      setIsLiked(!nextState);
+      setLikeCount(prev => (nextState ? prev - 1 : prev + 1));
+      console.error('Like Toggle Error:', error);
+    }
+  };
 
   const imageCount = post.imageUrls?.length || 0;
   const iconColor = isDark ? '#FAFAFA' : '#141414';
@@ -152,11 +182,30 @@ export default function FeedDetail() {
                 </View>
               )}
               <View style={styles.reactionRow}>
-                <View style={styles.reactionBox}>
-                  <LikedIcon size={16} color={primaryColors.color} />
-                  <Text style={styles.defaultText}>좋아요</Text>
-                  <Text style={styles.defaultText}>{post.likeCount}</Text>
-                </View>
+                <Pressable style={styles.reactionBox} onPress={handleLikePress}>
+                  <LikedIcon
+                    size={16}
+                    color={
+                      isLiked ? primaryColors.pointColor : primaryColors.color
+                    }
+                  />
+                  <Text
+                    style={[
+                      styles.defaultText,
+                      isLiked && { color: primaryColors.pointColor },
+                    ]}
+                  >
+                    좋아요
+                  </Text>
+                  <Text
+                    style={[
+                      styles.defaultText,
+                      isLiked && { color: primaryColors.pointColor },
+                    ]}
+                  >
+                    {likeCount}
+                  </Text>
+                </Pressable>
                 <View style={styles.reactionBox}>
                   <CommentIcon size={16} color={primaryColors.color} />
                   <Text style={styles.defaultText}>댓글</Text>
