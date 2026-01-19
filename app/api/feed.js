@@ -1,3 +1,5 @@
+import { parseJsonResponse } from './utils.js';
+
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export const fetchCommunityPosts = async (field = 'RECOMMEND', accessToken) => {
@@ -11,11 +13,7 @@ export const fetchCommunityPosts = async (field = 'RECOMMEND', accessToken) => {
     },
   });
 
-  if (!response.ok) {
-    throw new Error(`API Error: ${response.status}`);
-  }
-
-  return await response.json();
+  return await parseJsonResponse(response);
 };
 
 export const fetchPostDetail = async (communityId, accessToken) => {
@@ -27,7 +25,7 @@ export const fetchPostDetail = async (communityId, accessToken) => {
     },
   });
 
-  return await response.json();
+  return await parseJsonResponse(response);
 };
 
 export const getPresignedUrl = async (fileName, contentType, token) => {
@@ -44,14 +42,14 @@ export const getPresignedUrl = async (fileName, contentType, token) => {
     },
   });
 
-  return await response.json();
+  return await parseJsonResponse(response);
 };
 
 export const uploadFileToS3 = async (uploadUrl, uri, contentType) => {
   const response = await fetch(uri);
   const blob = await response.blob();
 
-  return await fetch(uploadUrl, {
+  const uploadResponse = await fetch(uploadUrl, {
     method: 'PUT',
     body: blob,
     headers: {
@@ -59,6 +57,8 @@ export const uploadFileToS3 = async (uploadUrl, uri, contentType) => {
       'x-amz-acl': 'public-read',
     },
   });
+
+  return await parseJsonResponse(uploadResponse);
 };
 
 export const createPost = async (postData, accessToken) => {
@@ -70,7 +70,8 @@ export const createPost = async (postData, accessToken) => {
     },
     body: JSON.stringify(postData),
   });
-  return await response.json();
+
+  return await parseJsonResponse(response);
 };
 
 export const likeFeedPost = async (communityId, accessToken) => {
@@ -81,7 +82,8 @@ export const likeFeedPost = async (communityId, accessToken) => {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  return await response.json();
+
+  return await parseJsonResponse(response);
 };
 
 export const unlikeFeedPost = async (communityId, accessToken) => {
@@ -92,5 +94,6 @@ export const unlikeFeedPost = async (communityId, accessToken) => {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  return await response.json();
+
+  return await parseJsonResponse(response);
 };
