@@ -46,6 +46,7 @@ export default function FeedDetail() {
   const [replyTarget, setReplyTarget] = useState(null);
   const [isLiked, setIsLiked] = useState(false); // 로컬 상태
   const [likeCount, setLikeCount] = useState(0);
+  const [isSending, setIsSending] = useState(false);
 
   const fetchPost = useCallback(async () => {
     try {
@@ -149,11 +150,12 @@ export default function FeedDetail() {
   };
 
   const handleSendComment = async () => {
-    if (!commentText.trim()) return;
+    if (!commentText.trim() || isSending) return;
 
     try {
-      let finalContent = commentText;
+      setIsSending(true);
 
+      let finalContent = commentText;
       if (replyTarget) {
         const prefix = `@${replyTarget.name} `;
 
@@ -174,13 +176,15 @@ export default function FeedDetail() {
 
       const result = await createComment(id, commentData, accessToken);
 
-      if (result.success) {
+      if (result?.success) {
         Alert.alert('댓글이 등록되었습니다.');
         cancelReply();
         await fetchPost();
       }
     } catch (error) {
       Alert.alert('오류', error.message || '댓글 등록에 실패했습니다.');
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -378,7 +382,11 @@ export default function FeedDetail() {
             value={commentText}
             onChangeText={handleCommentChange}
           />
-          <Pressable onPress={handleSendComment}>
+          <Pressable
+            onPress={handleSendComment}
+            disabled={isSending}
+            style={{ opacity: isSending ? 0.5 : 1 }}
+          >
             <CommentSendIcon
               bgColor={primaryColors.pointColor}
               iconColor={primaryColors.iconPrimaryColor}
