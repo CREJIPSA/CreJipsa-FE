@@ -152,7 +152,12 @@ export default function FeedDetail() {
   };
 
   const handleSendComment = async () => {
-    if (!commentText.trim() || isSending) return;
+    if (isSending) return;
+
+    if (!commentText.trim()) {
+      Alert.alert('알림', '댓글 내용을 입력해주세요.');
+      return;
+    }
 
     try {
       setIsSending(true);
