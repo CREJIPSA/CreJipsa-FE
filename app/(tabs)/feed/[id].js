@@ -51,10 +51,12 @@ export default function FeedDetail() {
   const fetchPost = useCallback(async () => {
     try {
       const data = await fetchPostDetail(id, accessToken);
-      if (data?.success) {
-        setPost(data.result);
-        setLikeCount(data.result.likeCount || 0);
+
+      if (!data?.success) {
+        throw new Error(data?.message || '데이터를 불러오지 못했습니다.');
       }
+      setPost(data.result);
+      setLikeCount(data.result.likeCount || 0);
     } catch (error) {
       Alert.alert('알림', error.message || '데이터를 불러오지 못했습니다.');
 
