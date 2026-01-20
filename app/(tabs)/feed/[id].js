@@ -65,18 +65,12 @@ export default function FeedDetail() {
   }, [id, accessToken, router]);
 
   useEffect(() => {
-    let isMounted = true;
-
     const init = async () => {
       setLoading(true);
       await fetchPost();
-      if (isMounted) setLoading(false);
+      setLoading(false);
     };
-
     init();
-    return () => {
-      isMounted = false;
-    };
   }, [fetchPost]);
 
   if (loading || !post) {
