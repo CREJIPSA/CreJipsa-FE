@@ -97,3 +97,16 @@ export const unlikeFeedPost = async (communityId, accessToken) => {
 
   return await parseJsonResponse(response);
 };
+
+export const createComment = async (communityId, commentData, accessToken) => {
+  const response = await fetch(`${API_BASE_URL}/comment/${communityId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(commentData),
+  });
+
+  return await parseJsonResponse(response);
+};

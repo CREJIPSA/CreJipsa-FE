@@ -1,5 +1,10 @@
 import { AuthContext } from '@/app/_layout';
-import { fetchPostDetail, likeFeedPost, unlikeFeedPost } from '@/app/api/feed';
+import {
+  createComment,
+  fetchPostDetail,
+  likeFeedPost,
+  unlikeFeedPost,
+} from '@/app/api/feed';
 import CategoryBadge from '@/app/components/feed/CategoryBadge';
 import SearchBar from '@/app/components/feed/SearchBar';
 import { COMMUNITY_FIELDS } from '@/app/constants/common/COMMUNITY_FIELDS';
@@ -12,7 +17,7 @@ import BackIcon from '@/assets/svgs/feed/back-icon';
 import CommentSendIcon from '@/assets/svgs/feed/comment-send-icon';
 import ReplyArrowIcon from '@/assets/svgs/feed/reply-arrow-icon';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Fragment, useContext, useEffect, useState } from 'react';
+import { Fragment, useCallback, useContext, useEffect, useState } from 'react';
 import {
   Alert,
   Image,
@@ -41,24 +46,35 @@ export default function FeedDetail() {
   const [replyTarget, setReplyTarget] = useState(null);
   const [isLiked, setIsLiked] = useState(false); // 로컬 상태
   const [likeCount, setLikeCount] = useState(0);
+  const [isSending, setIsSending] = useState(false);
+
+  const fetchPost = useCallback(async () => {
+    try {
+      const data = await fetchPostDetail(id, accessToken);
+
+      if (!data?.success) {
+        throw new Error(data?.message || '데이터를 불러오지 못했습니다.');
+      }
+      setPost(data.result);
+      setLikeCount(data.result.likeCount || 0);
+    } catch (error) {
+      Alert.alert('알림', error.message || '데이터를 불러오지 못했습니다.');
+
+      setPost(prev => {
+        if (!prev) router.back();
+        return prev;
+      });
+    }
+  }, [id, accessToken, router]);
 
   useEffect(() => {
-    const loadDetail = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchPostDetail(id, accessToken);
-        if (data.success) {
-          setPost(data.result);
-          setLikeCount(data.result.likeCount || 0);
-        }
-      } catch (error) {
-        console.error('상세 조회 실패:', error);
-      } finally {
-        setLoading(false);
-      }
+    const init = async () => {
+      setLoading(true);
+      await fetchPost();
+      setLoading(false);
     };
-    loadDetail();
-  }, [id, accessToken]);
+    init();
+  }, [fetchPost]);
 
   if (loading || !post) {
     return (
@@ -107,9 +123,76 @@ export default function FeedDetail() {
   const imageCount = post.imageUrls?.length || 0;
   const iconColor = isDark ? '#FAFAFA' : '#141414';
 
+  const cancelReply = () => {
+    setReplyTarget(null);
+    setCommentText('');
+  };
+
+  const handleCommentChange = input => {
+    if (replyTarget) {
+      const prefix = `@${replyTarget.name} `;
+
+      if (!input.startsWith(prefix)) {
+        setCommentText(prefix);
+      } else {
+        setCommentText(input);
+      }
+    } else {
+      setCommentText(input);
+    }
+  };
+
   const handleReplyPress = (commentId, authorName) => {
-    setReplyTarget({ id: commentId, name: authorName });
-    setCommentText(`@${authorName} `);
+    if (replyTarget?.id === commentId) {
+      cancelReply();
+    } else {
+      setReplyTarget({ id: commentId, name: authorName });
+      setCommentText(`@${authorName} `);
+    }
+  };
+
+  const handleSendComment = async () => {
+    if (isSending) return;
+
+    if (!commentText.trim()) {
+      Alert.alert('알림', '댓글 내용을 입력해주세요.');
+      return;
+    }
+
+    try {
+      setIsSending(true);
+
+      let finalContent = commentText;
+      if (replyTarget) {
+        const prefix = `@${replyTarget.name} `;
+
+        if (commentText.startsWith(prefix)) {
+          finalContent = commentText.slice(prefix.length);
+        }
+      }
+
+      if (!finalContent.trim()) {
+        Alert.alert('알림', '답글 내용을 입력해주세요.');
+        return;
+      }
+
+      const commentData = {
+        content: finalContent.trim(),
+        parentId: replyTarget ? replyTarget.id : null,
+      };
+
+      const result = await createComment(id, commentData, accessToken);
+
+      if (result?.success) {
+        Alert.alert('댓글이 등록되었습니다.');
+        cancelReply();
+        await fetchPost();
+      }
+    } catch (error) {
+      Alert.alert('오류', error.message || '댓글 등록에 실패했습니다.');
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -304,12 +387,18 @@ export default function FeedDetail() {
             placeholder="댓글을 입력하세요"
             placeholderTextColor={isDark ? '#454545' : '#F4F2F2'}
             value={commentText}
-            onChangeText={setCommentText}
+            onChangeText={handleCommentChange}
           />
-          <CommentSendIcon
-            bgColor={primaryColors.pointColor}
-            iconColor={primaryColors.iconPrimaryColor}
-          />
+          <Pressable
+            onPress={handleSendComment}
+            disabled={isSending}
+            style={{ opacity: isSending ? 0.5 : 1 }}
+          >
+            <CommentSendIcon
+              bgColor={primaryColors.pointColor}
+              iconColor={primaryColors.iconPrimaryColor}
+            />
+          </Pressable>
         </View>
       </View>
     </KeyboardAvoidingView>

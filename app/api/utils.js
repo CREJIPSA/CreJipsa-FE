@@ -8,7 +8,7 @@ export const parseJsonResponse = async response => {
     data = null;
   }
 
-  if (!response.ok) {
+  if (!response.ok || (data && data.success === false)) {
     const errorMsg =
       data?.message || data?.error || `서버 에러 (${response.status})`;
 
