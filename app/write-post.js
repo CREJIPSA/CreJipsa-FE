@@ -1,8 +1,8 @@
 import { createPost, getPresignedUrl, uploadFileToS3 } from '@/app/api/feed';
 import {
   COMMUNITY_FIELDS,
-  getCommunityFieldLabels,
   getFieldKeyByLabel,
+  getWriteFieldOptions,
 } from '@/app/constants/common/COMMUNITY_FIELDS';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -171,7 +171,7 @@ export default function WritePost() {
           text={COMMUNITY_FIELDS[selectedField]}
           isOpen={openedFilter === 'category'}
           onPress={() => toggleFilter('category')}
-          options={getCommunityFieldLabels()}
+          options={getWriteFieldOptions}
           onSelect={handleSelectFilter}
         />
       </View>

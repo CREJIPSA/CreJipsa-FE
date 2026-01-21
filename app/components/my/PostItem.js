@@ -1,13 +1,62 @@
+import { AuthContext } from '@/app/_layout';
+import { deletePost } from '@/app/api/my';
+import { COMMUNITY_FIELDS } from '@/app/constants/common/COMMUNITY_FIELDS';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import CommentIcon from '@/assets/svgs/common/comment-icon';
 import LikedIcon from '@/assets/svgs/common/like-icon';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { useContext } from 'react';
+import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import DeleteComponent from './DeleteComponent';
 
-export default function PostItem({ post, isMyReplys = false }) {
+export default function PostItem({
+  post,
+  isMyReplys = false,
+  onDeleteSuccess,
+}) {
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
+  const { accessToken } = useContext(AuthContext);
 
-  const hasImage = post.imageUrls && post.imageUrls.length > 0;
+  const hasImage = !!post.thumbnailUrl;
+
+  const handlePress = () => {
+    router.push(`/feed/${post.communityId}`);
+  };
+
+  const handleDelete = () => {
+    Alert.alert(
+      '게시글 삭제',
+      '이 게시글을 삭제하시겠습니까?',
+      [
+        {
+          text: '취소',
+          style: 'cancel',
+        },
+        {
+          text: '삭제',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const result = await deletePost(post.communityId, accessToken);
+
+              if (result.success) {
+                Alert.alert('성공', '게시글이 삭제되었습니다.');
+                if (onDeleteSuccess) {
+                  onDeleteSuccess(post.communityId);
+                }
+              } else {
+                Alert.alert('실패', '게시글 삭제에 실패했습니다.');
+              }
+            } catch (error) {
+              console.error('Delete error:', error);
+              Alert.alert('오류', '게시글 삭제 중 오류가 발생했습니다.');
+            }
+          },
+        },
+      ],
+      { cancelable: true },
+    );
+  };
 
   const textContent = (
     <>
@@ -16,18 +65,15 @@ export default function PostItem({ post, isMyReplys = false }) {
           <Text style={styles.titleText} numberOfLines={1}>
             {post.title}
           </Text>
-          <DeleteComponent
-            isDark={isDark}
-            onDelete={() => console.log(`${post.id}번 삭제`)}
-          />
+          <DeleteComponent isDark={isDark} onDelete={handleDelete} />
         </View>
       )}
       <Text style={styles.contentText} numberOfLines={2}>
-        {post.content}
+        {post.contentPreview}
       </Text>
       <View style={styles.detailRow}>
-        <Text style={styles.detailText}># {post.category}</Text>
-        <Text style={styles.detailText}>{post.timeAgo}</Text>
+        <Text style={styles.detailText}>#{COMMUNITY_FIELDS[post.field]}</Text>
+        <Text style={styles.detailText}>{post.relativeTime}</Text>
       </View>
       {!isMyReplys && (
         <View style={styles.reactionRow}>
@@ -41,22 +87,19 @@ export default function PostItem({ post, isMyReplys = false }) {
   );
 
   return (
-    <Pressable style={styles.container}>
+    <Pressable style={styles.container} onPress={handlePress}>
       {hasImage && !isMyReplys ? (
         <View style={styles.contentWrapperCol}>
           <View style={styles.titleTextRow}>
             <Text style={styles.titleText} numberOfLines={1}>
               {post.title}
             </Text>
-            <DeleteComponent
-              isDark={isDark}
-              onDelete={() => console.log(`${post.id}번 삭제`)}
-            />
+            <DeleteComponent isDark={isDark} onDelete={handleDelete} />
           </View>
           <View style={styles.contentWrapperRow}>
             <View style={styles.contentWrapperCol}>{textContent}</View>
             <Image
-              source={{ uri: post.imageUrls?.[0] }}
+              source={{ uri: post.thumbnailUrl }}
               style={styles.thumbnail}
               resizeMode="cover"
             />
