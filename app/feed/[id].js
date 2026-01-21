@@ -48,7 +48,6 @@ export default function FeedDetail() {
   const fetchPost = useCallback(async () => {
     try {
       const data = await fetchPostDetail(id, accessToken);
-      console.log(data.result.writer);
 
       if (!data?.success) {
         throw new Error(data?.message || '데이터를 불러오지 못했습니다.');
