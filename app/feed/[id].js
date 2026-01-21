@@ -208,16 +208,15 @@ export default function FeedDetail() {
                   <Text style={styles.authorName}>{post.writer.nickName}</Text>
                   <View style={styles.authorProfileDetailRow}>
                     {post.writer.mainPlatform && (
-                      <Image
-                        source={getPlatformLogo(post.writer.mainPlatform)}
-                        style={styles.authorPlatformImage}
-                      />
-                    )}
-
-                    {post.writer.mainPlatformId && (
-                      <Text style={styles.authorProfileDetailText}>
-                        {post.writer.mainPlatformId}
-                      </Text>
+                      <>
+                        <Image
+                          source={getPlatformLogo(post.writer.mainPlatform)}
+                          style={styles.authorPlatformImage}
+                        />
+                        <Text style={styles.authorProfileDetailText}>
+                          {post.writer.mainPlatformId}
+                        </Text>
+                      </>
                     )}
                     <Text style={styles.authorProfileDetailText}>
                       {post.relativeTime}
@@ -311,22 +310,20 @@ export default function FeedDetail() {
                         </Text>
                         <View style={styles.authorProfileDetailRow}>
                           {comment.writer.mainPlatform && (
-                            <Image
-                              source={getPlatformLogo(
-                                comment.writer.mainPlatform,
-                              )}
-                              style={styles.authorPlatformImage}
-                            />
+                            <>
+                              <Image
+                                source={getPlatformLogo(
+                                  comment.writer.mainPlatform,
+                                )}
+                                style={styles.authorPlatformImage}
+                              />
+                              <Text
+                                style={styles.commentAuthorProfileDetailText}
+                              >
+                                {comment.writer.mainPlatformId}
+                              </Text>
+                            </>
                           )}
-
-                          {comment.writer.mainPlatformId && (
-                            <Text style={styles.commentAuthorProfileDetailText}>
-                              {comment.writer.mainPlatformId}
-                            </Text>
-                          )}
-                          <Text style={styles.commentAuthorProfileDetailText}>
-                            {comment.relativeTime}
-                          </Text>
                         </View>
                       </View>
                     </View>
@@ -349,20 +346,21 @@ export default function FeedDetail() {
                             </Text>
                             <View style={styles.authorProfileDetailRow}>
                               {reply.writer.mainPlatform && (
-                                <Image
-                                  source={getPlatformLogo(
-                                    reply.writer.mainPlatform,
-                                  )}
-                                  style={styles.authorPlatformImage}
-                                />
-                              )}
-
-                              {reply.writer.mainPlatformId && (
-                                <Text
-                                  style={styles.commentAuthorProfileDetailText}
-                                >
-                                  {reply.writer.mainPlatformId}
-                                </Text>
+                                <>
+                                  <Image
+                                    source={getPlatformLogo(
+                                      reply.writer.mainPlatform,
+                                    )}
+                                    style={styles.authorPlatformImage}
+                                  />
+                                  <Text
+                                    style={
+                                      styles.commentAuthorProfileDetailText
+                                    }
+                                  >
+                                    {reply.writer.mainPlatformId}
+                                  </Text>
+                                </>
                               )}
                               <Text
                                 style={styles.commentAuthorProfileDetailText}
