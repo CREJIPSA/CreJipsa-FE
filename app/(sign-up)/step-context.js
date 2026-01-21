@@ -103,11 +103,11 @@ export default function StepProvider({ children }) {
         payload.activeTiktok = channelId;
       }
     });
-    if (channelInfo.activeYoutube) {
+    if (payload.activeYoutube) {
       payload.mainPlatform = 'YOUTUBE';
-    } else if (channelInfo.activeInstagram) {
+    } else if (payload.activeInstagram) {
       payload.mainPlatform = 'INSTAGRAM';
-    } else if (channelInfo.activeTiktok) {
+    } else if (payload.activeTiktok) {
       payload.mainPlatform = 'TIKTOK';
     }
     return payload;

@@ -58,12 +58,12 @@ export default function StoryboardEdit() {
     if (!cuts?.length) return false;
     return cuts.some(cut => !isCutEmpty(cut));
   };
-  const isStoryboardEmpty = () => {
-    const t = title.trim();
-    if (t) return false;
+  const isStoryboardEmpty = (t, c) => {
+    const trimmedTitle = (t ?? '').trim();
+    if (trimmedTitle) return false;
 
-    if (!cuts?.length) return true;
-    if (cuts.length === 1 && isCutEmpty(cuts[0])) return true;
+    if (!c?.length) return true;
+    if (c.length === 1 && isCutEmpty(c[0])) return true;
 
     return false;
   };
@@ -135,7 +135,13 @@ export default function StoryboardEdit() {
             throw new Error(`Storyboard API error: ${res.status}`);
           }
 
-          const data = raw ? JSON.parse(raw) : null;
+          let data = null;
+          try {
+            data = raw ? JSON.parse(raw) : null;
+          } catch (e) {
+            console.error('Failed to parse JSON response', e);
+            return;
+          }
 
           const loadedCuts = (data?.result?.cuts ?? []).map(cut => ({
             localId: String(cut.cutId),
@@ -181,7 +187,7 @@ export default function StoryboardEdit() {
 
   // 스토리보드 저장 시 컷 추가 + 컷 수정 + 제목 수정
   const saveStoryboard = async () => {
-    await fetch(
+    const titleRes = await fetch(
       `https://dev.crezipsa.site/api/storyboard/${storyboardId}/title`,
       {
         method: 'PATCH',
@@ -194,6 +200,15 @@ export default function StoryboardEdit() {
         }),
       },
     );
+    if (!titleRes.ok) {
+      const raw = await titleRes.text();
+      console.log(
+        'Update Storyboard Title API response:',
+        titleRes.status,
+        raw,
+      );
+      throw new Error(`Update Storyboard Title API error: ${titleRes.status}`);
+    }
 
     const meaningfulCuts = cuts.filter(cut => !isCutEmpty(cut));
 

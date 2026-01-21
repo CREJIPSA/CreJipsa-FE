@@ -15,30 +15,45 @@ export default function StoryboardStorage() {
   const fetchList = useCallback(async () => {
     if (!accessToken) return;
 
-    const res = await fetch('https://dev.crezipsa.site/api/storyboard', {
-      method: 'GET',
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+    try {
+      const res = await fetch('https://dev.crezipsa.site/api/storyboard', {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
 
-    const raw = await res.text();
-    console.log('my storyboard api status', res.status);
-    console.log('my storyboard api raw response', raw);
+      const raw = await res.text();
+      console.log('my storyboard api status', res.status);
+      console.log('my storyboard api raw response', raw);
 
-    if (!res.ok) throw new Error(`My Storyboard API error: ${res.status}`);
+      if (!res.ok) {
+        console.error(
+          `Fetch My Storyboard List API error: ${res.status} raw=${raw}`,
+        );
+        return;
+      }
 
-    const data = raw ? JSON.parse(raw) : null;
-    const result = data?.result;
+      let data = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        console.error('Failed to parse JSON response', e);
+        return;
+      }
+      const result = data?.result;
 
-    if (!Array.isArray(result)) return;
+      if (!Array.isArray(result)) return;
 
-    const nextList = result
-      .filter(item => item?.createdAt)
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
+      const nextList = result
+        .filter(item => item?.createdAt)
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        );
 
-    setMyStoryboardList(nextList);
+      setMyStoryboardList(nextList);
+    } catch (error) {
+      console.error('Failed to fetch my storyboard list', error);
+    }
   }, [accessToken]);
 
   useFocusEffect(

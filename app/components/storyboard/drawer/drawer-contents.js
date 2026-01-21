@@ -214,9 +214,6 @@ export default function StoryboardDrawerDefault({ onClose }) {
                 console.error('Failed to parse JSON response', e);
               }
 
-              if (!res.ok)
-                throw new Error(`Create Storyboard API error: ${res.status}`);
-
               return data;
             })
             .then(data => {

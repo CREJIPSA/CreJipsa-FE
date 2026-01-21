@@ -55,7 +55,13 @@ const MessageItem = ({ text, isUser, chatMessageId }) => {
         );
       }
 
-      const data = raw ? JSON.parse(raw) : null;
+      let data = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        console.error('Failed to parse JSON response', e);
+      }
+
       const storyboardId = data?.result?.storyboardId;
 
       if (!storyboardId)
