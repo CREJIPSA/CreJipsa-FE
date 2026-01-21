@@ -1,18 +1,63 @@
+import { AuthContext } from '@/app/_layout';
+import { deletePost } from '@/app/api/my';
 import { COMMUNITY_FIELDS } from '@/app/constants/common/COMMUNITY_FIELDS';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import CommentIcon from '@/assets/svgs/common/comment-icon';
 import LikedIcon from '@/assets/svgs/common/like-icon';
 import { router } from 'expo-router';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useContext } from 'react';
+import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import DeleteComponent from './DeleteComponent';
 
-export default function PostItem({ post, isMyReplys = false }) {
+export default function PostItem({
+  post,
+  isMyReplys = false,
+  onDeleteSuccess,
+}) {
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
+  const { accessToken } = useContext(AuthContext);
 
   const hasImage = !!post.thumbnailUrl;
 
   const handlePress = () => {
     router.push(`/feed/${post.communityId}`);
+  };
+
+  const handleDelete = () => {
+    Alert.alert(
+      '게시글 삭제',
+      '이 게시글을 삭제하시겠습니까?',
+      [
+        {
+          text: '취소',
+          style: 'cancel',
+        },
+        {
+          text: '삭제',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              console.log(post.communityId);
+              const result = await deletePost(post.communityId, accessToken);
+              console.log(result);
+
+              if (result.success) {
+                Alert.alert('성공', '게시글이 삭제되었습니다.');
+                if (onDeleteSuccess) {
+                  onDeleteSuccess(post.communityId);
+                }
+              } else {
+                Alert.alert('실패', '게시글 삭제에 실패했습니다.');
+              }
+            } catch (error) {
+              console.error('Delete error:', error);
+              Alert.alert('오류', '게시글 삭제 중 오류가 발생했습니다.');
+            }
+          },
+        },
+      ],
+      { cancelable: true },
+    );
   };
 
   const textContent = (
@@ -22,10 +67,7 @@ export default function PostItem({ post, isMyReplys = false }) {
           <Text style={styles.titleText} numberOfLines={1}>
             {post.title}
           </Text>
-          <DeleteComponent
-            isDark={isDark}
-            onDelete={() => console.log(`${post.id}번 삭제`)}
-          />
+          <DeleteComponent isDark={isDark} onDelete={handleDelete} />
         </View>
       )}
       <Text style={styles.contentText} numberOfLines={2}>
@@ -54,10 +96,7 @@ export default function PostItem({ post, isMyReplys = false }) {
             <Text style={styles.titleText} numberOfLines={1}>
               {post.title}
             </Text>
-            <DeleteComponent
-              isDark={isDark}
-              onDelete={() => console.log(`${post.id}번 삭제`)}
-            />
+            <DeleteComponent isDark={isDark} onDelete={handleDelete} />
           </View>
           <View style={styles.contentWrapperRow}>
             <View style={styles.contentWrapperCol}>{textContent}</View>

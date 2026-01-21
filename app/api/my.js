@@ -29,3 +29,16 @@ export const fetchMyPosts = async (params, accessToken) => {
 
   return await parseJsonResponse(response);
 };
+
+export const deletePost = async (communityId, accessToken) => {
+  const url = `${API_BASE_URL}/community/${communityId}`;
+
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return await parseJsonResponse(response);
+};

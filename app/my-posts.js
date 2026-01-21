@@ -69,8 +69,6 @@ export default function MyPosts() {
 
         const data = await fetchMyPosts(params, accessToken);
 
-        console.log(data.result);
-
         if (data?.success) {
           const newPosts = data.result || [];
 
@@ -123,6 +121,11 @@ export default function MyPosts() {
     setOpenedFilter(openedFilter === filterName ? null : filterName);
   };
 
+  const handleDeleteSuccess = communityId => {
+    // 삭제된 게시글을 목록에서 제거
+    setPosts(prev => prev.filter(post => post.communityId !== communityId));
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerContainer}>
@@ -153,7 +156,9 @@ export default function MyPosts() {
       <FlatList
         style={styles.contentsListContainer}
         data={posts}
-        renderItem={({ item }) => <PostItem post={item} />}
+        renderItem={({ item }) => (
+          <PostItem post={item} onDeleteSuccess={handleDeleteSuccess} />
+        )}
         keyExtractor={item => item.communityId.toString()}
         onRefresh={onRefresh}
         refreshing={isRefreshing}
