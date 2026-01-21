@@ -37,9 +37,7 @@ export default function PostItem({
           style: 'destructive',
           onPress: async () => {
             try {
-              console.log(post.communityId);
               const result = await deletePost(post.communityId, accessToken);
-              console.log(result);
 
               if (result.success) {
                 Alert.alert('성공', '게시글이 삭제되었습니다.');

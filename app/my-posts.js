@@ -47,7 +47,6 @@ export default function MyPosts() {
 
   const loadPosts = useCallback(
     async (targetPage, isFresh = false) => {
-      console.log(targetPage);
       if (isFetching.current) {
         return;
       }
