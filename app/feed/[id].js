@@ -324,6 +324,9 @@ export default function FeedDetail() {
                               </Text>
                             </>
                           )}
+                          <Text style={styles.commentAuthorProfileDetailText}>
+                            {comment.relativeTime}
+                          </Text>
                         </View>
                       </View>
                     </View>
