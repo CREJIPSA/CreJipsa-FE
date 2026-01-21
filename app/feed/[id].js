@@ -41,7 +41,7 @@ export default function FeedDetail() {
   const [loading, setLoading] = useState(true);
   const [commentText, setCommentText] = useState('');
   const [replyTarget, setReplyTarget] = useState(null);
-  const [isLiked, setIsLiked] = useState(false); // 로컬 상태
+  const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isSending, setIsSending] = useState(false);
 
@@ -54,7 +54,7 @@ export default function FeedDetail() {
       }
       setPost(data.result);
       setLikeCount(data.result.likeCount || 0);
-      setIsLiked(data.result.isLiked);
+      setIsLiked(Boolean(data.result.isLiked));
     } catch (error) {
       Alert.alert('알림', error.message || '데이터를 불러오지 못했습니다.');
 
