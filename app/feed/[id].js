@@ -381,7 +381,14 @@ export default function FeedDetail() {
             ))}
           </View>
         </ScrollView>
-        <View style={styles.bottomBar}>
+        <View
+          style={[
+            styles.bottomBar,
+            {
+              paddingBottom: insets.bottom > 0 ? insets.bottom + 12 : 20,
+            },
+          ]}
+        >
           <TextInput
             style={styles.commentInput}
             placeholder="댓글을 입력하세요"
