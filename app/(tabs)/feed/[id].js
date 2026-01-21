@@ -39,7 +39,6 @@ export default function FeedDetail() {
 
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [text, setText] = useState('');
   const [commentText, setCommentText] = useState('');
   const [replyTarget, setReplyTarget] = useState(null);
   const [isLiked, setIsLiked] = useState(false); // 로컬 상태
@@ -114,7 +113,6 @@ export default function FeedDetail() {
   };
 
   const imageCount = post.imageUrls?.length || 0;
-  const iconColor = isDark ? '#FAFAFA' : '#141414';
 
   const cancelReply = () => {
     setReplyTarget(null);
