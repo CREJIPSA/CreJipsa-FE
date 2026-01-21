@@ -51,12 +51,14 @@ export default function FeedDetail() {
   const fetchPost = useCallback(async () => {
     try {
       const data = await fetchPostDetail(id, accessToken);
+      console.log(data.result.writer);
 
       if (!data?.success) {
         throw new Error(data?.message || '데이터를 불러오지 못했습니다.');
       }
       setPost(data.result);
       setLikeCount(data.result.likeCount || 0);
+      setIsLiked(data.result.isLiked);
     } catch (error) {
       Alert.alert('알림', error.message || '데이터를 불러오지 못했습니다.');
 
@@ -94,29 +96,22 @@ export default function FeedDetail() {
   }
 
   const handleLikePress = async () => {
-    const nextState = !isLiked;
-    setIsLiked(nextState);
-    setLikeCount(prev => (nextState ? prev + 1 : prev - 1));
-
     try {
       let result;
-      if (nextState) {
-        // 좋아요 등록 (현재 false -> true로 변함)
+      if (!isLiked) {
         result = await likeFeedPost(id, accessToken);
       } else {
-        // 좋아요 취소 (현재 true -> false로 변함)
         result = await unlikeFeedPost(id, accessToken);
       }
 
-      if (!result?.success) {
-        setIsLiked(!nextState);
-        setLikeCount(prev => (nextState ? prev - 1 : prev + 1));
+      if (result?.success) {
+        await fetchPost();
+      } else {
         Alert.alert('알림', result?.message || '처리에 실패했습니다.');
       }
     } catch (error) {
-      setIsLiked(!nextState);
-      setLikeCount(prev => (nextState ? prev - 1 : prev + 1));
       console.error('Like Toggle Error:', error);
+      Alert.alert('오류', '좋아요 처리에 실패했습니다.');
     }
   };
 
@@ -331,7 +326,7 @@ export default function FeedDetail() {
                             {comment.writer.mainPlatformId}
                           </Text>
                           <Text style={styles.commentAuthorProfileDetailText}>
-                            {comment.createdAt}
+                            {comment.relativeTime}
                           </Text>
                         </View>
                       </View>
@@ -368,7 +363,7 @@ export default function FeedDetail() {
                               <Text
                                 style={styles.commentAuthorProfileDetailText}
                               >
-                                {reply.createdAt}
+                                {reply.relativeTime}
                               </Text>
                             </View>
                           </View>
