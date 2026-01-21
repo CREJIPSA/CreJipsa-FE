@@ -16,7 +16,7 @@ export default function DrawerHeader({
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.drawerHeader, { paddingTop: insets.top }]}>
+    <View style={[styles.drawerHeader, { paddingTop: insets.top + 12 }]}>
       <Pressable onPress={onClose}>
         <CloseIcon color={primaryColors.color} size={13} />
       </Pressable>
