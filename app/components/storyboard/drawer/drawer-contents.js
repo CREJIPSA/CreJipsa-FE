@@ -186,9 +186,59 @@ export default function StoryboardDrawerDefault({ onClose }) {
       </Pressable>
       <Pressable
         style={styles.drawerOption}
-        onPress={() => {
+        onPress={async () => {
           onClose();
-          // 라우팅 추가
+          await fetch('https://dev.crezipsa.site/api/storyboard/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({}),
+          })
+            .then(async res => {
+              const raw = await res.text();
+              console.log('create storyboard api status', res.status);
+              console.log('create storyboard api raw response', raw);
+
+              if (!res.ok) {
+                throw new Error(
+                  `Create Storyboard API error: ${res.status} raw=${raw}`,
+                );
+              }
+
+              let data = null;
+              try {
+                data = raw ? JSON.parse(raw) : null;
+              } catch (e) {
+                console.error('Failed to parse JSON response', e);
+              }
+
+              if (!res.ok)
+                throw new Error(`Create Storyboard API error: ${res.status}`);
+
+              return data;
+            })
+            .then(data => {
+              const newStoryboardId = data?.result?.storyboardId;
+              if (!newStoryboardId) {
+                console.error('Invalid create storyboard data format', data);
+                return;
+              } else {
+                console.log(
+                  'newStoryboardId',
+                  newStoryboardId,
+                  typeof newStoryboardId,
+                );
+                router.push({
+                  pathname: `/storyboard/edit/${newStoryboardId}`,
+                  params: { draft: 1 },
+                });
+              }
+            })
+            .catch(error => {
+              console.error('Failed to create new storyboard', error);
+            });
         }}
       >
         <NewStoryboardIcon color={primaryColors.color} size={20} />

@@ -4,7 +4,7 @@ import MessageItem from '@/app/components/storyboard/message-input';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import MenuIcon from '@/assets/svgs/storyboard/menu.js';
 import SendIcon from '@/assets/svgs/storyboard/send.js';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
   FlatList,
@@ -17,21 +17,31 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function ChatScreen({ roomId }) {
+export default function ChatScreen() {
+  const { roomId: roomIdParam, initialMessage } = useLocalSearchParams();
+  const roomId = Array.isArray(roomIdParam) ? roomIdParam[0] : roomIdParam;
+  console.log('roomIdParam', roomIdParam, 'roomId', roomId);
+  const initial = Array.isArray(initialMessage)
+    ? initialMessage[0]
+    : initialMessage;
+
   const { accessToken } = useContext(AuthContext);
   const router = useRouter();
 
   const insets = useSafeAreaInsets();
   const { styles, primaryColors } = useThemedStyle(getStyles);
   const [drawerVisible, setDrawerVisible] = useState(false);
-
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
 
+  const roomIdRef = useRef(roomId ?? null);
   useEffect(() => {
-    if (!roomId) {
-      setMessages([]);
-    }
+    roomIdRef.current = roomId ?? null;
+  }, [roomId]);
+
+  const initialSentRef = useRef(false);
+  useEffect(() => {
+    initialSentRef.current = false;
   }, [roomId]);
 
   // 기존 메시지 로드
@@ -68,7 +78,13 @@ export default function ChatScreen({ roomId }) {
           }));
 
           if (!cancelled) {
-            setMessages(prev => (prev.length ? prev : loadedMessages));
+            if (!loadedMessages.length) return;
+            setMessages(prev => {
+              const map = new Map();
+              prev.forEach(m => map.set(String(m.id), m));
+              loadedMessages.forEach(m => map.set(String(m.id), m));
+              return Array.from(map.values());
+            });
           }
         } catch (error) {
           console.error('Error loading messages:', error);
@@ -82,11 +98,6 @@ export default function ChatScreen({ roomId }) {
       };
     }, [accessToken, roomId]),
   );
-
-  const roomIdRef = useRef(roomId ?? null);
-  useEffect(() => {
-    roomIdRef.current = roomId ?? null;
-  }, [roomId]);
 
   // 채팅창 생성
   const creatingRoomRef = useRef(false); // 중복 생성 방지
@@ -118,26 +129,72 @@ export default function ChatScreen({ roomId }) {
     }
   };
 
+  useEffect(() => {
+    if (!accessToken) return;
+    if (!roomId) return;
+    if (!initial) return;
+    if (initialSentRef.current) return;
+
+    initialSentRef.current = true;
+
+    (async () => {
+      setMessages(prev => [
+        ...prev,
+        { id: `tmp-user-${Date.now()}`, text: initial, isUser: true },
+      ]);
+
+      const res = await fetch(
+        `https://dev.crezipsa.site/api/chats/${roomId}/messages`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ message: initial }),
+        },
+      );
+
+      const raw = await res.text();
+      if (!res.ok) return;
+
+      const data = JSON.parse(raw);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `tmp-ai-${Date.now()}`,
+          text: data.result.content,
+          isUser: false,
+        },
+      ]);
+    })();
+  }, [accessToken, roomId, initial]);
+
   // 메시지 전송 처리
   const handleSend = async () => {
     const text = messageInput.trim();
     if (!text) return;
 
-    setMessages(prev => [
-      ...prev,
-      { id: Date.now().toString(), text, isUser: true },
-    ]);
     setMessageInput('');
 
-    const id = await ensureRoomId(); // 방 ID 확보
-    if (!id) return;
-
     if (!roomId) {
-      router.replace('/storyboard/' + id);
+      const id = await ensureRoomId();
+      if (!id) return;
+
+      router.replace({
+        pathname: `/storyboard/${id}`,
+        params: { initialMessage: text },
+      });
+      return;
     }
 
+    setMessages(prev => [
+      ...prev,
+      { id: `temp-user-${Date.now()}`, text, isUser: true },
+    ]);
+
     const res = await fetch(
-      `https://dev.crezipsa.site/api/chats/${id}/messages`,
+      `https://dev.crezipsa.site/api/chats/${roomId}/messages`,
       {
         method: 'POST',
         headers: {
@@ -158,10 +215,11 @@ export default function ChatScreen({ roomId }) {
 
     const data = JSON.parse(raw);
 
+    const aiMessageId = data.result.messageId ?? `temp-ai-${Date.now()}`;
     setMessages(prev => [
       ...prev,
       {
-        id: Date.now().toString(),
+        id: aiMessageId,
         text: data.result.content,
         isUser: false,
       },
@@ -203,7 +261,11 @@ export default function ChatScreen({ roomId }) {
           data={messages}
           keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => (
-            <MessageItem text={item.text} isUser={item.isUser} />
+            <MessageItem
+              text={item.text}
+              isUser={item.isUser}
+              chatMessageId={item.id}
+            />
           )}
           contentContainerStyle={{
             paddingTop: 40,
