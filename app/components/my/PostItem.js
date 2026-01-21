@@ -1,13 +1,19 @@
+import { COMMUNITY_FIELDS } from '@/app/constants/common/COMMUNITY_FIELDS';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import CommentIcon from '@/assets/svgs/common/comment-icon';
 import LikedIcon from '@/assets/svgs/common/like-icon';
+import { router } from 'expo-router';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import DeleteComponent from './DeleteComponent';
 
 export default function PostItem({ post, isMyReplys = false }) {
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
 
-  const hasImage = post.imageUrls && post.imageUrls.length > 0;
+  const hasImage = !!post.thumbnailUrl;
+
+  const handlePress = () => {
+    router.push(`/feed/${post.communityId}`);
+  };
 
   const textContent = (
     <>
@@ -23,11 +29,11 @@ export default function PostItem({ post, isMyReplys = false }) {
         </View>
       )}
       <Text style={styles.contentText} numberOfLines={2}>
-        {post.content}
+        {post.contentPreview}
       </Text>
       <View style={styles.detailRow}>
-        <Text style={styles.detailText}># {post.category}</Text>
-        <Text style={styles.detailText}>{post.timeAgo}</Text>
+        <Text style={styles.detailText}>#{COMMUNITY_FIELDS[post.field]}</Text>
+        <Text style={styles.detailText}>{post.relativeTime}</Text>
       </View>
       {!isMyReplys && (
         <View style={styles.reactionRow}>
@@ -41,7 +47,7 @@ export default function PostItem({ post, isMyReplys = false }) {
   );
 
   return (
-    <Pressable style={styles.container}>
+    <Pressable style={styles.container} onPress={handlePress}>
       {hasImage && !isMyReplys ? (
         <View style={styles.contentWrapperCol}>
           <View style={styles.titleTextRow}>
@@ -56,7 +62,7 @@ export default function PostItem({ post, isMyReplys = false }) {
           <View style={styles.contentWrapperRow}>
             <View style={styles.contentWrapperCol}>{textContent}</View>
             <Image
-              source={{ uri: post.imageUrls?.[0] }}
+              source={{ uri: post.thumbnailUrl }}
               style={styles.thumbnail}
               resizeMode="cover"
             />
