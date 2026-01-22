@@ -137,3 +137,17 @@ export const getMyInterest = async accessToken => {
 
   return await parseJsonResponse(response);
 };
+
+export const addInterest = async (category, accessToken) => {
+  const url = `${API_BASE_URL}/user/interest/${encodeURIComponent(category)}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return await parseJsonResponse(response);
+};

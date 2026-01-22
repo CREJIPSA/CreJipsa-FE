@@ -15,7 +15,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DeleteIcon from '../assets/svgs/my/delete-icon.js';
 import { AuthContext } from './_layout.js';
-import { fetchMe, getMyInterest } from './api/my.js';
+import { addInterest, fetchMe, getMyInterest } from './api/my.js';
 import ChannelAddModal from './components/profile-edit/ChannelAddModal.js';
 import InterestTag from './components/profile-edit/InterestTag';
 import MyInterestTag from './components/profile-edit/MyInterestTag';
@@ -31,6 +31,39 @@ export default function ProfileEdit() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
+
+  const loadUserData = async () => {
+    try {
+      const [userRes, interestRes] = await Promise.all([
+        fetchMe(accessToken),
+        getMyInterest(accessToken),
+      ]);
+
+      if (userRes.success) setUserInfo(userRes.result);
+      if (interestRes.success) setMyInterests(interestRes.result || []);
+    } catch (error) {
+      console.error('데이터 로드 실패:', error);
+    }
+  };
+
+  // 2. 관심분야 추가 핸들러
+  const handleAddInterest = async category => {
+    try {
+      const result = await addInterest(category, accessToken);
+
+      if (result.success) {
+        // 추가 성공 시 목록 다시 불러오기
+        await loadUserData();
+        // 선택사항: 알림 피드백
+        Alert.alert('알림', `'${category}' 카테고리가 추가되었습니다.`);
+      } else {
+        Alert.alert('오류', result.message || '추가에 실패했습니다.');
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert('오류', '서버 통신 중 오류가 발생했습니다.');
+    }
+  };
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -112,7 +145,7 @@ export default function ProfileEdit() {
   const myChannels = getMyChannels();
 
   const fixedAllInterests = [
-    '일상/밈',
+    '일상',
     '게임',
     '패션',
     '음악',
@@ -243,7 +276,7 @@ export default function ProfileEdit() {
                 <InterestTag
                   key={index}
                   label={tag}
-                  onClick={() => console.log(`${tag} 추가`)}
+                  onClick={() => handleAddInterest(tag)}
                   isDark={isDark}
                 />
               ))}
