@@ -11,6 +11,7 @@ export default function RootLayout() {
   const [accessToken, setAccessToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
   const [kakaoEmail, setKakaoEmail] = useState(null);
+  const [kakaoProfileImageUrl, setKakaoProfileImageUrl] = useState(null);
 
   const { styles, isDark } = useThemedStyle(getStyles);
 
@@ -37,6 +38,8 @@ export default function RootLayout() {
         isLoggedIn: !!accessToken,
         kakaoEmail,
         setKakaoEmail,
+        kakaoProfileImageUrl,
+        setKakaoProfileImageUrl,
       }}
     >
       <Stack screenOptions={{ headerShown: false }} />

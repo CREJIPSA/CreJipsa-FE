@@ -15,8 +15,13 @@ export default function Landing() {
   const insets = useSafeAreaInsets();
   const { styles } = useThemedStyle(getStyles);
 
-  const { setAccessToken, setRefreshToken, setUser, setKakaoEmail } =
-    useContext(AuthContext);
+  const {
+    setAccessToken,
+    setRefreshToken,
+    setUser,
+    setKakaoEmail,
+    setKakaoProfileImageUrl,
+  } = useContext(AuthContext);
 
   useEffect(() => {
     initializeKakaoSDK('2d0e496c2a9ff2019280d0ff3d7ffb23');
@@ -67,6 +72,7 @@ export default function Landing() {
       if (result.newUser) {
         setUser(result.kakaoUserInfo);
         setKakaoEmail(result.kakaoUserInfo?.email ?? null);
+        setKakaoProfileImageUrl(result.kakaoUserInfo?.profileImage ?? null);
         router.replace('/(sign-up)');
         return;
       }
@@ -79,6 +85,7 @@ export default function Landing() {
       setRefreshToken(result.refreshToken);
       setUser(result.kakaoUserInfo);
       setKakaoEmail(result.kakaoUserInfo?.email ?? null);
+      setKakaoProfileImageUrl(result.kakaoUserInfo?.profileImage ?? null);
       router.replace('/(tabs)');
     } catch (error) {
       console.error('Kakao login failed', error);

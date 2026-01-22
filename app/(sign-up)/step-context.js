@@ -113,7 +113,7 @@ export default function StepProvider({ children }) {
     return payload;
   }
 
-  const { kakaoEmail } = useContext(AuthContext);
+  const { kakaoEmail, kakaoProfileImageUrl } = useContext(AuthContext);
 
   const signUp = async () => {
     if (!kakaoEmail) {
@@ -128,6 +128,7 @@ export default function StepProvider({ children }) {
         birth: form.userInfo.birth,
         gender: form.userInfo.gender,
         userInterest: form.interests,
+        profileImageUrl: kakaoProfileImageUrl,
         ...buildChannelPayload(form.channelInfo),
       }),
     });
