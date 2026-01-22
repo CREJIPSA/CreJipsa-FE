@@ -110,16 +110,52 @@ export default function SearchTrend() {
   }, [accessToken]);
 
   // 실시간 트렌드 순위
-  const keywordRanking = [
-    { rank: 1, label: '주토피아', state: 'up' },
-    { rank: 2, label: '두바이 쫀득 쿠키', state: null },
-    { rank: 3, label: '힙사사돈', state: null },
-    { rank: 4, label: '방어회', state: 'down' },
-    { rank: 5, label: '크리스마스', state: 'up' },
-    { rank: 6, label: '첫눈', state: null },
-    { rank: 7, label: '싱숭생숭', state: null },
-    { rank: 8, label: 'zoo', state: 'up' },
-  ];
+  // const keywordRanking = [
+  //   { rank: 1, label: '주토피아', state: 'up' },
+  //   { rank: 2, label: '두바이 쫀득 쿠키', state: null },
+  //   { rank: 3, label: '힙사사돈', state: null },
+  //   { rank: 4, label: '방어회', state: 'down' },
+  //   { rank: 5, label: '크리스마스', state: 'up' },
+  //   { rank: 6, label: '첫눈', state: null },
+  //   { rank: 7, label: '싱숭생숭', state: null },
+  //   { rank: 8, label: 'zoo', state: 'up' },
+  // ];
+  const [keywordRanking, setKeywordRanking] = useState([]);
+  useEffect(() => {
+    fetch(`https://dev.crezipsa.site/api/main/trend`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+      .then(async res => {
+        const raw = await res.text();
+        console.log('keyword ranking api status', res.status);
+        console.log('keyword ranking api raw response', raw);
+
+        let data = null;
+        try {
+          data = raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          console.error('Failed to parse keyword ranking API response', e);
+        }
+
+        if (!res.ok)
+          throw new Error(`Keyword Ranking API error: ${res.status}`);
+        return data;
+      })
+      .then(data => {
+        const result = data?.result;
+        if (!result || !Array.isArray(result)) {
+          console.error('Invalid keyword ranking data format');
+          return;
+        }
+        setKeywordRanking(result);
+      })
+      .catch(error => {
+        console.error('Error fetching keyword ranking:', error);
+      });
+  }, [accessToken]);
 
   // 최근 검색어 칩 컴포넌트
   const RecentSearchChip = memo(function Chip({ keyword, onPressDelete }) {
@@ -152,9 +188,9 @@ export default function SearchTrend() {
           <Text style={styles.keywordRankingItemRank}>{rank}</Text>
           <Text style={styles.keywordRankingItemLabel}>{label}</Text>
         </View>
-        {state === 'up' && <RankUp />}
-        {state === 'down' && <RankDown />}
-        {state === null && <RankNone />}
+        {state === '상승' && <RankUp />}
+        {state === '하락' && <RankDown />}
+        {state === '유지' && <RankNone />}
       </View>
     );
   });
@@ -216,7 +252,7 @@ export default function SearchTrend() {
           contentContainerStyle={{ paddingHorizontal: 16 }}
         >
           {recentSearchKeywords.length === 0 ? (
-            <View style={{ height: 40 }} />
+            <View style={{ height: 35 }} />
           ) : (
             recentSearchKeywords.map(keyword => (
               <RecentSearchChip
@@ -275,22 +311,22 @@ export default function SearchTrend() {
         </View>
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <View style={styles.keywordRankingList}>
-            {keywordRanking.slice(0, 4).map(({ rank, label, state }) => (
+            {keywordRanking.slice(0, 5).map(item => (
               <KeywordRankingItem
-                key={rank}
-                rank={rank}
-                label={label}
-                state={state}
+                key={item.id}
+                rank={item.rank}
+                label={item.keyword}
+                state={item.trendDirection}
               />
             ))}
           </View>
           <View style={styles.keywordRankingList}>
-            {keywordRanking.slice(4, 9).map(({ rank, label, state }) => (
+            {keywordRanking.slice(5, 10).map(item => (
               <KeywordRankingItem
-                key={rank}
-                rank={rank}
-                label={label}
-                state={state}
+                key={item.id}
+                rank={item.rank}
+                label={item.keyword}
+                state={item.trendDirection}
               />
             ))}
           </View>
