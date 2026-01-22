@@ -58,6 +58,30 @@ export const fetchMyLikes = async (params, accessToken) => {
   return await parseJsonResponse(response);
 };
 
+export const fetchMyComments = async (params, accessToken) => {
+  const { page = 0, size = 10, field } = params;
+
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString(),
+  });
+
+  if (field && field !== '전체') {
+    queryParams.append('field', field);
+  }
+
+  const url = `${API_BASE_URL}/comment/my?${queryParams.toString()}`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return await parseJsonResponse(response);
+};
+
 export const deletePost = async (communityId, accessToken) => {
   const url = `${API_BASE_URL}/community/${communityId}`;
 
