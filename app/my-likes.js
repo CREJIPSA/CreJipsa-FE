@@ -43,16 +43,20 @@ export default function MyLikes() {
 
   const isFetching = useRef(false);
   const onEndReachedDuringMomentum = useRef(false);
+  const requestIdRef = useRef(0);
 
   const loadPosts = useCallback(
     async (targetPage, isFresh = false) => {
-      if (isFetching.current) {
+      // isFresh일 때는 진행 중이어도 허용 (필터 변경 시)
+      if (isFetching.current && !isFresh) {
         return;
       }
 
       if (!isFresh && targetPage === 0) {
         return;
       }
+
+      const requestId = ++requestIdRef.current;
 
       try {
         isFetching.current = true;
@@ -66,6 +70,9 @@ export default function MyLikes() {
         };
 
         const data = await fetchMyLikes(params, accessToken);
+
+        // 최신 요청이 아니면 무시
+        if (requestId !== requestIdRef.current) return;
 
         if (data?.success) {
           const newPosts = data.result || [];
@@ -83,9 +90,12 @@ export default function MyLikes() {
       } catch (e) {
         console.error(e);
       } finally {
-        isFetching.current = false;
-        setLoading(false);
-        setIsRefreshing(false);
+        // 최신 요청일 때만 로딩 상태 해제
+        if (requestId === requestIdRef.current) {
+          isFetching.current = false;
+          setLoading(false);
+          setIsRefreshing(false);
+        }
       }
     },
     [selectedField, selectedSort, accessToken],
@@ -106,11 +116,7 @@ export default function MyLikes() {
 
   const onEndReached = () => {
     if (!loading && hasNextPage && !onEndReachedDuringMomentum.current) {
-      setPage(prev => {
-        const nextPage = prev + 1;
-        loadPosts(nextPage);
-        return nextPage;
-      });
+      loadPosts(page + 1);
       onEndReachedDuringMomentum.current = true;
     }
   };
