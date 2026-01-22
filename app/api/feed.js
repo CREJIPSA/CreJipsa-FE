@@ -108,3 +108,32 @@ export const createComment = async (communityId, commentData, accessToken) => {
 
   return await parseJsonResponse(response);
 };
+
+export const searchCommunityPosts = async (params, accessToken) => {
+  const { keyword, field, sort = 'latest', page = 0, size = 10 } = params;
+
+  const queryParams = new URLSearchParams({
+    keyword,
+    page: page.toString(),
+    size: size.toString(),
+  });
+
+  if (field) {
+    queryParams.append('field', field);
+  }
+
+  if (sort) {
+    queryParams.append('sort', sort);
+  }
+
+  const url = `${API_BASE_URL}/community/search?${queryParams.toString()}`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  return await parseJsonResponse(response);
+};

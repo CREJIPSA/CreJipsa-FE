@@ -5,7 +5,7 @@ import NotificationIcon from '@/assets/svgs/feed/notification-icon';
 import WriteButtonIcon from '@/assets/svgs/feed/write-button-icon';
 import { useRouter } from 'expo-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useThemedStyle from '../../hooks/use-themed-style';
 import NavigationLayout from './(navigation)/_layout';
@@ -19,12 +19,15 @@ export default function Feed() {
   const router = useRouter();
 
   const handleSearch = () => {
-    if (text.trim().length > 0) {
-      router.push({
-        pathname: '/feed/results',
-        params: { q: text },
-      });
+    if (text.trim().length === 0) {
+      Alert.alert('알림', '검색어를 입력해주세요.');
+      return;
     }
+
+    router.push({
+      pathname: '/feed/results',
+      params: { q: text.trim() },
+    });
   };
 
   const fetchPosts = useCallback(
