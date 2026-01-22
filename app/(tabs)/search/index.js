@@ -144,7 +144,20 @@ export default function SearchTrend() {
       <View style={styles.recentSearchContainer}>
         <View style={styles.recentSearchHeader}>
           <Text style={styles.headerTitleText}>최근 검색어</Text>
-          <Pressable onPress={() => setRecentSearchKeywords([])}>
+          <Pressable
+            onPress={async () => {
+              await fetch(
+                `https://dev.crezipsa.site/api/main/trend/all-history`,
+                {
+                  method: 'DELETE',
+                  headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                },
+              );
+              setRecentSearchKeywords([]);
+            }}
+          >
             <Text style={styles.clearAllText}>전체 삭제</Text>
           </Pressable>
         </View>
