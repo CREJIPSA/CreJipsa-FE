@@ -13,7 +13,13 @@ import BackIcon from '@/assets/svgs/feed/back-icon';
 import WriteButtonIcon from '@/assets/svgs/feed/write-button-icon';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FeedScreen from '../(navigation)/FeedScreen';
 
@@ -123,11 +129,14 @@ export default function SearchResult() {
   }, [searchQuery, selectedField, selectedSort]);
 
   const handleSearch = () => {
-    if (text.trim().length > 0) {
-      setSearchQuery(text);
-      router.setParams({ q: text });
-      console.log('결과 페이지 내 재검색 완료:', text);
+    if (text.trim().length === 0) {
+      Alert.alert('알림', '검색어를 입력해주세요.');
+      return;
     }
+
+    setSearchQuery(text);
+    router.setParams({ q: text });
+    console.log('결과 페이지 내 재검색 완료:', text);
   };
 
   const onRefresh = () => {
