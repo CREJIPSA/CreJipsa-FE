@@ -311,7 +311,7 @@ export default function SearchTrend() {
         </View>
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <View style={styles.keywordRankingList}>
-            {keywordRanking.slice(0, 5).map(item => (
+            {keywordRanking.slice(0, 4).map(item => (
               <KeywordRankingItem
                 key={item.id}
                 rank={item.rank}
@@ -321,7 +321,7 @@ export default function SearchTrend() {
             ))}
           </View>
           <View style={styles.keywordRankingList}>
-            {keywordRanking.slice(5, 10).map(item => (
+            {keywordRanking.slice(4, 8).map(item => (
               <KeywordRankingItem
                 key={item.id}
                 rank={item.rank}
