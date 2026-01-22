@@ -4,6 +4,7 @@ import {
 } from '@react-native-kakao/core';
 import { login as kakaoLogin } from '@react-native-kakao/user';
 import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import { useContext, useEffect } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -83,6 +84,7 @@ export default function Landing() {
       }
       setAccessToken(result.accessToken);
       setRefreshToken(result.refreshToken);
+      await SecureStore.setItemAsync('refreshToken', result.refreshToken);
       setUser(result.kakaoUserInfo);
       setKakaoEmail(result.kakaoUserInfo?.email ?? null);
       setKakaoProfileImageUrl(result.kakaoUserInfo?.profileImage ?? null);

@@ -1,8 +1,10 @@
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import { StatusBar } from 'expo-status-bar';
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { initAuthFetch } from './api/authFetch';
 import useThemedStyle from './hooks/use-themed-style';
 
 export const AuthContext = createContext({});
@@ -13,7 +15,34 @@ export default function RootLayout() {
   const [kakaoEmail, setKakaoEmail] = useState(null);
   const [kakaoProfileImageUrl, setKakaoProfileImageUrl] = useState(null);
 
+  const router = useRouter();
   const { styles, isDark } = useThemedStyle(getStyles);
+
+  // authFetch 초기화
+  const accessTokenRef = useRef(accessToken);
+
+  useEffect(() => {
+    accessTokenRef.current = accessToken;
+  }, [accessToken]);
+
+  useEffect(() => {
+    initAuthFetch({
+      getToken: () => accessTokenRef.current,
+      setToken: token => setAccessToken(token),
+      onLogout: () => logout(),
+    });
+  }, []);
+
+  async function logout() {
+    setAccessToken(null);
+    setRefreshToken(null);
+    setUser(null);
+    setKakaoEmail(null);
+    setKakaoProfileImageUrl(null);
+    await SecureStore.deleteItemAsync('refreshToken');
+
+    router.replace('/landing');
+  }
 
   // 토스트
   const toastConfig = {
