@@ -1,9 +1,11 @@
+import { AuthContext } from '@/app/_layout';
 import RankDown from '@/assets/search/rank-down.js';
 import RankNone from '@/assets/search/rank-none.js';
 import RankUp from '@/assets/search/rank-up.js';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
-import { memo, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { memo, useCallback, useContext, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Chip from '../../components/chip';
@@ -13,17 +15,53 @@ import useThemedStyle from '../../hooks/use-themed-style';
 export default function SearchTrend() {
   const insets = useSafeAreaInsets();
   const { styles, primaryColors } = useThemedStyle(getStyles);
+  const { accessToken } = useContext(AuthContext);
 
   const [searchKeyword, setSearchKeyword] = useState('');
 
   // 최근 검색어
-  const [recentSearchKeywords, setRecentSearchKeywords] = useState([
-    'Text',
-    '듀 가나디 키링',
-    '밈',
-    '아이폰 17',
-    '두바이 쫀득 쿠키',
-  ]);
+  const [recentSearchKeywords, setRecentSearchKeywords] = useState([]);
+  const fetchRecentSearchKeywords = useCallback(() => {
+    let aborted = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          `https://dev.crezipsa.site/api/main/trend/search-history`,
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
+
+        const raw = await res.text();
+        console.log('search history api status', res.status);
+        console.log('search history api raw response', raw);
+
+        if (!res.ok) {
+          console.error(
+            `Fetch Search History API error: ${res.status} raw=${raw}`,
+          );
+          return;
+        }
+
+        const data = raw ? JSON.parse(raw) : null;
+        const result = data?.result;
+        if (!Array.isArray(result)) return;
+
+        if (!aborted) setRecentSearchKeywords(result);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+
+    return () => {
+      aborted = true;
+    };
+  }, [accessToken]);
+
+  useFocusEffect(fetchRecentSearchKeywords);
 
   // 채널 기반 키워드 추천 리스트
   const keywordRecommendations = [
@@ -121,8 +159,8 @@ export default function SearchTrend() {
           ) : (
             recentSearchKeywords.map(keyword => (
               <RecentSearchChip
-                key={keyword}
-                keyword={keyword}
+                key={keyword.historyId}
+                keyword={keyword.history}
                 onPressDelete={() => {
                   setRecentSearchKeywords(prev =>
                     prev.filter(item => item !== keyword),
