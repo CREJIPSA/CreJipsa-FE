@@ -94,3 +94,32 @@ export const deletePost = async (communityId, accessToken) => {
 
   return await parseJsonResponse(response);
 };
+
+export const fetchMe = async accessToken => {
+  const url = `${API_BASE_URL}/user/me`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return await parseJsonResponse(response);
+};
+
+export const updateMyChannels = async (channelData, accessToken) => {
+  const url = `${API_BASE_URL}/user/update`;
+
+  const response = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(channelData),
+  });
+
+  return await parseJsonResponse(response);
+};
