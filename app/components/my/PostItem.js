@@ -2,6 +2,7 @@ import { AuthContext } from '@/app/_layout';
 import { deletePost } from '@/app/api/my';
 import { COMMUNITY_FIELDS } from '@/app/constants/common/COMMUNITY_FIELDS';
 import useThemedStyle from '@/app/hooks/use-themed-style';
+import { stripHtmlTags } from '@/app/utils/string';
 import CommentIcon from '@/assets/svgs/common/comment-icon';
 import LikedIcon from '@/assets/svgs/common/like-icon';
 import { router } from 'expo-router';
@@ -19,6 +20,8 @@ export default function PostItem({
   const { accessToken } = useContext(AuthContext);
 
   const hasImage = !!post.thumbnailUrl;
+
+  const plainContent = stripHtmlTags(post.contentPreview);
 
   const handlePress = () => {
     router.push(`/feed/${post.communityId}`);
@@ -74,7 +77,7 @@ export default function PostItem({
         </View>
       )}
       <Text style={styles.contentText} numberOfLines={2}>
-        {post.contentPreview}
+        {plainContent}
       </Text>
       <View style={styles.detailRow}>
         <Text style={styles.detailText}>#{COMMUNITY_FIELDS[post.field]}</Text>
