@@ -13,6 +13,7 @@ import Toast from 'react-native-toast-message';
 import useThemedStyle from '../../hooks/use-themed-style';
 
 import { AuthContext } from '@/app/_layout';
+import { authFetch } from '@/app/api/authFetch';
 
 export default function Trend() {
   const router = useRouter();
@@ -36,7 +37,7 @@ export default function Trend() {
   const [videoInfo, setVideoInfo] = useState([]);
 
   useEffect(() => {
-    fetch(`https://dev.crezipsa.site/api/main/trend/detail/${id}`, {
+    authFetch(`https://dev.crezipsa.site/api/main/trend/detail/${id}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -79,7 +80,7 @@ export default function Trend() {
   }, [accessToken, id]);
 
   const addTrend = () => {
-    fetch('https://dev.crezipsa.site/api/main/trend/save', {
+    authFetch('https://dev.crezipsa.site/api/main/trend/save', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

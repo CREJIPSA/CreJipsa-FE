@@ -1,4 +1,5 @@
 import { AuthContext } from '@/app/_layout';
+import { authFetch } from '@/app/api/authFetch';
 import DropdownInnerOption from '@/app/components/storyboard/dropdown-inner-option';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import { useContext, useEffect, useState } from 'react';
@@ -12,7 +13,7 @@ export default function ChattingStorage() {
   const [myChatList, setMyChatList] = useState([]);
 
   useEffect(() => {
-    fetch('https://dev.crezipsa.site/api/chats', {
+    authFetch('https://dev.crezipsa.site/api/chats', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,

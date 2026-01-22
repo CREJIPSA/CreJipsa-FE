@@ -1,4 +1,5 @@
 import { AuthContext } from '@/app/_layout';
+import { authFetch } from '@/app/api/authFetch';
 import RankDown from '@/assets/search/rank-down.js';
 import RankNone from '@/assets/search/rank-none.js';
 import RankUp from '@/assets/search/rank-up.js';
@@ -25,7 +26,7 @@ export default function SearchTrend() {
     let aborted = false;
     (async () => {
       try {
-        const res = await fetch(
+        const res = await authFetch(
           `https://dev.crezipsa.site/api/main/trend/search-history`,
           {
             method: 'GET',
@@ -68,7 +69,7 @@ export default function SearchTrend() {
   useEffect(() => {
     const controller = new AbortController();
     let mounted = true;
-    fetch(
+    authFetch(
       `https://dev.crezipsa.site/api/main/trend/recommendations/by-platform`,
       {
         method: 'GET',
@@ -122,7 +123,7 @@ export default function SearchTrend() {
   useEffect(() => {
     const controller = new AbortController();
     let mounted = true;
-    fetch(`https://dev.crezipsa.site/api/main/trend`, {
+    authFetch(`https://dev.crezipsa.site/api/main/trend`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -226,7 +227,7 @@ export default function SearchTrend() {
           <Pressable
             onPress={async () => {
               try {
-                const res = await fetch(
+                const res = await authFetch(
                   `https://dev.crezipsa.site/api/main/trend/all-history`,
                   {
                     method: 'DELETE',
@@ -266,7 +267,7 @@ export default function SearchTrend() {
                 keyword={keyword.history}
                 onPressDelete={async () => {
                   try {
-                    const res = await fetch(
+                    const res = await authFetch(
                       `https://dev.crezipsa.site/api/main/trend/${keyword.historyId}`,
                       {
                         method: 'DELETE',

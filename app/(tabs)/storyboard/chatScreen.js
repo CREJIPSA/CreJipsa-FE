@@ -1,4 +1,5 @@
 import { AuthContext } from '@/app/_layout';
+import { authFetch } from '@/app/api/authFetch';
 import StoryboardDrawer from '@/app/components/storyboard/drawer/index.js';
 import MessageItem from '@/app/components/storyboard/message-input';
 import useThemedStyle from '@/app/hooks/use-themed-style';
@@ -53,7 +54,7 @@ export default function ChatScreen() {
         if (!accessToken || !roomId) return;
 
         try {
-          const res = await fetch(
+          const res = await authFetch(
             `https://dev.crezipsa.site/api/chats/${roomId}`,
             {
               method: 'GET',
@@ -108,7 +109,7 @@ export default function ChatScreen() {
 
     creatingRoomRef.current = true;
     try {
-      const res = await fetch('https://dev.crezipsa.site/api/chats', {
+      const res = await authFetch('https://dev.crezipsa.site/api/chats', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -143,7 +144,7 @@ export default function ChatScreen() {
         { id: `tmp-user-${Date.now()}`, text: initial, isUser: true },
       ]);
 
-      const res = await fetch(
+      const res = await authFetch(
         `https://dev.crezipsa.site/api/chats/${roomId}/messages`,
         {
           method: 'POST',
@@ -193,7 +194,7 @@ export default function ChatScreen() {
       { id: `temp-user-${Date.now()}`, text, isUser: true },
     ]);
 
-    const res = await fetch(
+    const res = await authFetch(
       `https://dev.crezipsa.site/api/chats/${roomId}/messages`,
       {
         method: 'POST',

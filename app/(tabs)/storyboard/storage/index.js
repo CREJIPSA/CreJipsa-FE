@@ -1,4 +1,5 @@
 import { AuthContext } from '@/app/_layout';
+import { authFetch } from '@/app/api/authFetch';
 import DropdownInnerOption from '@/app/components/storyboard/dropdown-inner-option';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import { useFocusEffect } from 'expo-router';
@@ -16,7 +17,7 @@ export default function StoryboardStorage() {
     if (!accessToken) return;
 
     try {
-      const res = await fetch('https://dev.crezipsa.site/api/storyboard', {
+      const res = await authFetch('https://dev.crezipsa.site/api/storyboard', {
         method: 'GET',
         headers: { Authorization: `Bearer ${accessToken}` },
       });
