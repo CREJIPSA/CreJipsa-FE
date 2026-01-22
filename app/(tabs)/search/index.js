@@ -174,9 +174,18 @@ export default function SearchTrend() {
               <RecentSearchChip
                 key={keyword.historyId}
                 keyword={keyword.history}
-                onPressDelete={() => {
+                onPressDelete={async () => {
+                  await fetch(
+                    `https://dev.crezipsa.site/api/main/trend/search-history/${keyword.historyId}`,
+                    {
+                      method: 'DELETE',
+                      headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                      },
+                    },
+                  );
                   setRecentSearchKeywords(prev =>
-                    prev.filter(item => item !== keyword),
+                    prev.filter(item => item.historyId !== keyword.historyId),
                   );
                 }}
               />
