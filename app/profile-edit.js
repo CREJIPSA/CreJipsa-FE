@@ -15,7 +15,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DeleteIcon from '../assets/svgs/my/delete-icon.js';
 import { AuthContext } from './_layout.js';
-import { addInterest, fetchMe, getMyInterest } from './api/my.js';
+import {
+  addInterest,
+  deleteInterest,
+  fetchMe,
+  getMyInterest,
+} from './api/my.js';
 import ChannelAddModal from './components/profile-edit/ChannelAddModal.js';
 import InterestTag from './components/profile-edit/InterestTag';
 import MyInterestTag from './components/profile-edit/MyInterestTag';
@@ -46,21 +51,33 @@ export default function ProfileEdit() {
     }
   };
 
-  // 2. 관심분야 추가 핸들러
   const handleAddInterest = async category => {
     try {
       const result = await addInterest(category, accessToken);
 
       if (result.success) {
-        // 추가 성공 시 목록 다시 불러오기
         await loadUserData();
-        // 선택사항: 알림 피드백
         Alert.alert('알림', `'${category}' 카테고리가 추가되었습니다.`);
       } else {
         Alert.alert('오류', result.message || '추가에 실패했습니다.');
       }
     } catch (error) {
       console.log(error);
+      Alert.alert('오류', '서버 통신 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleDeleteInterest = async (interestId, category) => {
+    try {
+      const result = await deleteInterest(interestId, accessToken);
+
+      if (result.success) {
+        await loadUserData();
+        Alert.alert('알림', `'${category}' 카테고리가 삭제되었습니다.`);
+      } else {
+        Alert.alert('오류', result.message || '삭제에 실패했습니다.');
+      }
+    } catch (error) {
       Alert.alert('오류', '서버 통신 중 오류가 발생했습니다.');
     }
   };
@@ -265,7 +282,12 @@ export default function ProfileEdit() {
                   <MyInterestTag
                     key={interest.interestId}
                     label={interest.category}
-                    onRemove={() => console.log(`${interest.interestId} 삭제`)}
+                    onRemove={() =>
+                      handleDeleteInterest(
+                        interest.interestId,
+                        interest.category,
+                      )
+                    }
                     isDark={isDark}
                   />
                 ))}

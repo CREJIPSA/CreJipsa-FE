@@ -151,3 +151,17 @@ export const addInterest = async (category, accessToken) => {
 
   return await parseJsonResponse(response);
 };
+
+export const deleteInterest = async (interestId, accessToken) => {
+  const url = `${API_BASE_URL}/user/interest/${interestId}`;
+
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return await parseJsonResponse(response);
+};
