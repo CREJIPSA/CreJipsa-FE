@@ -49,7 +49,7 @@ export const uploadFileToS3 = async (uploadUrl, uri, contentType) => {
   const response = await fetch(uri);
   const blob = await response.blob();
 
-  const uploadResponse = await fetch(uploadUrl, {
+  return await fetch(uploadUrl, {
     method: 'PUT',
     body: blob,
     headers: {
@@ -57,8 +57,6 @@ export const uploadFileToS3 = async (uploadUrl, uri, contentType) => {
       'x-amz-acl': 'public-read',
     },
   });
-
-  return await parseJsonResponse(uploadResponse);
 };
 
 export const createPost = async (postData, accessToken) => {

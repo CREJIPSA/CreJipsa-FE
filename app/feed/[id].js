@@ -5,13 +5,14 @@ import {
   likeFeedPost,
   unlikeFeedPost,
 } from '@/app/api/feed';
+import { deletePost } from '@/app/api/my';
 import CategoryBadge from '@/app/components/feed/CategoryBadge';
+import DeleteComponent from '@/app/components/my/DeleteComponent';
 import { COMMUNITY_FIELDS } from '@/app/constants/common/COMMUNITY_FIELDS';
 import { getPlatformLogo } from '@/app/constants/common/PLATFORM_LOGOS';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import CommentIcon from '@/assets/svgs/common/comment-icon';
 import LikedIcon from '@/assets/svgs/common/like-icon';
-import ThreeDotsIcon from '@/assets/svgs/common/three-dots-icon';
 import CommentSendIcon from '@/assets/svgs/feed/comment-send-icon';
 import ReplyArrowIcon from '@/assets/svgs/feed/reply-arrow-icon';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -90,6 +91,43 @@ export default function FeedDetail() {
       </View>
     );
   }
+
+  const handleDelete = () => {
+    Alert.alert(
+      '게시글 삭제',
+      '이 게시글을 삭제하시겠습니까?',
+      [
+        {
+          text: '취소',
+          style: 'cancel',
+        },
+        {
+          text: '삭제',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const result = await deletePost(id, accessToken);
+
+              if (result.success) {
+                Alert.alert('성공', '게시글이 삭제되었습니다.', [
+                  {
+                    text: '확인',
+                    onPress: () => router.back(),
+                  },
+                ]);
+              } else {
+                Alert.alert('실패', '게시글 삭제에 실패했습니다.');
+              }
+            } catch (error) {
+              console.error('Delete error:', error);
+              Alert.alert('오류', '게시글 삭제 중 오류가 발생했습니다.');
+            }
+          },
+        },
+      ],
+      { cancelable: true },
+    );
+  };
 
   const handleLikePress = async () => {
     try {
@@ -196,7 +234,9 @@ export default function FeedDetail() {
           <View style={styles.postContainer}>
             <View style={styles.categoryRow}>
               <CategoryBadge text={COMMUNITY_FIELDS[post.field]} />
-              <ThreeDotsIcon isDark={isDark} />
+              {post.isWriter && (
+                <DeleteComponent isDark={isDark} onDelete={handleDelete} />
+              )}
             </View>
             <View style={styles.mainContentBox}>
               <View style={styles.authorProfileBox}>
@@ -229,13 +269,11 @@ export default function FeedDetail() {
               {imageCount > 0 && (
                 <View style={styles.imageSection}>
                   {imageCount === 1 ? (
-                    // 1장일 때: 가로로 꽉 찬 이미지
                     <Image
                       source={{ uri: post.imageUrls[0] }}
                       style={styles.singleImage}
                     />
                   ) : (
-                    // 2장 이상일 때: 273x273 정사각형 스크롤
                     <ScrollView
                       horizontal
                       showsHorizontalScrollIndicator={false}
