@@ -1,7 +1,7 @@
 import { AuthContext } from '@/app/_layout';
-import { authFetch } from '@/app/api/authFetch';
 import RelatedVideo from '@/app/components/search/related-video';
 import TrendKeywordCard from '@/app/components/trend-keyword-card';
+import { authFetch } from '@/lib/authFetch';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';

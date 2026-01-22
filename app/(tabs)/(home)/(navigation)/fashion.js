@@ -1,5 +1,5 @@
-import { authFetch } from '@/app/api/authFetch';
 import RealTimeTrend from '@/app/components/realtime-trend';
+import { authFetch } from '@/lib/authFetch';
 import { useContext, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { AuthContext } from '../../../_layout';

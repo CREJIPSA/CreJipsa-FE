@@ -1,5 +1,5 @@
-import { authFetch } from '@/app/api/authFetch';
 import useThemedStyle from '@/app/hooks/use-themed-style';
+import { authFetch } from '@/lib/authFetch';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useContext, useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';

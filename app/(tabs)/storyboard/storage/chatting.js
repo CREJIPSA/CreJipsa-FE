@@ -1,7 +1,7 @@
 import { AuthContext } from '@/app/_layout';
-import { authFetch } from '@/app/api/authFetch';
 import DropdownInnerOption from '@/app/components/storyboard/dropdown-inner-option';
 import useThemedStyle from '@/app/hooks/use-themed-style';
+import { authFetch } from '@/lib/authFetch';
 import { useContext, useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 

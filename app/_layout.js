@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { initAuthFetch } from './api/authFetch';
+import { initAuthFetch } from '../lib/authFetch';
 import useThemedStyle from './hooks/use-themed-style';
 
 export const AuthContext = createContext({});
@@ -25,13 +25,11 @@ export default function RootLayout() {
     accessTokenRef.current = accessToken;
   }, [accessToken]);
 
-  useEffect(() => {
-    initAuthFetch({
-      getToken: () => accessTokenRef.current,
-      setToken: token => setAccessToken(token),
-      onLogout: () => logout(),
-    });
-  }, []);
+  initAuthFetch({
+    getToken: () => accessTokenRef.current,
+    setToken: t => setAccessToken(t),
+    onLogout: () => logout(),
+  });
 
   async function logout() {
     setAccessToken(null);
@@ -39,7 +37,16 @@ export default function RootLayout() {
     setUser(null);
     setKakaoEmail(null);
     setKakaoProfileImageUrl(null);
+    await SecureStore.deleteItemAsync('userId');
+    await SecureStore.deleteItemAsync('accessToken');
     await SecureStore.deleteItemAsync('refreshToken');
+
+    console.log('[logout] called');
+    console.trace?.('[logout] stack trace');
+    console.log(
+      '[logout] userId(before delete)',
+      await SecureStore.getItemAsync('userId'),
+    );
 
     router.replace('/landing');
   }

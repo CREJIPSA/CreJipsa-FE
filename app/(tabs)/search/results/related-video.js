@@ -1,6 +1,6 @@
 import { AuthContext } from '@/app/_layout';
-import { authFetch } from '@/app/api/authFetch';
 import Video from '@/app/components/search/related-video';
+import { authFetch } from '@/lib/authFetch';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { FlatList, Text, useWindowDimensions, View } from 'react-native';

@@ -1,10 +1,10 @@
 import { AuthContext } from '@/app/_layout';
-import { authFetch } from '@/app/api/authFetch';
 import StoryboardDrawer from '@/app/components/storyboard/drawer/index.js';
 import MessageItem from '@/app/components/storyboard/message-input';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import MenuIcon from '@/assets/svgs/storyboard/menu.js';
 import SendIcon from '@/assets/svgs/storyboard/send.js';
+import { authFetch } from '@/lib/authFetch';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {

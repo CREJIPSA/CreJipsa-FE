@@ -13,7 +13,7 @@ import Toast from 'react-native-toast-message';
 import useThemedStyle from '../../hooks/use-themed-style';
 
 import { AuthContext } from '@/app/_layout';
-import { authFetch } from '@/app/api/authFetch';
+import { authFetch } from '@/lib/authFetch';
 
 export default function Trend() {
   const router = useRouter();

@@ -1,8 +1,8 @@
 import { AuthContext } from '@/app/_layout';
-import { authFetch } from '@/app/api/authFetch';
 import RankDown from '@/assets/search/rank-down.js';
 import RankNone from '@/assets/search/rank-none.js';
 import RankUp from '@/assets/search/rank-up.js';
+import { authFetch } from '@/lib/authFetch';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { useFocusEffect } from 'expo-router';

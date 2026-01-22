@@ -1,9 +1,9 @@
 import { AuthContext } from '@/app/_layout';
-import { authFetch } from '@/app/api/authFetch';
 import CutComponent from '@/app/components/storyboard/cut';
 import StoryboardDrawer from '@/app/components/storyboard/drawer/index.js';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import MenuIcon from '@/assets/svgs/storyboard/menu';
+import { authFetch } from '@/lib/authFetch';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {

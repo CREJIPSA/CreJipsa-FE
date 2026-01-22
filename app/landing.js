@@ -1,3 +1,4 @@
+import { authFetch } from '@/lib/authFetch';
 import {
   getKeyHashAndroid,
   initializeKakaoSDK,
@@ -84,10 +85,16 @@ export default function Landing() {
       }
       setAccessToken(result.accessToken);
       setRefreshToken(result.refreshToken);
+      await SecureStore.setItemAsync('accessToken', result.accessToken);
       await SecureStore.setItemAsync('refreshToken', result.refreshToken);
       setUser(result.kakaoUserInfo);
       setKakaoEmail(result.kakaoUserInfo?.email ?? null);
       setKakaoProfileImageUrl(result.kakaoUserInfo?.profileImage ?? null);
+
+      const meRes = await authFetch('https://dev.crezipsa.site/api/user/me');
+      const me = await meRes.json();
+      await SecureStore.setItemAsync('userId', String(me.result.userId));
+
       router.replace('/(tabs)');
     } catch (error) {
       console.error('Kakao login failed', error);
