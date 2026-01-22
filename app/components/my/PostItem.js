@@ -12,6 +12,7 @@ import DeleteComponent from './DeleteComponent';
 export default function PostItem({
   post,
   isMyReplys = false,
+  isLikePage = false,
   onDeleteSuccess,
 }) {
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
@@ -58,6 +59,8 @@ export default function PostItem({
     );
   };
 
+  const showDeleteButton = !isLikePage && !isMyReplys;
+
   const textContent = (
     <>
       {(isMyReplys || !hasImage) && (
@@ -65,7 +68,9 @@ export default function PostItem({
           <Text style={styles.titleText} numberOfLines={1}>
             {post.title}
           </Text>
-          <DeleteComponent isDark={isDark} onDelete={handleDelete} />
+          {showDeleteButton && (
+            <DeleteComponent isDark={isDark} onDelete={handleDelete} />
+          )}
         </View>
       )}
       <Text style={styles.contentText} numberOfLines={2}>
@@ -94,7 +99,9 @@ export default function PostItem({
             <Text style={styles.titleText} numberOfLines={1}>
               {post.title}
             </Text>
-            <DeleteComponent isDark={isDark} onDelete={handleDelete} />
+            {showDeleteButton && (
+              <DeleteComponent isDark={isDark} onDelete={handleDelete} />
+            )}
           </View>
           <View style={styles.contentWrapperRow}>
             <View style={styles.contentWrapperCol}>{textContent}</View>
