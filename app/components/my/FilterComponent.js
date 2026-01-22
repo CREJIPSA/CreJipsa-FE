@@ -70,7 +70,6 @@ const getStyles = (isDark, primaryColors) => {
       top: 35,
       left: 0,
       minWidth: 106,
-      minHeight: 76,
       backgroundColor: isDark ? '#454545' : '#D9D9D9',
       borderRadius: 10,
       elevation: 5,
