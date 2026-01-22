@@ -66,6 +66,8 @@ export default function SearchTrend() {
   // 채널 기반 키워드 추천 리스트
   const [keywordRecommendations, setKeywordRecommendations] = useState([]);
   useEffect(() => {
+    const controller = new AbortController();
+    let mounted = true;
     fetch(
       `https://dev.crezipsa.site/api/main/trend/recommendations/by-platform`,
       {
@@ -73,6 +75,7 @@ export default function SearchTrend() {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
+        signal: controller.signal,
       },
     )
       .then(async res => {
@@ -102,31 +105,29 @@ export default function SearchTrend() {
           console.error('Invalid keyword recommendations data format');
           return;
         }
-        setKeywordRecommendations(result);
+        if (mounted) setKeywordRecommendations(result);
       })
       .catch(error => {
+        if (controller.signal.aborted) return;
         console.error('Error fetching keyword recommendations:', error);
       });
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
   }, [accessToken]);
 
-  // 실시간 트렌드 순위
-  // const keywordRanking = [
-  //   { rank: 1, label: '주토피아', state: 'up' },
-  //   { rank: 2, label: '두바이 쫀득 쿠키', state: null },
-  //   { rank: 3, label: '힙사사돈', state: null },
-  //   { rank: 4, label: '방어회', state: 'down' },
-  //   { rank: 5, label: '크리스마스', state: 'up' },
-  //   { rank: 6, label: '첫눈', state: null },
-  //   { rank: 7, label: '싱숭생숭', state: null },
-  //   { rank: 8, label: 'zoo', state: 'up' },
-  // ];
+  // 실시간 키워드 순위
   const [keywordRanking, setKeywordRanking] = useState([]);
   useEffect(() => {
+    const controller = new AbortController();
+    let mounted = true;
     fetch(`https://dev.crezipsa.site/api/main/trend`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
+      signal: controller.signal,
     })
       .then(async res => {
         const raw = await res.text();
@@ -150,11 +151,16 @@ export default function SearchTrend() {
           console.error('Invalid keyword ranking data format');
           return;
         }
-        setKeywordRanking(result);
+        if (mounted) setKeywordRanking(result);
       })
       .catch(error => {
+        if (controller.signal.aborted) return;
         console.error('Error fetching keyword ranking:', error);
       });
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
   }, [accessToken]);
 
   // 최근 검색어 칩 컴포넌트
