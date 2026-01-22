@@ -146,16 +146,27 @@ export default function SearchTrend() {
           <Text style={styles.headerTitleText}>최근 검색어</Text>
           <Pressable
             onPress={async () => {
-              await fetch(
-                `https://dev.crezipsa.site/api/main/trend/all-history`,
-                {
-                  method: 'DELETE',
-                  headers: {
-                    Authorization: `Bearer ${accessToken}`,
+              try {
+                const res = await fetch(
+                  `https://dev.crezipsa.site/api/main/trend/all-history`,
+                  {
+                    method: 'DELETE',
+                    headers: {
+                      Authorization: `Bearer ${accessToken}`,
+                    },
                   },
-                },
-              );
-              setRecentSearchKeywords([]);
+                );
+
+                if (res.ok) {
+                  setRecentSearchKeywords([]);
+                } else {
+                  console.error(
+                    `Delete All Search History API error: ${res.status}`,
+                  );
+                }
+              } catch (e) {
+                console.error(e);
+              }
             }}
           >
             <Text style={styles.clearAllText}>전체 삭제</Text>
@@ -175,18 +186,33 @@ export default function SearchTrend() {
                 key={keyword.historyId}
                 keyword={keyword.history}
                 onPressDelete={async () => {
-                  await fetch(
-                    `https://dev.crezipsa.site/api/main/trend/search-history/${keyword.historyId}`,
-                    {
-                      method: 'DELETE',
-                      headers: {
-                        Authorization: `Bearer ${accessToken}`,
+                  try {
+                    const res = await fetch(
+                      `https://dev.crezipsa.site/api/main/trend/${keyword.historyId}`,
+                      {
+                        method: 'DELETE',
+                        headers: {
+                          Authorization: `Bearer ${accessToken}`,
+                        },
                       },
-                    },
-                  );
-                  setRecentSearchKeywords(prev =>
-                    prev.filter(item => item.historyId !== keyword.historyId),
-                  );
+                    );
+                    const raw = await res.text();
+                    console.log('delete search history api status', res.status);
+                    console.log('delete search history api raw response', raw);
+                    if (res.ok) {
+                      setRecentSearchKeywords(prev =>
+                        prev.filter(
+                          item => item.historyId !== keyword.historyId,
+                        ),
+                      );
+                    } else {
+                      console.error(
+                        `Delete Search History API error: ${res.status}`,
+                      );
+                    }
+                  } catch (e) {
+                    console.error(e);
+                  }
                 }}
               />
             ))
