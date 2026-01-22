@@ -1,5 +1,6 @@
 import { COMMUNITY_FIELDS } from '@/app/constants/common/COMMUNITY_FIELDS';
 import useThemedStyle from '@/app/hooks/use-themed-style';
+import { stripHtmlTags } from '@/app/utils/string';
 import CommentIcon from '@/assets/svgs/common/comment-icon';
 import LikedIcon from '@/assets/svgs/common/like-icon';
 import { router } from 'expo-router';
@@ -26,6 +27,8 @@ export default function FeedItem({ post }) {
     router.push(`/feed/${communityId}`);
   };
 
+  const plainText = stripHtmlTags(contentPreview);
+
   const textContent = (
     <>
       <View style={styles.titleTextRow}>
@@ -34,7 +37,7 @@ export default function FeedItem({ post }) {
         </Text>
       </View>
       <Text style={styles.contentText} numberOfLines={2}>
-        {contentPreview}
+        {plainText}
       </Text>
       <View style={styles.detailRow}>
         <Text style={styles.detailText}>#{fieldLabel}</Text>

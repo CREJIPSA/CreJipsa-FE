@@ -27,8 +27,10 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native';
+import RenderHTML from 'react-native-render-html';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function FeedDetail() {
@@ -45,6 +47,8 @@ export default function FeedDetail() {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isSending, setIsSending] = useState(false);
+
+  const { width } = useWindowDimensions();
 
   const fetchPost = useCallback(async () => {
     try {
@@ -265,7 +269,30 @@ export default function FeedDetail() {
                 </View>
               </View>
               <Text style={styles.postTitleText}>{post.title}</Text>
-              <Text style={styles.defaultText}>{post.content}</Text>
+              <RenderHTML
+                contentWidth={width - 34}
+                source={{ html: post.content || '' }}
+                tagsStyles={{
+                  body: {
+                    color: primaryColors.color,
+                    fontSize: 16,
+                    fontWeight: '500',
+                    lineHeight: 22,
+                  },
+                  div: {
+                    margin: 0,
+                    padding: 0,
+                  },
+                  b: {
+                    fontWeight: '700',
+                    color: primaryColors.color,
+                  },
+                  u: {
+                    textDecorationLine: 'underline',
+                    color: primaryColors.color,
+                  },
+                }}
+              />
               {imageCount > 0 && (
                 <View style={styles.imageSection}>
                   {imageCount === 1 ? (
