@@ -1,6 +1,5 @@
 import { AuthContext } from '@/app/_layout';
 import DropdownInnerOption from '@/app/components/storyboard/dropdown-inner-option';
-import StoryboardStorageData from '@/app/constants/storyboard/STORYBOARD_STORAGE.js';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import ChatStorageIcon from '@/assets/svgs/storyboard/archive.js';
 import NewChatIcon from '@/assets/svgs/storyboard/chat.js';
@@ -15,6 +14,7 @@ export default function StoryboardDrawerDefault({ onClose }) {
   const { styles, primaryColors, isDark } = useThemedStyle(getStyles);
 
   const router = useRouter();
+  const { accessToken } = useContext(AuthContext);
 
   const [openDropdown, setOpenDropdown] = useState(null); // 'storyboard' or 'chatting' or null
   const toggleStoryboardDropdown = () => {
@@ -84,8 +84,6 @@ export default function StoryboardDrawerDefault({ onClose }) {
   };
 
   // 채팅 데이터
-  const { accessToken } = useContext(AuthContext);
-
   const [myChatList, setMyChatList] = useState([]);
 
   useEffect(() => {
@@ -131,6 +129,49 @@ export default function StoryboardDrawerDefault({ onClose }) {
       });
   }, [accessToken]);
 
+  // 스토리보드 데이터
+  const [myStoryboardList, setMyStoryboardList] = useState([]);
+  useEffect(() => {
+    fetch('https://dev.crezipsa.site/api/storyboard', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+      .then(async res => {
+        const raw = await res.text();
+        console.log('my storyboard api status', res.status);
+        console.log('my storyboard api raw response', raw);
+
+        let data = null;
+        try {
+          data = raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          console.error('Failed to parse JSON response', e);
+        }
+
+        if (!res.ok) throw new Error(`My Storyboard API error: ${res.status}`);
+        return data;
+      })
+      .then(data => {
+        const result = data?.result;
+        if (!result || !Array.isArray(result)) {
+          console.error('Invalid my storyboard data format', data);
+          return;
+        }
+        const nextList = result
+          .filter(item => item?.createdAt)
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          );
+        setMyStoryboardList(nextList.slice(0, 5));
+      })
+      .catch(error => {
+        console.error('Failed to fetch my storyboard data', error);
+      });
+  }, [accessToken]);
+
   return (
     <View style={{ gap: 16 }}>
       <Pressable
@@ -145,9 +186,56 @@ export default function StoryboardDrawerDefault({ onClose }) {
       </Pressable>
       <Pressable
         style={styles.drawerOption}
-        onPress={() => {
+        onPress={async () => {
           onClose();
-          // 라우팅 추가
+          await fetch('https://dev.crezipsa.site/api/storyboard/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({}),
+          })
+            .then(async res => {
+              const raw = await res.text();
+              console.log('create storyboard api status', res.status);
+              console.log('create storyboard api raw response', raw);
+
+              if (!res.ok) {
+                throw new Error(
+                  `Create Storyboard API error: ${res.status} raw=${raw}`,
+                );
+              }
+
+              let data = null;
+              try {
+                data = raw ? JSON.parse(raw) : null;
+              } catch (e) {
+                console.error('Failed to parse JSON response', e);
+              }
+
+              return data;
+            })
+            .then(data => {
+              const newStoryboardId = data?.result?.storyboardId;
+              if (!newStoryboardId) {
+                console.error('Invalid create storyboard data format', data);
+                return;
+              } else {
+                console.log(
+                  'newStoryboardId',
+                  newStoryboardId,
+                  typeof newStoryboardId,
+                );
+                router.push({
+                  pathname: `/storyboard/edit/${newStoryboardId}`,
+                  params: { draft: 1 },
+                });
+              }
+            })
+            .catch(error => {
+              console.error('Failed to create new storyboard', error);
+            });
         }}
       >
         <NewStoryboardIcon color={primaryColors.color} size={20} />
@@ -161,12 +249,12 @@ export default function StoryboardDrawerDefault({ onClose }) {
       {/* 스토리보드 드롭다운 */}
       {openDropdown === 'storyboard' && (
         <View style={styles.dropdownContainer}>
-          {StoryboardStorageData.slice(0, 5).map((item, index) => (
+          {myStoryboardList.slice(0, 5).map((item, index) => (
             <DropdownInnerOption
-              key={item.id}
+              key={item.storyboardId}
               label="storyboard"
-              text={item.text}
-              route={item.route}
+              text={item.title}
+              route={item.storyboardId}
               onClose={onClose}
             />
           ))}

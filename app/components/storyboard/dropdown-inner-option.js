@@ -24,7 +24,7 @@ export default function DropdownInnerOption({
     prevTitleRef.current = text;
   }, [text]);
 
-  async function changeTitle() {
+  async function changeChatTitle() {
     if (!accessToken || !chatRoomId) return;
 
     const newTitle = chatRoomTitle.trim();
@@ -60,13 +60,14 @@ export default function DropdownInnerOption({
         value={chatRoomTitle}
         onChangeText={setChatRoomTitle}
         editable={label === 'chatting'}
-        onSubmitEditing={changeTitle}
+        onSubmitEditing={changeChatTitle}
       />
       <Pressable
         style={styles.drawerInnerOptionButton}
         onPress={() => {
+          console.log('label', label, 'route', route, 'typeof', typeof route);
           if (label === 'storyboard') {
-            router.push(`/storyboard/edit`);
+            router.push(`/storyboard/edit/${route}`);
           } else {
             router.push(`/storyboard/${route}`);
           }
