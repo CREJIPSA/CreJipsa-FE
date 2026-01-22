@@ -170,7 +170,6 @@ const getStyles = isDark => {
     },
     menuItem: {
       alignItems: 'center',
-      width: '22%',
     },
     squareBox: {
       width: 60,
