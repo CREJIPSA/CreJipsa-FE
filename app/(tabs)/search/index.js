@@ -5,7 +5,7 @@ import RankUp from '@/assets/search/rank-up.js';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { useFocusEffect } from 'expo-router';
-import { memo, useCallback, useContext, useState } from 'react';
+import { memo, useCallback, useContext, useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Chip from '../../components/chip';
@@ -64,13 +64,50 @@ export default function SearchTrend() {
   useFocusEffect(fetchRecentSearchKeywords);
 
   // 채널 기반 키워드 추천 리스트
-  const keywordRecommendations = [
-    '듀 가나디 키링',
-    '요즘 BGM',
-    '듀 가나디',
-    '아이폰 17',
-    '밈',
-  ];
+  const [keywordRecommendations, setKeywordRecommendations] = useState([]);
+  useEffect(() => {
+    fetch(
+      `https://dev.crezipsa.site/api/main/trend/recommendations/by-platform`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    )
+      .then(async res => {
+        const raw = await res.text();
+        console.log('keyword recommendations api status', res.status);
+        console.log('keyword recommendations api raw response', raw);
+
+        let data = null;
+        try {
+          data = raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          console.error(
+            'Failed to parse keyword recommendations API response',
+            e,
+          );
+        }
+
+        if (!res.ok)
+          throw new Error(
+            `Keyword Recommendations API error: ${res.status} raw=${raw}`,
+          );
+        return data;
+      })
+      .then(data => {
+        const result = data?.result;
+        if (!result || !Array.isArray(result)) {
+          console.error('Invalid keyword recommendations data format');
+          return;
+        }
+        setKeywordRecommendations(result);
+      })
+      .catch(error => {
+        console.error('Error fetching keyword recommendations:', error);
+      });
+  }, [accessToken]);
 
   // 실시간 트렌드 순위
   const keywordRanking = [
@@ -225,8 +262,8 @@ export default function SearchTrend() {
           채널 기반 키워드 추천
         </Text>
         <View style={styles.keywordRecommendations}>
-          {keywordRecommendations.map((keyword, index) => (
-            <Chip key={index} label={keyword} />
+          {keywordRecommendations.slice(0, 5).map(keyword => (
+            <Chip key={keyword.id} label={keyword.keyword} />
           ))}
         </View>
       </View>
