@@ -6,14 +6,12 @@ import {
   unlikeFeedPost,
 } from '@/app/api/feed';
 import CategoryBadge from '@/app/components/feed/CategoryBadge';
-import SearchBar from '@/app/components/feed/SearchBar';
 import { COMMUNITY_FIELDS } from '@/app/constants/common/COMMUNITY_FIELDS';
 import { getPlatformLogo } from '@/app/constants/common/PLATFORM_LOGOS';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import CommentIcon from '@/assets/svgs/common/comment-icon';
 import LikedIcon from '@/assets/svgs/common/like-icon';
 import ThreeDotsIcon from '@/assets/svgs/common/three-dots-icon';
-import BackIcon from '@/assets/svgs/feed/back-icon';
 import CommentSendIcon from '@/assets/svgs/feed/comment-send-icon';
 import ReplyArrowIcon from '@/assets/svgs/feed/reply-arrow-icon';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -41,10 +39,9 @@ export default function FeedDetail() {
 
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [text, setText] = useState('');
   const [commentText, setCommentText] = useState('');
   const [replyTarget, setReplyTarget] = useState(null);
-  const [isLiked, setIsLiked] = useState(false); // 로컬 상태
+  const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isSending, setIsSending] = useState(false);
 
@@ -57,6 +54,7 @@ export default function FeedDetail() {
       }
       setPost(data.result);
       setLikeCount(data.result.likeCount || 0);
+      setIsLiked(Boolean(data.result.isLiked));
     } catch (error) {
       Alert.alert('알림', error.message || '데이터를 불러오지 못했습니다.');
 
@@ -94,34 +92,26 @@ export default function FeedDetail() {
   }
 
   const handleLikePress = async () => {
-    const nextState = !isLiked;
-    setIsLiked(nextState);
-    setLikeCount(prev => (nextState ? prev + 1 : prev - 1));
-
     try {
       let result;
-      if (nextState) {
-        // 좋아요 등록 (현재 false -> true로 변함)
+      if (!isLiked) {
         result = await likeFeedPost(id, accessToken);
       } else {
-        // 좋아요 취소 (현재 true -> false로 변함)
         result = await unlikeFeedPost(id, accessToken);
       }
 
-      if (!result?.success) {
-        setIsLiked(!nextState);
-        setLikeCount(prev => (nextState ? prev - 1 : prev + 1));
+      if (result?.success) {
+        await fetchPost();
+      } else {
         Alert.alert('알림', result?.message || '처리에 실패했습니다.');
       }
     } catch (error) {
-      setIsLiked(!nextState);
-      setLikeCount(prev => (nextState ? prev - 1 : prev + 1));
       console.error('Like Toggle Error:', error);
+      Alert.alert('오류', '좋아요 처리에 실패했습니다.');
     }
   };
 
   const imageCount = post.imageUrls?.length || 0;
-  const iconColor = isDark ? '#FAFAFA' : '#141414';
 
   const cancelReply = () => {
     setReplyTarget(null);
@@ -202,12 +192,6 @@ export default function FeedDetail() {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
     >
       <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
-        <View style={styles.searchBarContainer}>
-          <Pressable onPress={() => router.back()}>
-            <BackIcon color={iconColor} />
-          </Pressable>
-          <SearchBar value={text} onChangeText={setText} styles={styles} />
-        </View>
         <ScrollView style={styles.scrollContainer}>
           <View style={styles.postContainer}>
             <View style={styles.categoryRow}>
@@ -223,13 +207,17 @@ export default function FeedDetail() {
                 <View style={styles.authorProfileDetailCol}>
                   <Text style={styles.authorName}>{post.writer.nickName}</Text>
                   <View style={styles.authorProfileDetailRow}>
-                    <Image
-                      source={getPlatformLogo(post.writer.mainPlatform)}
-                      style={styles.authorPlatformImage}
-                    />
-                    <Text style={styles.authorProfileDetailText}>
-                      {post.writer.mainPlatformId}
-                    </Text>
+                    {post.writer.mainPlatform && (
+                      <>
+                        <Image
+                          source={getPlatformLogo(post.writer.mainPlatform)}
+                          style={styles.authorPlatformImage}
+                        />
+                        <Text style={styles.authorProfileDetailText}>
+                          {post.writer.mainPlatformId}
+                        </Text>
+                      </>
+                    )}
                     <Text style={styles.authorProfileDetailText}>
                       {post.relativeTime}
                     </Text>
@@ -321,17 +309,23 @@ export default function FeedDetail() {
                           {comment.writer.nickName}
                         </Text>
                         <View style={styles.authorProfileDetailRow}>
-                          <Image
-                            source={getPlatformLogo(
-                              comment.writer.mainPlatform,
-                            )}
-                            style={styles.authorPlatformImage}
-                          />
+                          {comment.writer.mainPlatform && (
+                            <>
+                              <Image
+                                source={getPlatformLogo(
+                                  comment.writer.mainPlatform,
+                                )}
+                                style={styles.authorPlatformImage}
+                              />
+                              <Text
+                                style={styles.commentAuthorProfileDetailText}
+                              >
+                                {comment.writer.mainPlatformId}
+                              </Text>
+                            </>
+                          )}
                           <Text style={styles.commentAuthorProfileDetailText}>
-                            {comment.writer.mainPlatformId}
-                          </Text>
-                          <Text style={styles.commentAuthorProfileDetailText}>
-                            {comment.createdAt}
+                            {comment.relativeTime}
                           </Text>
                         </View>
                       </View>
@@ -354,21 +348,27 @@ export default function FeedDetail() {
                               {reply.writer.nickName}
                             </Text>
                             <View style={styles.authorProfileDetailRow}>
-                              <Image
-                                source={getPlatformLogo(
-                                  reply.writer.mainPlatform,
-                                )}
-                                style={styles.authorPlatformImage}
-                              />
+                              {reply.writer.mainPlatform && (
+                                <>
+                                  <Image
+                                    source={getPlatformLogo(
+                                      reply.writer.mainPlatform,
+                                    )}
+                                    style={styles.authorPlatformImage}
+                                  />
+                                  <Text
+                                    style={
+                                      styles.commentAuthorProfileDetailText
+                                    }
+                                  >
+                                    {reply.writer.mainPlatformId}
+                                  </Text>
+                                </>
+                              )}
                               <Text
                                 style={styles.commentAuthorProfileDetailText}
                               >
-                                {reply.writer.mainPlatformId}
-                              </Text>
-                              <Text
-                                style={styles.commentAuthorProfileDetailText}
-                              >
-                                {reply.createdAt}
+                                {reply.relativeTime}
                               </Text>
                             </View>
                           </View>
@@ -381,7 +381,14 @@ export default function FeedDetail() {
             ))}
           </View>
         </ScrollView>
-        <View style={styles.bottomBar}>
+        <View
+          style={[
+            styles.bottomBar,
+            {
+              paddingBottom: insets.bottom > 0 ? insets.bottom + 12 : 20,
+            },
+          ]}
+        >
           <TextInput
             style={styles.commentInput}
             placeholder="댓글을 입력하세요"
@@ -406,47 +413,18 @@ export default function FeedDetail() {
 }
 
 const getStyles = (isDark, primaryColors) => {
-  const headerBg = isDark ? '#141414' : '#FAFAFA';
   const contentBg = isDark ? '#323232' : '#FFFFFF';
   const PROFILE_IMAGE_SIZE = 36;
 
   return StyleSheet.create({
     mainContainer: {
       flex: 1,
-      backgroundColor: headerBg,
+      backgroundColor: contentBg,
     },
 
     scrollContainer: {
+      marginTop: 30,
       backgroundColor: isDark ? 'transparent' : '#ECECEC',
-    },
-
-    searchBarContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 22,
-      paddingTop: 20,
-      paddingBottom: 10,
-      paddingHorizontal: 16,
-      backgroundColor: headerBg,
-    },
-
-    inputWrapper: {
-      flex: 1,
-      position: 'relative',
-      justifyContent: 'center',
-    },
-
-    searchInput: {
-      flexDirection: 'row',
-      gap: 90,
-      backgroundColor: isDark ? '#E6E6E6' : '#EFF1F4',
-      borderRadius: 100,
-      paddingHorizontal: 15,
-    },
-
-    searchIconContainer: {
-      position: 'absolute',
-      right: 15,
     },
 
     postContainer: {
