@@ -115,8 +115,14 @@ export default function MyLikes() {
   };
 
   const onEndReached = () => {
-    if (!loading && hasNextPage && !onEndReachedDuringMomentum.current) {
-      loadPosts(page + 1);
+    if (
+      !loading &&
+      hasNextPage &&
+      !onEndReachedDuringMomentum.current &&
+      !isFetching.current
+    ) {
+      const nextPage = page + 1;
+      loadPosts(nextPage);
       onEndReachedDuringMomentum.current = true;
     }
   };
