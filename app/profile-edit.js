@@ -15,7 +15,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DeleteIcon from '../assets/svgs/my/delete-icon.js';
 import { AuthContext } from './_layout.js';
-import { fetchMe } from './api/my.js';
+import { fetchMe, getMyInterest } from './api/my.js';
 import ChannelAddModal from './components/profile-edit/ChannelAddModal.js';
 import InterestTag from './components/profile-edit/InterestTag';
 import MyInterestTag from './components/profile-edit/MyInterestTag';
@@ -23,6 +23,7 @@ import MyInterestTag from './components/profile-edit/MyInterestTag';
 export default function ProfileEdit() {
   const { accessToken } = useContext(AuthContext);
   const [userInfo, setUserInfo] = useState(null);
+  const [myInterests, setMyInterests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [profileImage, setProfileImage] = useState(null);
   const safeAreaBg = isDark ? '#202020' : '#FCFCFC';
@@ -35,10 +36,20 @@ export default function ProfileEdit() {
     const loadUserData = async () => {
       try {
         setLoading(true);
-        const data = await fetchMe(accessToken);
-        console.log(data);
-        if (data.success) {
-          setUserInfo(data.result);
+
+        const [userRes, interestRes] = await Promise.all([
+          fetchMe(accessToken),
+          getMyInterest(accessToken),
+        ]);
+
+        console.log(interestRes);
+
+        if (userRes.success) {
+          setUserInfo(userRes.result);
+        }
+
+        if (interestRes.success) {
+          setMyInterests(interestRes.result || []);
         }
       } catch (error) {
         console.error('사용자 정보 로드 실패:', error);
@@ -100,8 +111,21 @@ export default function ProfileEdit() {
 
   const myChannels = getMyChannels();
 
-  const allInterests = ['일상/밈', '게임', '패션', '음악', '뷰티', '반려동물'];
-  const myInterests = ['일상/밈', '게임', '패션'];
+  const fixedAllInterests = [
+    '일상/밈',
+    '게임',
+    '패션',
+    '음악',
+    '뷰티',
+    '반려동물',
+    '스포츠',
+  ];
+
+  const myInterestCategories = myInterests.map(interest => interest.category);
+
+  const availableInterests = fixedAllInterests.filter(
+    tag => !myInterestCategories.includes(tag),
+  );
 
   const pickImage = async () => {
     const permissionResult =
@@ -204,18 +228,18 @@ export default function ProfileEdit() {
             <View style={styles.interestHeaderContainer}>
               <Text style={styles.boxTitleText}>관심분야</Text>
               <View style={styles.myInterestTagContainer}>
-                {myInterests.map((tag, index) => (
+                {myInterests.map(interest => (
                   <MyInterestTag
-                    key={index}
-                    label={tag}
-                    onRemove={() => console.log(`${tag} 삭제`)}
+                    key={interest.interestId}
+                    label={interest.category}
+                    onRemove={() => console.log(`${interest.interestId} 삭제`)}
                     isDark={isDark}
                   />
                 ))}
               </View>
             </View>
             <View style={styles.interestTagContainer}>
-              {allInterests.map((tag, index) => (
+              {availableInterests.map((tag, index) => (
                 <InterestTag
                   key={index}
                   label={tag}

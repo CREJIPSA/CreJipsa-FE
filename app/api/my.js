@@ -123,3 +123,17 @@ export const updateMyChannels = async (channelData, accessToken) => {
 
   return await parseJsonResponse(response);
 };
+
+export const getMyInterest = async accessToken => {
+  const url = `${API_BASE_URL}/user/interest`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return await parseJsonResponse(response);
+};
