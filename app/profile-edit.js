@@ -2,39 +2,103 @@ import useThemedStyle from '@/app/hooks/use-themed-style';
 import AddIcon from '@/assets/svgs/my/add-icon';
 import EditIcon from '@/assets/svgs/my/edit-icon.js';
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { useContext, useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DeleteIcon from '../assets/svgs/my/delete-icon.js';
+import { AuthContext } from './_layout.js';
+import { fetchMe } from './api/my.js';
+import ChannelAddModal from './components/profile-edit/ChannelAddModal.js';
 import InterestTag from './components/profile-edit/InterestTag';
 import MyInterestTag from './components/profile-edit/MyInterestTag';
 
 export default function ProfileEdit() {
+  const { accessToken } = useContext(AuthContext);
+  const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [profileImage, setProfileImage] = useState(null);
+  const safeAreaBg = isDark ? '#202020' : '#FCFCFC';
+  const iconColor = isDark ? '#CCFF66' : '#B8E65C';
+  const [modalVisible, setModalVisible] = useState(false);
+
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
 
-  const nickname = '혜안';
-  const [profileImage, setProfileImage] = useState(null);
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchMe(accessToken);
+        console.log(data);
+        if (data.success) {
+          setUserInfo(data.result);
+        }
+      } catch (error) {
+        console.error('사용자 정보 로드 실패:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const myChannels = [
-    {
-      type: 'youtube',
-      id: '@suucong',
-      isMain: true,
-      icon: require('../assets/images/platform_logo/youtube_logo.png'),
-    },
-    {
-      type: 'tiktok',
-      id: '@suucong',
-      isMain: false,
-      icon: require('../assets/images/platform_logo/tiktok_logo.png'),
-    },
-    {
-      type: 'instagram',
-      id: '@suucong',
-      isMain: false,
-      icon: require('../assets/images/platform_logo/instagram_logo.png'),
-    },
-  ];
+    if (accessToken) {
+      loadUserData();
+    }
+  }, [accessToken]);
+
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: safeAreaBg,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <ActivityIndicator size="large" color={iconColor} />
+      </SafeAreaView>
+    );
+  }
+
+  const getMyChannels = () => {
+    if (!userInfo) return [];
+
+    const platforms = [
+      {
+        key: 'YOUTUBE',
+        id: userInfo.activeYoutube,
+        icon: require('@/assets/images/platform_logo/youtube_logo.png'),
+      },
+      {
+        key: 'TIKTOK',
+        id: userInfo.activeTiktok,
+        icon: require('@/assets/images/platform_logo/tiktok_logo.png'),
+      },
+      {
+        key: 'INSTAGRAM',
+        id: userInfo.activeInsta,
+        icon: require('@/assets/images/platform_logo/instagram_logo.png'),
+      },
+    ];
+
+    return platforms
+      .filter(p => p.id)
+      .map(p => ({
+        type: p.key.toLowerCase(),
+        id: p.id,
+        isMain: userInfo.mainPlatform === p.key,
+        icon: p.icon,
+      }));
+  };
+
+  const myChannels = getMyChannels();
 
   const allInterests = ['일상/밈', '게임', '패션', '음악', '뷰티', '반려동물'];
   const myInterests = ['일상/밈', '게임', '패션'];
@@ -65,29 +129,36 @@ export default function ProfileEdit() {
         <Text style={styles.title}>마이</Text>
         <View style={styles.profileSection}>
           <View style={styles.avatarContainer}>
-            <Image
-              source={
-                profileImage
-                  ? { uri: profileImage }
-                  : require('../assets/images/profile.png')
-              }
-              style={styles.avatar}
-            />
+            {userInfo?.profileImageUrl ? (
+              <Image
+                source={{ uri: userInfo.profileImageUrl }}
+                style={styles.avatar}
+              />
+            ) : (
+              <View
+                style={[
+                  styles.avatar,
+                  { backgroundColor: isDark ? '#454545' : '#D3D3D3' },
+                ]}
+              />
+            )}
             <Pressable style={styles.editButton} onPress={pickImage}>
               <EditIcon isDark={isDark} />
             </Pressable>
           </View>
-          <Text style={styles.name}>{nickname}</Text>
+          <Text style={styles.name}>{userInfo.nickName}</Text>
         </View>
         <View style={styles.infoSection}>
           <View style={styles.boxContainer}>
             <View style={styles.rowContainer}>
               <Text style={styles.boxTitleText}>내 채널 정보</Text>
-              <AddIcon
-                fillColor={primaryColors.pointColor}
-                color={primaryColors.iconPrimaryColor}
-                isDark={isDark}
-              />
+              <Pressable onPress={() => setModalVisible(true)}>
+                <AddIcon
+                  fillColor={primaryColors.pointColor}
+                  color={primaryColors.iconPrimaryColor}
+                  isDark={isDark}
+                />
+              </Pressable>
             </View>
             <View style={styles.channelContainer}>
               {myChannels.map((channel, index) => (
@@ -114,11 +185,19 @@ export default function ProfileEdit() {
           <View style={styles.boxContainer}>
             <View style={styles.myInfoContainer}>
               <Text style={styles.boxTitleText}>생년월일</Text>
-              <Text style={styles.detailText}>2000.00.00</Text>
+              <Text style={styles.detailText}>
+                {userInfo.birth.replaceAll('-', '.')}
+              </Text>
             </View>
             <View style={styles.myInfoContainer}>
               <Text style={styles.boxTitleText}>성별</Text>
-              <Text style={styles.detailText}>여성</Text>
+              <Text style={styles.detailText}>
+                {userInfo?.gender === 'FEMALE'
+                  ? '여성'
+                  : userInfo?.gender === 'MALE'
+                    ? '남성'
+                    : '-'}
+              </Text>
             </View>
           </View>
           <View style={styles.boxContainer}>
@@ -148,6 +227,12 @@ export default function ProfileEdit() {
           </View>
         </View>
       </ScrollView>
+      <ChannelAddModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        isDark={isDark}
+        primaryColors={primaryColors}
+      />
     </SafeAreaView>
   );
 }
