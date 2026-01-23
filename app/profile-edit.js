@@ -40,8 +40,10 @@ export default function ProfileEdit() {
 
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
 
-  const loadUserData = async () => {
+  const loadUserData = async (showLoading = false) => {
     try {
+      if (showLoading) setLoading(true);
+
       const [userRes, interestRes] = await Promise.all([
         fetchMe(accessToken),
         getMyInterest(accessToken),
@@ -51,8 +53,17 @@ export default function ProfileEdit() {
       if (interestRes.success) setMyInterests(interestRes.result || []);
     } catch (error) {
       console.error('데이터 로드 실패:', error);
+    } finally {
+      if (showLoading) setLoading(false);
     }
   };
+
+  // ✅ [수정] 통합된 함수를 사용하도록 useEffect 간소화
+  useEffect(() => {
+    if (accessToken) {
+      loadUserData(true);
+    }
+  }, [accessToken]);
 
   const handleAddInterest = async category => {
     if (myInterests.length >= 3) {
@@ -112,37 +123,6 @@ export default function ProfileEdit() {
       },
     ]);
   };
-
-  useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        setLoading(true);
-
-        const [userRes, interestRes] = await Promise.all([
-          fetchMe(accessToken),
-          getMyInterest(accessToken),
-        ]);
-
-        console.log(interestRes);
-
-        if (userRes.success) {
-          setUserInfo(userRes.result);
-        }
-
-        if (interestRes.success) {
-          setMyInterests(interestRes.result || []);
-        }
-      } catch (error) {
-        console.error('사용자 정보 로드 실패:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (accessToken) {
-      loadUserData();
-    }
-  }, [accessToken]);
 
   if (loading) {
     return (
