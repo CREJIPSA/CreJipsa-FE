@@ -1,3 +1,4 @@
+import { authFetch } from '@/lib/authFetch.js';
 import { parseJsonResponse } from './utils.js';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -20,7 +21,7 @@ export const fetchMyPosts = async (params, accessToken) => {
 
   const url = `${API_BASE_URL}/community/my?${queryParams.toString()}`;
 
-  const response = await fetch(url, {
+  const response = await authFetch(url, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -48,7 +49,7 @@ export const fetchMyLikes = async (params, accessToken) => {
 
   const url = `${API_BASE_URL}/likes/me?${queryParams.toString()}`;
 
-  const response = await fetch(url, {
+  const response = await authFetch(url, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -72,7 +73,7 @@ export const fetchMyComments = async (params, accessToken) => {
 
   const url = `${API_BASE_URL}/comment/my?${queryParams.toString()}`;
 
-  const response = await fetch(url, {
+  const response = await authFetch(url, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -85,7 +86,7 @@ export const fetchMyComments = async (params, accessToken) => {
 export const deletePost = async (communityId, accessToken) => {
   const url = `${API_BASE_URL}/community/${communityId}`;
 
-  const response = await fetch(url, {
+  const response = await authFetch(url, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -98,7 +99,7 @@ export const deletePost = async (communityId, accessToken) => {
 export const fetchMe = async accessToken => {
   const url = `${API_BASE_URL}/user/me`;
 
-  const response = await fetch(url, {
+  const response = await authFetch(url, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -112,7 +113,7 @@ export const fetchMe = async accessToken => {
 export const updateMe = async (channelData, accessToken) => {
   const url = `${API_BASE_URL}/user/update`;
 
-  const response = await fetch(url, {
+  const response = await authFetch(url, {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -127,7 +128,7 @@ export const updateMe = async (channelData, accessToken) => {
 export const deleteChannel = async (platform, accessToken) => {
   const url = `${API_BASE_URL}/user/update?platform=${platform.toUpperCase()}`;
 
-  const response = await fetch(url, {
+  const response = await authFetch(url, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -141,7 +142,7 @@ export const deleteChannel = async (platform, accessToken) => {
 export const getMyInterest = async accessToken => {
   const url = `${API_BASE_URL}/user/interest`;
 
-  const response = await fetch(url, {
+  const response = await authFetch(url, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -155,7 +156,7 @@ export const getMyInterest = async accessToken => {
 export const addInterest = async (category, accessToken) => {
   const url = `${API_BASE_URL}/user/interest/${encodeURIComponent(category)}`;
 
-  const response = await fetch(url, {
+  const response = await authFetch(url, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -169,7 +170,7 @@ export const addInterest = async (category, accessToken) => {
 export const deleteInterest = async (interestId, accessToken) => {
   const url = `${API_BASE_URL}/user/interest/${interestId}`;
 
-  const response = await fetch(url, {
+  const response = await authFetch(url, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -183,7 +184,7 @@ export const deleteInterest = async (interestId, accessToken) => {
 export const deleteMe = async accessToken => {
   const url = `${API_BASE_URL}/user/me`;
 
-  const response = await fetch(url, {
+  const response = await authFetch(url, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -196,7 +197,7 @@ export const deleteMe = async accessToken => {
 
 export const fetchMyTrends = async accessToken => {
   const url = `${API_BASE_URL}/main/trend/getUserTrend`;
-  const response = await fetch(url, {
+  const response = await authFetch(url, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
