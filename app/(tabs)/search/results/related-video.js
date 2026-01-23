@@ -1,5 +1,6 @@
 import { AuthContext } from '@/app/_layout';
 import Video from '@/app/components/search/related-video';
+import { authFetch } from '@/lib/authFetch';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { FlatList, Text, useWindowDimensions, View } from 'react-native';
@@ -16,13 +17,16 @@ export default function RelatedVideo() {
     const encodedQuery = encodeURIComponent(
       Array.isArray(query) ? (query[0] ?? '') : (query ?? ''),
     );
-    fetch(`https://dev.crezipsa.site/api/main/trend/search/${encodedQuery}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
+    authFetch(
+      `https://dev.crezipsa.site/api/main/trend/search/${encodedQuery}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
       },
-    })
+    )
       .then(async res => {
         const raw = await res.text();
         console.log('search api status', res.status);

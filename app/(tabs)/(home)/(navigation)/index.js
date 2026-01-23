@@ -1,4 +1,5 @@
 import useThemedStyle from '@/app/hooks/use-themed-style';
+import { authFetch } from '@/lib/authFetch';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useContext, useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -15,7 +16,7 @@ export default function Home({ platform }) {
   useEffect(() => {
     const url = `https://dev.crezipsa.site/api/main/trend?platform=${platform}`;
     // 플랫폼과 카테고리에 따른 실시간 트렌드 데이터 가져오기
-    fetch(url, {
+    authFetch(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -53,7 +54,7 @@ export default function Home({ platform }) {
 
   const [overallTrendData, setOverallTrendData] = useState([]);
   useEffect(() => {
-    fetch(
+    authFetch(
       `https://dev.crezipsa.site/api/main/trend/recommendations/by-platform`,
       {
         method: 'GET',
@@ -92,7 +93,7 @@ export default function Home({ platform }) {
 
   const [interestTrendData, setInterestTrendData] = useState([]);
   useEffect(() => {
-    fetch(
+    authFetch(
       `https://dev.crezipsa.site/api/main/trend/recommendations/by-interests`,
       {
         method: 'GET',

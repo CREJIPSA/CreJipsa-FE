@@ -3,6 +3,7 @@ import CutComponent from '@/app/components/storyboard/cut';
 import StoryboardDrawer from '@/app/components/storyboard/drawer/index.js';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import MenuIcon from '@/assets/svgs/storyboard/menu';
+import { authFetch } from '@/lib/authFetch';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
@@ -83,7 +84,7 @@ export default function StoryboardEdit() {
 
     deletingRef.current = true;
     try {
-      const res = await fetch(
+      const res = await authFetch(
         `https://dev.crezipsa.site/api/storyboard/${storyboardId}`,
         {
           method: 'DELETE',
@@ -119,7 +120,7 @@ export default function StoryboardEdit() {
         if (!accessToken || !storyboardId) return;
 
         try {
-          const res = await fetch(
+          const res = await authFetch(
             `https://dev.crezipsa.site/api/storyboard/${storyboardId}`,
             {
               method: 'GET',
@@ -187,7 +188,7 @@ export default function StoryboardEdit() {
 
   // 스토리보드 저장 시 컷 추가 + 컷 수정 + 제목 수정
   const saveStoryboard = async () => {
-    const titleRes = await fetch(
+    const titleRes = await authFetch(
       `https://dev.crezipsa.site/api/storyboard/${storyboardId}/title`,
       {
         method: 'PATCH',
@@ -216,7 +217,7 @@ export default function StoryboardEdit() {
       await (async () => {
         // 새로운 컷이면 추가
         if (!cut.id) {
-          const cutRes = await fetch(
+          const cutRes = await authFetch(
             `https://dev.crezipsa.site/api/storyboard/${storyboardId}/cuts`,
             {
               method: 'POST',
@@ -250,7 +251,7 @@ export default function StoryboardEdit() {
             etc: cut.etc,
           });
 
-          const createdRes = await fetch(
+          const createdRes = await authFetch(
             `https://dev.crezipsa.site/api/storyboard/cuts/${newCutId}`,
             {
               method: 'PATCH',
@@ -286,7 +287,7 @@ export default function StoryboardEdit() {
           console.log('updated cut data', createdData);
         } else {
           // 기존 컷이면 수정
-          const updatedRes = await fetch(
+          const updatedRes = await authFetch(
             `https://dev.crezipsa.site/api/storyboard/cuts/${cut.id}`,
             {
               method: 'PATCH',

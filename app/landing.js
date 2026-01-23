@@ -1,9 +1,11 @@
+import { authFetch } from '@/lib/authFetch';
 import {
   getKeyHashAndroid,
   initializeKakaoSDK,
 } from '@react-native-kakao/core';
 import { login as kakaoLogin } from '@react-native-kakao/user';
 import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import { useContext, useEffect } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -83,9 +85,24 @@ export default function Landing() {
       }
       setAccessToken(result.accessToken);
       setRefreshToken(result.refreshToken);
+      await SecureStore.setItemAsync('accessToken', result.accessToken);
+      await SecureStore.setItemAsync('refreshToken', result.refreshToken);
       setUser(result.kakaoUserInfo);
       setKakaoEmail(result.kakaoUserInfo?.email ?? null);
       setKakaoProfileImageUrl(result.kakaoUserInfo?.profileImage ?? null);
+
+      const meRes = await authFetch('https://dev.crezipsa.site/api/user/me', {
+        headers: { Authorization: `Bearer ${result.accessToken}` },
+      });
+      if (!meRes.ok) {
+        throw new Error(`UserInfo API error: ${meRes.status}`);
+      }
+      const me = await meRes.json();
+      if (!me?.result?.userId) {
+        throw new Error('No userId in UserInfo API response');
+      }
+      await SecureStore.setItemAsync('userId', String(me.result.userId));
+
       router.replace('/(tabs)');
     } catch (error) {
       console.error('Kakao login failed', error);

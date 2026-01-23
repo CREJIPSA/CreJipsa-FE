@@ -1,6 +1,7 @@
 import { AuthContext } from '@/app/_layout';
 import RelatedVideo from '@/app/components/search/related-video';
 import TrendKeywordCard from '@/app/components/trend-keyword-card';
+import { authFetch } from '@/lib/authFetch';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';
@@ -20,13 +21,16 @@ export default function SearchKeyword() {
     const encodedQuery = encodeURIComponent(
       Array.isArray(query) ? (query[0] ?? '') : (query ?? ''),
     );
-    fetch(`https://dev.crezipsa.site/api/main/trend/search/${encodedQuery}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
+    authFetch(
+      `https://dev.crezipsa.site/api/main/trend/search/${encodedQuery}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
       },
-    })
+    )
       .then(async res => {
         const raw = await res.text();
         console.log('search api status', res.status);

@@ -1,3 +1,4 @@
+import { authFetch } from '@/lib/authFetch';
 import { useContext, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { AuthContext } from '../../../_layout';
@@ -13,7 +14,7 @@ export default function Sports({ platform }) {
   useEffect(() => {
     const url = `https://dev.crezipsa.site/api/main/trend?platform=${platform}&category=스포츠`;
     // 플랫폼과 카테고리에 따른 실시간 트렌드 데이터 가져오기
-    fetch(url, {
+    authFetch(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
