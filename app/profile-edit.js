@@ -129,7 +129,7 @@ export default function ProfileEdit() {
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: safeAreaBg,
+          backgroundColor: primaryColors.background,
           justifyContent: 'center',
           alignItems: 'center',
         }}
@@ -247,14 +247,6 @@ export default function ProfileEdit() {
       setIsUploading(false);
     }
   };
-
-  if (loading) {
-    return (
-      <SafeAreaView style={[styles.centered, { backgroundColor: safeAreaBg }]}>
-        <ActivityIndicator size="large" color={iconColor} />
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: styles.safeAreaBg }}>
