@@ -91,7 +91,7 @@ export default function My() {
               />
             )}
           </View>
-          <Text style={styles.name}>{userInfo.nickName}</Text>
+          <Text style={styles.name}>{userInfo?.nickName}</Text>
         </View>
 
         <View style={styles.menuRow}>
