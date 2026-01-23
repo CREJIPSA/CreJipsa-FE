@@ -1,6 +1,7 @@
 import { AuthContext } from '@/app/_layout';
 import { updateMyChannels } from '@/app/api/my';
 import useThemedStyle from '@/app/hooks/use-themed-style';
+import { Ionicons } from '@expo/vector-icons';
 import { useContext, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -147,12 +148,21 @@ export default function ChannelAddModal({ visible, onClose, onRefresh }) {
                 style={styles.checkRow}
                 onPress={() => setIsMain(!isMain)}
               >
+                {/* --- 체크박스 영역 수정 --- */}
                 <View
                   style={[
                     styles.checkbox,
-                    isMain && { backgroundColor: primaryColors.pointColor },
+                    isMain && {
+                      backgroundColor: primaryColors.pointColor,
+                      borderColor: primaryColors.pointColor,
+                    },
                   ]}
-                />
+                >
+                  {isMain && (
+                    <Ionicons name="checkmark" size={14} color="#000" />
+                  )}
+                </View>
+                {/* ----------------------- */}
                 <Text
                   style={[
                     styles.label,
@@ -247,11 +257,13 @@ const getStyles = (isDark, primaryColors) =>
     },
     checkRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     checkbox: {
-      width: 18,
-      height: 18,
-      borderWidth: 1,
-      borderColor: primaryColors.pointColor,
+      width: 20, // 아이콘이 들어가므로 크기를 살짝 키우면 더 예쁩니다
+      height: 20,
+      borderWidth: 1.5,
+      borderColor: isDark ? '#666' : '#CCC', // 체크 안됐을 때 테두리 색상
       borderRadius: 4,
+      justifyContent: 'center', // 아이콘 중앙 정렬
+      alignItems: 'center',
     },
     saveButton: {
       backgroundColor: primaryColors.pointColor,

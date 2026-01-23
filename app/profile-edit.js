@@ -309,6 +309,7 @@ export default function ProfileEdit() {
       <ChannelAddModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
+        onRefresh={loadUserData}
         isDark={isDark}
         primaryColors={primaryColors}
       />

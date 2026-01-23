@@ -165,3 +165,17 @@ export const deleteInterest = async (interestId, accessToken) => {
 
   return await parseJsonResponse(response);
 };
+
+export const deleteMe = async accessToken => {
+  const url = `${API_BASE_URL}/user/me`;
+
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return await parseJsonResponse(response);
+};
