@@ -22,7 +22,7 @@ import {
   deleteInterest,
   fetchMe,
   getMyInterest,
-  updatMe,
+  updateMe,
 } from './api/my.js';
 import ChannelAddModal from './components/profile-edit/ChannelAddModal.js';
 import InterestTag from './components/profile-edit/InterestTag';
@@ -249,7 +249,7 @@ export default function ProfileEdit() {
       );
       if (!s3Response.ok) throw new Error('S3 업로드 실패');
 
-      const updateRes = await updatMe(
+      const updateRes = await updateMe(
         { profileImageUrl: fileUrl },
         accessToken,
       );

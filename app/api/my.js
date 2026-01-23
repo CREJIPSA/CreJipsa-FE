@@ -109,7 +109,7 @@ export const fetchMe = async accessToken => {
   return await parseJsonResponse(response);
 };
 
-export const updatMe = async (channelData, accessToken) => {
+export const updateMe = async (channelData, accessToken) => {
   const url = `${API_BASE_URL}/user/update`;
 
   const response = await fetch(url, {
