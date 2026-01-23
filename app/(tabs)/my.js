@@ -2,9 +2,10 @@ import HeartIcon from '@/assets/svgs/my/heart-icon.js';
 import PostIcon from '@/assets/svgs/my/post-icon.js';
 import ReplyIcon from '@/assets/svgs/my/reply-icon.js';
 import TrendIcon from '@/assets/svgs/my/trend-icon.js';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useContext, useState } from 'react';
 import {
+  ActivityIndicator,
   Image,
   Pressable,
   ScrollView,
@@ -16,9 +17,14 @@ import {
   useColorScheme,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AuthContext } from '../_layout.js';
+import { fetchMe } from '../api/my.js';
 import DeleteModal from '../components/DeleteModal.js';
 
 export default function My() {
+  const { accessToken } = useContext(AuthContext);
+  const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [pushEnabled, setPushEnabled] = useState(true);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -28,6 +34,42 @@ export default function My() {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const router = useRouter();
 
+  const loadUserData = useCallback(async () => {
+    try {
+      const data = await fetchMe(accessToken);
+      if (data.success) {
+        setUserInfo(data.result);
+      }
+    } catch (error) {
+      console.error('사용자 정보 로드 실패:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [accessToken]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (accessToken) {
+        loadUserData();
+      }
+    }, [accessToken, loadUserData]),
+  );
+
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: safeAreaBg,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <ActivityIndicator size="large" color={iconColor} />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: safeAreaBg }}>
       <ScrollView style={styles.container}>
@@ -35,12 +77,21 @@ export default function My() {
 
         <View style={styles.profileSection}>
           <View style={styles.avatarContainer}>
-            <Image
-              source={require('../../assets/images/profile.png')}
-              style={styles.avatar}
-            />
+            {userInfo?.profileImageUrl ? (
+              <Image
+                source={{ uri: userInfo.profileImageUrl }}
+                style={styles.avatar}
+              />
+            ) : (
+              <View
+                style={[
+                  styles.avatar,
+                  { backgroundColor: isDark ? '#454545' : '#D3D3D3' },
+                ]}
+              />
+            )}
           </View>
-          <Text style={styles.name}>혜안</Text>
+          <Text style={styles.name}>{userInfo?.nickName}</Text>
         </View>
 
         <View style={styles.menuRow}>
@@ -170,7 +221,6 @@ const getStyles = isDark => {
     },
     menuItem: {
       alignItems: 'center',
-      width: '22%',
     },
     squareBox: {
       width: 60,

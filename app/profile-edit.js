@@ -2,47 +2,192 @@ import useThemedStyle from '@/app/hooks/use-themed-style';
 import AddIcon from '@/assets/svgs/my/add-icon';
 import EditIcon from '@/assets/svgs/my/edit-icon.js';
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { useContext, useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DeleteIcon from '../assets/svgs/my/delete-icon.js';
+import { AuthContext } from './_layout.js';
+import { getPresignedUrl, uploadFileToS3 } from './api/common.js';
+import {
+  addInterest,
+  deleteChannel,
+  deleteInterest,
+  fetchMe,
+  getMyInterest,
+  updateMe,
+} from './api/my.js';
+import ChannelAddModal from './components/profile-edit/ChannelAddModal.js';
 import InterestTag from './components/profile-edit/InterestTag';
 import MyInterestTag from './components/profile-edit/MyInterestTag';
 
 export default function ProfileEdit() {
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
+  const { accessToken } = useContext(AuthContext);
+  const [userInfo, setUserInfo] = useState(null);
+  const [myInterests, setMyInterests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const nickname = '혜안';
-  const [profileImage, setProfileImage] = useState(null);
+  const loadUserData = async (showLoading = false) => {
+    try {
+      if (showLoading) setLoading(true);
 
-  const myChannels = [
-    {
-      type: 'youtube',
-      id: '@suucong',
-      isMain: true,
-      icon: require('../assets/images/platform_logo/youtube_logo.png'),
-    },
-    {
-      type: 'tiktok',
-      id: '@suucong',
-      isMain: false,
-      icon: require('../assets/images/platform_logo/tiktok_logo.png'),
-    },
-    {
-      type: 'instagram',
-      id: '@suucong',
-      isMain: false,
-      icon: require('../assets/images/platform_logo/instagram_logo.png'),
-    },
+      const [userRes, interestRes] = await Promise.all([
+        fetchMe(accessToken),
+        getMyInterest(accessToken),
+      ]);
+
+      if (userRes.success) setUserInfo(userRes.result);
+      if (interestRes.success) setMyInterests(interestRes.result || []);
+    } catch (error) {
+      console.error('데이터 로드 실패:', error);
+    } finally {
+      if (showLoading) setLoading(false);
+    }
+  };
+
+  // ✅ [수정] 통합된 함수를 사용하도록 useEffect 간소화
+  useEffect(() => {
+    if (accessToken) {
+      loadUserData(true);
+    }
+  }, [accessToken]);
+
+  const handleAddInterest = async category => {
+    if (myInterests.length >= 3) {
+      Alert.alert('알림', '관심분야는 최대 3개까지만 등록할 수 있습니다.');
+      return;
+    }
+
+    try {
+      const result = await addInterest(category, accessToken);
+
+      if (result.success) {
+        await loadUserData();
+        Alert.alert('알림', `'${category}' 카테고리가 추가되었습니다.`);
+      } else {
+        Alert.alert('오류', result.message || '추가에 실패했습니다.');
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert('오류', '서버 통신 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleDeleteInterest = async (interestId, category) => {
+    try {
+      const result = await deleteInterest(interestId, accessToken);
+
+      if (result.success) {
+        await loadUserData();
+        Alert.alert('알림', `'${category}' 카테고리가 삭제되었습니다.`);
+      } else {
+        Alert.alert('오류', result.message || '삭제에 실패했습니다.');
+      }
+    } catch (error) {
+      Alert.alert('오류', '서버 통신 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleDeleteChannel = async platform => {
+    Alert.alert('채널 삭제', `정말로 ${platform} 채널을 삭제하시겠어요?`, [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '삭제',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            const result = await deleteChannel(platform, accessToken);
+            if (result.success) {
+              await loadUserData();
+              Alert.alert('성공', '채널이 삭제되었습니다.');
+            } else {
+              Alert.alert('오류', result.message || '삭제에 실패했습니다.');
+            }
+          } catch (error) {
+            Alert.alert('오류', '서버 통신 중 오류가 발생했습니다.');
+          }
+        },
+      },
+    ]);
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: primaryColors.background,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <ActivityIndicator size="large" color={primaryColors.pointColor} />
+      </SafeAreaView>
+    );
+  }
+
+  const getMyChannels = () => {
+    if (!userInfo) return [];
+
+    const platforms = [
+      {
+        key: 'YOUTUBE',
+        id: userInfo.activeYoutube,
+        icon: require('@/assets/images/platform_logo/youtube_logo.png'),
+      },
+      {
+        key: 'TIKTOK',
+        id: userInfo.activeTiktok,
+        icon: require('@/assets/images/platform_logo/tiktok_logo.png'),
+      },
+      {
+        key: 'INSTAGRAM',
+        id: userInfo.activeInsta,
+        icon: require('@/assets/images/platform_logo/instagram_logo.png'),
+      },
+    ];
+
+    return platforms
+      .filter(p => p.id)
+      .map(p => ({
+        type: p.key.toLowerCase(),
+        id: p.id,
+        isMain: userInfo.mainPlatform === p.key,
+        icon: p.icon,
+      }));
+  };
+
+  const myChannels = getMyChannels();
+
+  const fixedAllInterests = [
+    '일상',
+    '게임',
+    '패션',
+    '음악',
+    '뷰티',
+    '반려동물',
+    '스포츠',
   ];
 
-  const allInterests = ['일상/밈', '게임', '패션', '음악', '뷰티', '반려동물'];
-  const myInterests = ['일상/밈', '게임', '패션'];
+  const myInterestCategories = myInterests.map(interest => interest.category);
+
+  const availableInterests = fixedAllInterests.filter(
+    tag => !myInterestCategories.includes(tag),
+  );
 
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
-
     if (permissionResult.granted === false) {
       Alert.alert('사진첩 접근 권한이 없습니다!');
       return;
@@ -50,12 +195,53 @@ export default function ProfileEdit() {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
-      allowsEditing: false,
-      quality: 1,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
     });
 
-    if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
+    if (result.canceled) return;
+
+    const selectedImage = result.assets[0];
+
+    const fileName = `profile/${userInfo?.userId || 'unknown'}/${Date.now()}.png`;
+    const contentType = 'image/png';
+
+    try {
+      setIsUploading(true);
+
+      const presignedRes = await getPresignedUrl(
+        fileName,
+        contentType,
+        accessToken,
+      );
+      if (!presignedRes.success) throw new Error('URL 발급 실패');
+
+      const { uploadUrl, fileUrl } = presignedRes.result;
+
+      const s3Response = await uploadFileToS3(
+        uploadUrl,
+        selectedImage.uri,
+        contentType,
+      );
+      if (!s3Response.ok) throw new Error('S3 업로드 실패');
+
+      const updateRes = await updateMe(
+        { profileImageUrl: fileUrl },
+        accessToken,
+      );
+
+      if (updateRes.success) {
+        await loadUserData();
+        Alert.alert('성공', '프로필 사진이 변경되었습니다.');
+      } else {
+        throw new Error(updateRes.message || 'DB 업데이트 실패');
+      }
+    } catch (error) {
+      console.error('업로드 실패:', error);
+      Alert.alert('오류', '사진 업로드 중 문제가 발생했습니다.');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -65,29 +251,39 @@ export default function ProfileEdit() {
         <Text style={styles.title}>마이</Text>
         <View style={styles.profileSection}>
           <View style={styles.avatarContainer}>
-            <Image
-              source={
-                profileImage
-                  ? { uri: profileImage }
-                  : require('../assets/images/profile.png')
-              }
-              style={styles.avatar}
-            />
+            {userInfo?.profileImageUrl ? (
+              <Image
+                source={{ uri: userInfo.profileImageUrl }}
+                style={styles.avatar}
+              />
+            ) : (
+              <View
+                style={[
+                  styles.avatar,
+                  { backgroundColor: isDark ? '#454545' : '#D3D3D3' },
+                ]}
+              />
+            )}
             <Pressable style={styles.editButton} onPress={pickImage}>
               <EditIcon isDark={isDark} />
             </Pressable>
           </View>
-          <Text style={styles.name}>{nickname}</Text>
+          <Text style={styles.name}>{userInfo?.nickName}</Text>
         </View>
         <View style={styles.infoSection}>
           <View style={styles.boxContainer}>
             <View style={styles.rowContainer}>
               <Text style={styles.boxTitleText}>내 채널 정보</Text>
-              <AddIcon
-                fillColor={primaryColors.pointColor}
-                color={primaryColors.iconPrimaryColor}
-                isDark={isDark}
-              />
+              <Pressable
+                onPress={() => setModalVisible(true)}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+              >
+                <AddIcon
+                  fillColor={primaryColors.pointColor}
+                  color={primaryColors.iconPrimaryColor}
+                  isDark={isDark}
+                />
+              </Pressable>
             </View>
             <View style={styles.channelContainer}>
               {myChannels.map((channel, index) => (
@@ -105,7 +301,14 @@ export default function ProfileEdit() {
                         </View>
                       )}
                     </View>
-                    <DeleteIcon color={primaryColors.color} />
+                    <Pressable
+                      onPress={() =>
+                        handleDeleteChannel(channel.type.toUpperCase())
+                      }
+                      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                    >
+                      <DeleteIcon color={primaryColors.color} />
+                    </Pressable>
                   </View>
                 </View>
               ))}
@@ -114,33 +317,46 @@ export default function ProfileEdit() {
           <View style={styles.boxContainer}>
             <View style={styles.myInfoContainer}>
               <Text style={styles.boxTitleText}>생년월일</Text>
-              <Text style={styles.detailText}>2000.00.00</Text>
+              <Text style={styles.detailText}>
+                {userInfo?.birth?.replaceAll('-', '.')}
+              </Text>
             </View>
             <View style={styles.myInfoContainer}>
               <Text style={styles.boxTitleText}>성별</Text>
-              <Text style={styles.detailText}>여성</Text>
+              <Text style={styles.detailText}>
+                {userInfo?.gender === 'FEMALE'
+                  ? '여성'
+                  : userInfo?.gender === 'MALE'
+                    ? '남성'
+                    : '-'}
+              </Text>
             </View>
           </View>
           <View style={styles.boxContainer}>
             <View style={styles.interestHeaderContainer}>
               <Text style={styles.boxTitleText}>관심분야</Text>
               <View style={styles.myInterestTagContainer}>
-                {myInterests.map((tag, index) => (
+                {myInterests.map(interest => (
                   <MyInterestTag
-                    key={index}
-                    label={tag}
-                    onRemove={() => console.log(`${tag} 삭제`)}
+                    key={interest.interestId}
+                    label={interest.category}
+                    onRemove={() =>
+                      handleDeleteInterest(
+                        interest.interestId,
+                        interest.category,
+                      )
+                    }
                     isDark={isDark}
                   />
                 ))}
               </View>
             </View>
             <View style={styles.interestTagContainer}>
-              {allInterests.map((tag, index) => (
+              {availableInterests.map((tag, index) => (
                 <InterestTag
                   key={index}
                   label={tag}
-                  onClick={() => console.log(`${tag} 추가`)}
+                  onClick={() => handleAddInterest(tag)}
                   isDark={isDark}
                 />
               ))}
@@ -148,6 +364,13 @@ export default function ProfileEdit() {
           </View>
         </View>
       </ScrollView>
+      <ChannelAddModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onRefresh={loadUserData}
+        isDark={isDark}
+        primaryColors={primaryColors}
+      />
     </SafeAreaView>
   );
 }
