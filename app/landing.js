@@ -91,8 +91,16 @@ export default function Landing() {
       setKakaoEmail(result.kakaoUserInfo?.email ?? null);
       setKakaoProfileImageUrl(result.kakaoUserInfo?.profileImage ?? null);
 
-      const meRes = await authFetch('https://dev.crezipsa.site/api/user/me');
+      const meRes = await authFetch('https://dev.crezipsa.site/api/user/me', {
+        headers: { Authorization: `Bearer ${result.accessToken}` },
+      });
+      if (!meRes.ok) {
+        throw new Error(`UserInfo API error: ${meRes.status}`);
+      }
       const me = await meRes.json();
+      if (!me?.result?.userId) {
+        throw new Error('No userId in UserInfo API response');
+      }
       await SecureStore.setItemAsync('userId', String(me.result.userId));
 
       router.replace('/(tabs)');

@@ -1,7 +1,7 @@
 import { Stack, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { StatusBar } from 'expo-status-bar';
-import { createContext, useEffect, useRef, useState } from 'react';
+import { createContext, useCallback, useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { initAuthFetch } from '../lib/authFetch';
@@ -25,13 +25,7 @@ export default function RootLayout() {
     accessTokenRef.current = accessToken;
   }, [accessToken]);
 
-  initAuthFetch({
-    getToken: () => accessTokenRef.current,
-    setToken: t => setAccessToken(t),
-    onLogout: () => logout(),
-  });
-
-  async function logout() {
+  const logout = useCallback(async () => {
     setAccessToken(null);
     setRefreshToken(null);
     setUser(null);
@@ -49,7 +43,15 @@ export default function RootLayout() {
     );
 
     router.replace('/landing');
-  }
+  }, [router]);
+
+  useEffect(() => {
+    initAuthFetch({
+      getToken: () => accessTokenRef.current,
+      setToken: t => setAccessToken(t),
+      onLogout: logout,
+    });
+  }, [logout]);
 
   // 토스트
   const toastConfig = {
