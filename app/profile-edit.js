@@ -271,7 +271,7 @@ export default function ProfileEdit() {
               <EditIcon isDark={isDark} />
             </Pressable>
           </View>
-          <Text style={styles.name}>{userInfo.nickName}</Text>
+          <Text style={styles.name}>{userInfo?.nickName}</Text>
         </View>
         <View style={styles.infoSection}>
           <View style={styles.boxContainer}>
@@ -321,7 +321,7 @@ export default function ProfileEdit() {
             <View style={styles.myInfoContainer}>
               <Text style={styles.boxTitleText}>생년월일</Text>
               <Text style={styles.detailText}>
-                {userInfo.birth.replaceAll('-', '.')}
+                {userInfo?.birth?.replaceAll('-', '.')}
               </Text>
             </View>
             <View style={styles.myInfoContainer}>
