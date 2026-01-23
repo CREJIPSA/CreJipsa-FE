@@ -9,7 +9,9 @@ import {
   Animated,
   Dimensions,
   Image,
+  Keyboard,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -23,11 +25,11 @@ export default function ChannelAddModal({ visible, onClose, onRefresh }) {
   const { accessToken } = useContext(AuthContext);
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
 
-  // 상태 관리
   const [selectedPlatform, setSelectedPlatform] = useState('YOUTUBE');
   const [channelId, setChannelId] = useState('');
   const [isMain, setIsMain] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
@@ -50,24 +52,42 @@ export default function ChannelAddModal({ visible, onClose, onRefresh }) {
   ];
 
   useEffect(() => {
+    const showEvent =
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent =
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const showSubscription = Keyboard.addListener(showEvent, e => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hideSubscription = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  useEffect(() => {
     if (visible) {
-      // 열릴 때 애니메이션
       Animated.timing(translateY, {
         toValue: 0,
         duration: 300,
         useNativeDriver: true,
       }).start();
     } else {
-      // 닫혀있을 때 위치 초기화
       translateY.setValue(SCREEN_HEIGHT);
-      // 상태 초기화
       setChannelId('');
       setIsMain(false);
       setSelectedPlatform('YOUTUBE');
+      setKeyboardHeight(0); // 닫힐 때 높이 초기화
     }
-  }, [visible]);
+  }, [visible, translateY]);
 
   const handleClose = () => {
+    Keyboard.dismiss(); // 닫을 때 키보드 먼저 닫기
     Animated.timing(translateY, {
       toValue: SCREEN_HEIGHT,
       duration: 250,
@@ -83,7 +103,6 @@ export default function ChannelAddModal({ visible, onClose, onRefresh }) {
 
     try {
       setIsSubmitting(true);
-
       const rawBody = {
         activeYoutube: selectedPlatform === 'YOUTUBE' ? channelId : undefined,
         activeTiktok: selectedPlatform === 'TIKTOK' ? channelId : undefined,
@@ -93,9 +112,7 @@ export default function ChannelAddModal({ visible, onClose, onRefresh }) {
 
       const requestBody = Object.entries(rawBody).reduce(
         (acc, [key, value]) => {
-          if (value !== undefined) {
-            acc[key] = value;
-          }
+          if (value !== undefined) acc[key] = value;
           return acc;
         },
         {},
@@ -131,7 +148,10 @@ export default function ChannelAddModal({ visible, onClose, onRefresh }) {
       animationType="fade"
       onRequestClose={handleClose}
     >
-      <Pressable style={styles.overlay} onPress={handleClose}>
+      <Pressable
+        style={[styles.overlay, { paddingBottom: keyboardHeight }]}
+        onPress={handleClose}
+      >
         <Animated.View
           style={[
             styles.bottomSheet,
@@ -141,14 +161,13 @@ export default function ChannelAddModal({ visible, onClose, onRefresh }) {
             },
           ]}
         >
+          {/* 내부 클릭 시 키보드 닫히지 않게 stopPropagation */}
           <Pressable style={styles.content} onPress={e => e.stopPropagation()}>
-            {/* 상단 헤더 영역: 대표 설정 및 저장 버튼 */}
             <View style={styles.header}>
               <Pressable
                 style={styles.checkRow}
                 onPress={() => setIsMain(!isMain)}
               >
-                {/* --- 체크박스 영역 수정 --- */}
                 <View
                   style={[
                     styles.checkbox,
@@ -162,7 +181,6 @@ export default function ChannelAddModal({ visible, onClose, onRefresh }) {
                     <Ionicons name="checkmark" size={14} color="#000" />
                   )}
                 </View>
-                {/* ----------------------- */}
                 <Text
                   style={[
                     styles.label,
@@ -186,7 +204,6 @@ export default function ChannelAddModal({ visible, onClose, onRefresh }) {
               </Pressable>
             </View>
 
-            {/* 플랫폼 선택 영역 */}
             <Text style={styles.sectionTitle}>채널 플랫폼</Text>
             <View style={styles.platformRow}>
               {platforms.map(p => (
@@ -216,7 +233,6 @@ export default function ChannelAddModal({ visible, onClose, onRefresh }) {
               ))}
             </View>
 
-            {/* 아이디 입력 영역 */}
             <Text style={styles.sectionTitle}>채널 아이디</Text>
             <TextInput
               style={styles.input}
@@ -225,6 +241,8 @@ export default function ChannelAddModal({ visible, onClose, onRefresh }) {
               placeholder="@아이디를 입력하세요"
               placeholderTextColor="#666"
               autoCapitalize="none"
+              onSubmitEditing={handleSave}
+              disableFullscreenUI={true}
             />
           </Pressable>
         </Animated.View>
@@ -257,12 +275,12 @@ const getStyles = (isDark, primaryColors) =>
     },
     checkRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     checkbox: {
-      width: 20, // 아이콘이 들어가므로 크기를 살짝 키우면 더 예쁩니다
+      width: 20,
       height: 20,
       borderWidth: 1.5,
-      borderColor: isDark ? '#666' : '#CCC', // 체크 안됐을 때 테두리 색상
+      borderColor: isDark ? '#666' : '#CCC',
       borderRadius: 4,
-      justifyContent: 'center', // 아이콘 중앙 정렬
+      justifyContent: 'center',
       alignItems: 'center',
     },
     saveButton: {
