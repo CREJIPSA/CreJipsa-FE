@@ -193,3 +193,15 @@ export const deleteMe = async accessToken => {
 
   return await parseJsonResponse(response);
 };
+
+export const fetchMyTrends = async accessToken => {
+  const url = `${API_BASE_URL}/main/trend/getUserTrend`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  return await parseJsonResponse(response);
+};
