@@ -17,6 +17,7 @@ import DeleteIcon from '../assets/svgs/my/delete-icon.js';
 import { AuthContext } from './_layout.js';
 import {
   addInterest,
+  deleteChannel,
   deleteInterest,
   fetchMe,
   getMyInterest,
@@ -80,6 +81,29 @@ export default function ProfileEdit() {
     } catch (error) {
       Alert.alert('오류', '서버 통신 중 오류가 발생했습니다.');
     }
+  };
+
+  const handleDeleteChannel = async platform => {
+    Alert.alert('채널 삭제', `정말로 ${platform} 채널을 삭제하시겠어요?`, [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '삭제',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            const result = await deleteChannel(platform, accessToken);
+            if (result.success) {
+              await loadUserData();
+              Alert.alert('성공', '채널이 삭제되었습니다.');
+            } else {
+              Alert.alert('오류', result.message || '삭제에 실패했습니다.');
+            }
+          } catch (error) {
+            Alert.alert('오류', '서버 통신 중 오류가 발생했습니다.');
+          }
+        },
+      },
+    ]);
   };
 
   useEffect(() => {
@@ -250,7 +274,14 @@ export default function ProfileEdit() {
                         </View>
                       )}
                     </View>
-                    <DeleteIcon color={primaryColors.color} />
+                    <Pressable
+                      onPress={() =>
+                        handleDeleteChannel(channel.type.toUpperCase())
+                      }
+                      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                    >
+                      <DeleteIcon color={primaryColors.color} />
+                    </Pressable>
                   </View>
                 </View>
               ))}
