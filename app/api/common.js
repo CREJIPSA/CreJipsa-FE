@@ -1,3 +1,4 @@
+import { authFetch } from '@/lib/authFetch.js';
 import { parseJsonResponse } from './utils.js';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -8,7 +9,7 @@ export const getPresignedUrl = async (fileName, contentType, token) => {
 
   const url = `${API_BASE_URL}/files/upload?fileName=${encodedFileName}&contentType=${encodedContentType}`;
 
-  const response = await fetch(url, {
+  const response = await authFetch(url, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -20,10 +21,10 @@ export const getPresignedUrl = async (fileName, contentType, token) => {
 };
 
 export const uploadFileToS3 = async (uploadUrl, uri, contentType) => {
-  const response = await fetch(uri);
+  const response = await authFetch(uri);
   const blob = await response.blob();
 
-  return await fetch(uploadUrl, {
+  return await authFetch(uploadUrl, {
     method: 'PUT',
     body: blob,
     headers: {
