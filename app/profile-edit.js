@@ -29,16 +29,13 @@ import InterestTag from './components/profile-edit/InterestTag';
 import MyInterestTag from './components/profile-edit/MyInterestTag';
 
 export default function ProfileEdit() {
+  const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
   const { accessToken } = useContext(AuthContext);
   const [userInfo, setUserInfo] = useState(null);
   const [myInterests, setMyInterests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const safeAreaBg = isDark ? '#202020' : '#FCFCFC';
-  const iconColor = isDark ? '#CCFF66' : '#B8E65C';
   const [modalVisible, setModalVisible] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-
-  const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
 
   const loadUserData = async (showLoading = false) => {
     try {
@@ -134,7 +131,7 @@ export default function ProfileEdit() {
           alignItems: 'center',
         }}
       >
-        <ActivityIndicator size="large" color={iconColor} />
+        <ActivityIndicator size="large" color={primaryColors.pointColor} />
       </SafeAreaView>
     );
   }
