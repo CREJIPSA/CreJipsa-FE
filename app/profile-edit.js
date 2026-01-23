@@ -209,13 +209,15 @@ export default function ProfileEdit() {
   );
 
   const pickImage = async () => {
-    await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permissionResult.granted === false) {
       Alert.alert('사진첩 접근 권한이 없습니다!');
       return;
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.5,
