@@ -2,8 +2,8 @@ import HeartIcon from '@/assets/svgs/my/heart-icon.js';
 import PostIcon from '@/assets/svgs/my/post-icon.js';
 import ReplyIcon from '@/assets/svgs/my/reply-icon.js';
 import TrendIcon from '@/assets/svgs/my/trend-icon.js';
-import { useRouter } from 'expo-router';
-import { useContext, useEffect, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useContext, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -34,26 +34,26 @@ export default function My() {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchMe(accessToken);
-        console.log(data);
-        if (data.success) {
-          setUserInfo(data.result);
-        }
-      } catch (error) {
-        console.error('사용자 정보 로드 실패:', error);
-      } finally {
-        setLoading(false);
+  const loadUserData = useCallback(async () => {
+    try {
+      const data = await fetchMe(accessToken);
+      if (data.success) {
+        setUserInfo(data.result);
       }
-    };
-
-    if (accessToken) {
-      loadUserData();
+    } catch (error) {
+      console.error('사용자 정보 로드 실패:', error);
+    } finally {
+      setLoading(false);
     }
   }, [accessToken]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (accessToken) {
+        loadUserData();
+      }
+    }, [accessToken, loadUserData]),
+  );
 
   if (loading) {
     return (
