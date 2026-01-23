@@ -53,6 +53,11 @@ export default function ProfileEdit() {
   };
 
   const handleAddInterest = async category => {
+    if (myInterests.length >= 3) {
+      Alert.alert('알림', '관심분야는 최대 3개까지만 등록할 수 있습니다.');
+      return;
+    }
+
     try {
       const result = await addInterest(category, accessToken);
 
