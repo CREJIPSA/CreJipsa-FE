@@ -21,10 +21,10 @@ export const getPresignedUrl = async (fileName, contentType, token) => {
 };
 
 export const uploadFileToS3 = async (uploadUrl, uri, contentType) => {
-  const response = await authFetch(uri);
+  const response = await fetch(uri);
   const blob = await response.blob();
 
-  return await authFetch(uploadUrl, {
+  return await fetch(uploadUrl, {
     method: 'PUT',
     body: blob,
     headers: {
