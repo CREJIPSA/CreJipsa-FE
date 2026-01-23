@@ -1,5 +1,5 @@
 import { AuthContext } from '@/app/_layout';
-import { updateMyChannels } from '@/app/api/my';
+import { updateMe } from '@/app/api/my';
 import useThemedStyle from '@/app/hooks/use-themed-style';
 import { Ionicons } from '@expo/vector-icons';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -118,7 +118,7 @@ export default function ChannelAddModal({ visible, onClose, onRefresh }) {
         {},
       );
 
-      const result = await updateMyChannels(requestBody, accessToken);
+      const result = await updateMe(requestBody, accessToken);
 
       if (result.success) {
         Alert.alert('성공', '채널 정보가 저장되었습니다.', [

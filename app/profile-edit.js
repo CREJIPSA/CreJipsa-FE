@@ -15,12 +15,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DeleteIcon from '../assets/svgs/my/delete-icon.js';
 import { AuthContext } from './_layout.js';
+import { getPresignedUrl, uploadFileToS3 } from './api/common.js';
 import {
   addInterest,
   deleteChannel,
   deleteInterest,
   fetchMe,
   getMyInterest,
+  updatMe,
 } from './api/my.js';
 import ChannelAddModal from './components/profile-edit/ChannelAddModal.js';
 import InterestTag from './components/profile-edit/InterestTag';
@@ -31,10 +33,10 @@ export default function ProfileEdit() {
   const [userInfo, setUserInfo] = useState(null);
   const [myInterests, setMyInterests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [profileImage, setProfileImage] = useState(null);
   const safeAreaBg = isDark ? '#202020' : '#FCFCFC';
   const iconColor = isDark ? '#CCFF66' : '#B8E65C';
   const [modalVisible, setModalVisible] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const { isDark, styles, primaryColors } = useThemedStyle(getStyles);
 
@@ -207,24 +209,70 @@ export default function ProfileEdit() {
   );
 
   const pickImage = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-
+    await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permissionResult.granted === false) {
       Alert.alert('사진첩 접근 권한이 없습니다!');
       return;
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: false,
-      quality: 1,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
     });
 
-    if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
+    if (result.canceled) return;
+
+    const selectedImage = result.assets[0];
+
+    const fileName = `profile/${userInfo?.userId || 'unknown'}/${Date.now()}.png`;
+    const contentType = 'image/png';
+
+    try {
+      setIsUploading(true);
+
+      const presignedRes = await getPresignedUrl(
+        fileName,
+        contentType,
+        accessToken,
+      );
+      if (!presignedRes.success) throw new Error('URL 발급 실패');
+
+      const { uploadUrl, fileUrl } = presignedRes.result;
+
+      const s3Response = await uploadFileToS3(
+        uploadUrl,
+        selectedImage.uri,
+        contentType,
+      );
+      if (!s3Response.ok) throw new Error('S3 업로드 실패');
+
+      const updateRes = await updatMe(
+        { profileImageUrl: fileUrl },
+        accessToken,
+      );
+
+      if (updateRes.success) {
+        await loadUserData();
+        Alert.alert('성공', '프로필 사진이 변경되었습니다.');
+      } else {
+        throw new Error(updateRes.message || 'DB 업데이트 실패');
+      }
+    } catch (error) {
+      console.error('업로드 실패:', error);
+      Alert.alert('오류', '사진 업로드 중 문제가 발생했습니다.');
+    } finally {
+      setIsUploading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={[styles.centered, { backgroundColor: safeAreaBg }]}>
+        <ActivityIndicator size="large" color={iconColor} />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: styles.safeAreaBg }}>
