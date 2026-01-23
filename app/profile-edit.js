@@ -250,7 +250,10 @@ export default function ProfileEdit() {
           <View style={styles.boxContainer}>
             <View style={styles.rowContainer}>
               <Text style={styles.boxTitleText}>내 채널 정보</Text>
-              <Pressable onPress={() => setModalVisible(true)}>
+              <Pressable
+                onPress={() => setModalVisible(true)}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+              >
                 <AddIcon
                   fillColor={primaryColors.pointColor}
                   color={primaryColors.iconPrimaryColor}
