@@ -489,7 +489,7 @@ const getStyles = (isDark, primaryColors) => {
 
     scrollContainer: {
       marginTop: 30,
-      backgroundColor: isDark ? 'transparent' : '#ECECEC',
+      backgroundColor: isDark ? '#202020' : '#ECECEC',
     },
 
     postContainer: {
