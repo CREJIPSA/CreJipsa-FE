@@ -171,7 +171,7 @@ export default function WritePost() {
           text={COMMUNITY_FIELDS[selectedField]}
           isOpen={openedFilter === 'category'}
           onPress={() => toggleFilter('category')}
-          options={getWriteFieldOptions}
+          options={getWriteFieldOptions()}
           onSelect={handleSelectFilter}
         />
       </View>
