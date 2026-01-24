@@ -10,7 +10,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "format": "prettier --write .",
-    "eas-build-pre-install": "npm i -g npm@10.9.3 && node -v && npm -v"
+    "eas-build-pre-install": "npm i -g npm@10.9.3 && node -v && npm -v && npm install --package-lock-only --include=dev"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

@@ -7,24 +7,18 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "node": "22.20.0",
-      "npm": "10.9.3",
-      "installCommand": "npm install --include=dev"
+      "node": "22.20.0"
     },
     "preview": {
       "distribution": "internal",
       "node": "22.20.0",
-      "npm": "10.9.3",
-      "installCommand": "npm install --include=dev",
       "android": {
         "buildType": "apk"
       }
     },
     "production": {
       "autoIncrement": true,
-      "node": "22.20.0",
-      "npm": "10.9.3",
-      "installCommand": "npm install --include=dev"
+      "node": "22.20.0"
     }
   },
   "submit": {
